@@ -1,0 +1,22 @@
+server:
+  port: 9900
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    #     声明是否将自己的信息注册到 Eureka 服务器上
+    registerWithEureka: false
+    #     是否到 Eureka 服务器中抓取注册信息
+    fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://@eureka.user.name@:@eureka.user.password@@${eureka.instance.hostname}:${server.port}/eureka/
+
+
+spring:
+  application:
+    name: eurka-service
+  security:
+    user:
+      name: @eureka.user.name@
+      password: @eureka.user.password@
