@@ -1,5 +1,7 @@
 package cn.edu.tongji.gohome.stayinformation.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -12,6 +14,7 @@ import java.sql.Time;
  * @date 2021/11/19 17:17
  */
 @Entity
+@JsonIgnoreProperties(value = { "hibernateLazyInitializer"})
 @Table(name = "stay", schema = "GoHome", catalog = "")
 public class StayEntity {
     private long stayId;
@@ -22,9 +25,9 @@ public class StayEntity {
     private int stayCapacity;
     private int roomAmount;
     private int bedAmount;
-    private byte publicBathroom;
-    private byte publicToilet;
-    private byte nonBarrierFacility;
+    private int publicBathroom;
+    private int publicToilet;
+    private int nonBarrierFacility;
     private String characteristic;
     private Time checkInTime;
     private Time checkOutTime;
@@ -116,31 +119,31 @@ public class StayEntity {
 
     @Basic
     @Column(name = "public_bathroom")
-    public byte getPublicBathroom() {
+    public int getPublicBathroom() {
         return publicBathroom;
     }
 
-    public void setPublicBathroom(byte publicBathroom) {
+    public void setPublicBathroom(int publicBathroom) {
         this.publicBathroom = publicBathroom;
     }
 
     @Basic
     @Column(name = "public_toilet")
-    public byte getPublicToilet() {
+    public int getPublicToilet() {
         return publicToilet;
     }
 
-    public void setPublicToilet(byte publicToilet) {
+    public void setPublicToilet(int publicToilet) {
         this.publicToilet = publicToilet;
     }
 
     @Basic
     @Column(name = "non_barrier_facility")
-    public byte getNonBarrierFacility() {
+    public int getNonBarrierFacility() {
         return nonBarrierFacility;
     }
 
-    public void setNonBarrierFacility(byte nonBarrierFacility) {
+    public void setNonBarrierFacility(int nonBarrierFacility) {
         this.nonBarrierFacility = nonBarrierFacility;
     }
 
