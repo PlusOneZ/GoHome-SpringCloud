@@ -1,4 +1,4 @@
-package com.example.stayinformation;
+package cn.edu.tongji.gohome.stayinformation;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
