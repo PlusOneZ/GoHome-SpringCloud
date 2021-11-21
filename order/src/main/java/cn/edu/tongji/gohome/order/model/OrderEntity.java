@@ -11,7 +11,7 @@ import java.sql.Timestamp;
  *
  * @className: OrderEntity
  * @author: loey
- * @date: 2021-11-19 21:18
+ * @date: 2021-11-21 15:21
  **/
 @Entity
 @Table(name = "`order`", schema = "GoHome", catalog = "")
@@ -21,6 +21,7 @@ public class OrderEntity {
     private Timestamp orderTime;
     private BigInteger memberAmount;
     private BigDecimal totalCost;
+    private int orderStatus;
 
     @Id
     @Column(name = "order_id", nullable = false)
@@ -72,6 +73,16 @@ public class OrderEntity {
         this.totalCost = totalCost;
     }
 
+    @Basic
+    @Column(name = "order_status", nullable = false)
+    public int getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(int orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -81,6 +92,7 @@ public class OrderEntity {
 
         if (orderId != that.orderId) return false;
         if (customerId != that.customerId) return false;
+        if (orderStatus != that.orderStatus) return false;
         if (orderTime != null ? !orderTime.equals(that.orderTime) : that.orderTime != null) return false;
         if (memberAmount != null ? !memberAmount.equals(that.memberAmount) : that.memberAmount != null) return false;
         if (totalCost != null ? !totalCost.equals(that.totalCost) : that.totalCost != null) return false;
@@ -95,6 +107,7 @@ public class OrderEntity {
         result = 31 * result + (orderTime != null ? orderTime.hashCode() : 0);
         result = 31 * result + (memberAmount != null ? memberAmount.hashCode() : 0);
         result = 31 * result + (totalCost != null ? totalCost.hashCode() : 0);
+        result = 31 * result + orderStatus;
         return result;
     }
 }

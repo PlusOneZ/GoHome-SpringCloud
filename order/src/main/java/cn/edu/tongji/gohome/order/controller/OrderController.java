@@ -1,11 +1,10 @@
 package
         cn.edu.tongji.gohome.order.controller;
 
-import cn.edu.tongji.gohome.order.model.OrderEntity;
-import cn.edu.tongji.gohome.order.repository.OrderRepository;
+import cn.edu.tongji.gohome.order.dto.OrderInfoDto;
+import cn.edu.tongji.gohome.order.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,7 +24,7 @@ import java.util.List;
 public class OrderController {
 
     @Resource
-    OrderRepository orderRepository;
+    private OrderService orderService;
 
     /**
      * @description: return all the order information for the customer.
@@ -34,10 +33,9 @@ public class OrderController {
      * @date: 2021/11/19 20:07
      **/
     @RequestMapping("orders/customer")
-    public ResponseEntity<List<OrderEntity>> getCustomerOrderList() {
+    public ResponseEntity<List<OrderInfoDto>> getCustomerOrderList() {
 
-        List<OrderEntity> orderEntityList = orderRepository.findAllByCustomerId(1L);
-        return new ResponseEntity<>(orderEntityList, HttpStatus.OK);
+        return new ResponseEntity<>(orderService.searchOrderInfoForCustomerId(1L), HttpStatus.OK);
     }
 
 }
