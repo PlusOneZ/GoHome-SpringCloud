@@ -12,10 +12,14 @@ import cn.edu.tongji.gohome.order.repository.OrderRepository;
 import cn.edu.tongji.gohome.order.repository.OrderStayRepository;
 import cn.edu.tongji.gohome.order.repository.RoomPhotoRepository;
 import cn.edu.tongji.gohome.order.service.OrderService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -41,20 +45,31 @@ public class OrderServiceImpl implements OrderService {
     private RoomPhotoRepository roomPhotoRepository;
 
     /**
-     * @param customerId: customer's id.
+     * @param customerId : customer's id.
      * @description: the implements for searching the order information by customer id...
      * @return: java.util.List<cn.edu.tongji.gohome.order.dto.OrderInfoDto>
      * @author: leoy
      * @date: 2021/11/21 17:07
      **/
     @Override
-    public List<OrderInfoDto> searchOrderInfoForCustomerId(long customerId) {
+    public HashMap<String, Object> searchOrderInfoForCustomerId(long customerId, Integer currentPage, Integer pageSize) {
+
+        Pageable pageable = PageRequest.of(currentPage,pageSize);
+
+        HashMap<String,Object> results = new HashMap<>();
 
         List<OrderInfoDto> orderInfoDtoList = new ArrayList<>();
-        List<OrderEntity> orderEntityList = orderRepository.findAllByCustomerId(customerId);
+        Page<OrderEntity> orderEntityList = orderRepository.findAllByCustomerId(customerId, pageable);
+
+        // there is no order for customer whose id = ...
         if (orderEntityList == null) {
-            return orderInfoDtoList;
+            results.put("totalPage",0);
+            results.put("orderInfo",orderInfoDtoList);
+            return results;
         }
+
+        results.put("totalPage",orderEntityList.getTotalPages());
+
         for (OrderEntity order : orderEntityList) {
             long orderId = order.getOrderId();
             CustomerCommentEntity customerComment = customerCommentRepository.findFirstByOrderId(orderId);
@@ -65,7 +80,9 @@ public class OrderServiceImpl implements OrderService {
             }
             orderInfoDtoList.add(OrderInfoMapper.getInstance().toDto(order,customerComment,roomPhoto));
         }
-        return orderInfoDtoList;
+
+        results.put("orderInfo",orderInfoDtoList);
+        return results;
 
     }
 }
