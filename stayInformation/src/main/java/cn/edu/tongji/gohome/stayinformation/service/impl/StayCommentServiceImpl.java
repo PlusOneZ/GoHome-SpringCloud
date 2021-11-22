@@ -14,7 +14,6 @@ import cn.edu.tongji.gohome.stayinformation.service.StayCommentService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.xml.stream.events.Comment;
 import java.util.ArrayList;
 import java.util.List;
 
