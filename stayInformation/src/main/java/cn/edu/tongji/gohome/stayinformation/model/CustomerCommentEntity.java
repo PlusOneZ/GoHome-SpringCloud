@@ -16,6 +16,7 @@ public class CustomerCommentEntity {
     private Timestamp customerCommentTime;
     private String customerCommentContent;
     private byte stayScore;
+    private long orderId;
 
     @Id
     @Column(name = "customer_comment_id")
@@ -81,5 +82,15 @@ public class CustomerCommentEntity {
         result = 31 * result + (customerCommentContent != null ? customerCommentContent.hashCode() : 0);
         result = 31 * result + (int) stayScore;
         return result;
+    }
+
+    @Basic
+    @Column(name = "order_id")
+    public long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(long orderId) {
+        this.orderId = orderId;
     }
 }

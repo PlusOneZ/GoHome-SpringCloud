@@ -6,5 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 /**
  * @author: 汪明杰
  */
+
 public interface StayRepository extends JpaRepository<StayEntity, Long> {
 }
