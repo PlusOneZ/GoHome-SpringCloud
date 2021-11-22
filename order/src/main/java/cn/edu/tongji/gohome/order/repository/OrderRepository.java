@@ -10,5 +10,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<OrderEntity, Long>, JpaSpecificationExecutor<OrderEntity> {
+
     Page<OrderEntity> findAllByCustomerId(Long customerId, Pageable pageable);
+
+    OrderEntity findFirstByOrderId(Long orderId);
 }
