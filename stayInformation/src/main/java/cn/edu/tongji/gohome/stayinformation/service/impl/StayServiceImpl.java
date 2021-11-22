@@ -6,12 +6,14 @@ import cn.edu.tongji.gohome.stayinformation.dto.StayInfoDto;
 import cn.edu.tongji.gohome.stayinformation.dto.mapper.RoomInfoMapper;
 import cn.edu.tongji.gohome.stayinformation.model.*;
 import cn.edu.tongji.gohome.stayinformation.repository.*;
+import cn.edu.tongji.gohome.stayinformation.service.StayCommentService;
 import cn.edu.tongji.gohome.stayinformation.service.StayService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -48,6 +50,9 @@ public class StayServiceImpl implements StayService {
 
     @Resource
     private HostGroupRepository hostGroupRepository;
+
+    @Resource
+    StayCommentService stayCommentService;
 
     @Override
     public StayInfoDto searchStayDetailedInfoForStayId(long stayId) {
@@ -95,12 +100,18 @@ public class StayServiceImpl implements StayService {
         for(RoomEntity room: roomList){
             // 获取到该房间对应的roomPhoto
             RoomPhotoEntity roomPhoto =
-                    roomPhotoRepository.findFirstByRoomId(room.getRoomId());
+                    roomPhotoRepository.findFirstByRoomIdAndStayId(
+                            room.getRoomId(),
+                            stayEntity.getStayId()
+                            );
             // 获取bedList
             List<BedEntity> bedEntityList = new ArrayList<>();
 
             List<RoomBedEntity> roomBedList =
-                    roomBedRepository.findAllByRoomId(room.getRoomId());
+                    roomBedRepository.findAllByRoomIdAndStayId(
+                            room.getRoomId(),
+                            stayId
+                    );
 
             for(RoomBedEntity roomBed: roomBedList){
                 bedEntityList.add(bedRepository.getById(roomBed.getBedType()));
@@ -143,9 +154,65 @@ public class StayServiceImpl implements StayService {
 
         stayInfoDto.setHostName(host.getHostRealName());
 
-        // TODO:根据房东id获取其名下所有房源对应订单的评价总数
-        stayInfoDto.setHostCommentNum(0);
+        // 根据房东id获取其名下所有房源对应订单的评价总数
+        stayInfoDto.setHostCommentNum(
+                stayCommentService.getCommentNumberForHostId(host.getHostId())
+        );
+
 
         return stayInfoDto;
+    }
+
+    @Override
+    public HashMap<String, Object>  getStayPositionsWithinArea(double westLng, double southLat, double eastLng, double northLat) {
+        List<HashMap<String, Object>> stayPositionInfo = new ArrayList<>();
+
+        List<StayEntity> stayEntityList = stayRepository.findAllByLongitudeBetweenAndLatitudeBetween(
+                BigDecimal.valueOf(westLng), BigDecimal.valueOf(eastLng),
+                BigDecimal.valueOf(southLat), BigDecimal.valueOf(northLat)
+        );
+
+
+
+        for(StayEntity stayEntity: stayEntityList){
+            HashMap<String, Object> objectHashMap = new HashMap<>();
+            objectHashMap.put("stayID", stayEntity.getStayId());
+            objectHashMap.put("stayPrice", getLowestRoomForStayId(
+                    stayEntity.getStayId()
+            ));
+
+            List<BigDecimal> position = new ArrayList<>();
+            position.add(stayEntity.getLongitude());
+            position.add(stayEntity.getLatitude());
+            objectHashMap.put("stayPosition",position);
+
+            stayPositionInfo.add(objectHashMap);
+        }
+
+        HashMap<String, Object> res= new HashMap<>();
+        res.put("stayPositionNum", stayEntityList.size());
+        res.put("stayPositionInfo", stayPositionInfo);
+
+        return res;
+    }
+
+    /**
+     * 获取一个房源中价格最低的房间
+     * @param stayId
+     * @return
+     */
+    @Override
+    public BigDecimal getLowestRoomForStayId(long stayId){
+        List<RoomEntity> roomEntityList = roomRepository.getAllByStayId(stayId);
+        if(roomEntityList.size() == 0){
+            return BigDecimal.valueOf(0);
+        }
+        BigDecimal lowestMoney = roomEntityList.get(0).getPrice();
+        for(int i = 1; i < roomEntityList.size(); ++i){
+            if (lowestMoney.compareTo(roomEntityList.get(i).getPrice()) > 0){
+                lowestMoney = roomEntityList.get(i).getPrice();
+            }
+        }
+        return lowestMoney;
     }
 }

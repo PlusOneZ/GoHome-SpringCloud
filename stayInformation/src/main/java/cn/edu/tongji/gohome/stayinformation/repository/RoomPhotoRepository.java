@@ -13,5 +13,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  */
 public interface RoomPhotoRepository extends JpaRepository<RoomPhotoEntity, RoomPhotoEntityPK>,
         JpaSpecificationExecutor<RoomPhotoEntity> {
-    RoomPhotoEntity findFirstByRoomId(int roomId);
+    RoomPhotoEntity findFirstByRoomIdAndStayId(int roomId, long stayId);
 }
