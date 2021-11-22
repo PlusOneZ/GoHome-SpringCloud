@@ -27,12 +27,13 @@ public class OrderController {
     private OrderService orderService;
 
     /**
-     * @description: return all the order information for the customer.
-     * @return: org.springframework.http.ResponseEntity<cn.edu.tongji.gohome.order.entity.OrderEntity>
-     * @author: leoy
-     * @date: 2021/11/19 20:07
+     * <b>example: /api/v1/orders/customer?currentPage=1&pageSize=5 </b><br>
+     * return all the order information for the customer.
+     * @return : org.springframework.http.ResponseEntity<cn.edu.tongji.gohome.order.entity.OrderEntity>
+     * @author : leoy
+     * @since  : 2021/11/19 20:07
      **/
-    @RequestMapping("orders/customer/")
+    @RequestMapping("orders/customer")
     public ResponseEntity<HashMap<String, Object>> getCustomerOrderList(
             @RequestParam(value = "currentPage") int currentPage,
             @RequestParam(value = "pageSize", defaultValue = "5") int pageSize) {
