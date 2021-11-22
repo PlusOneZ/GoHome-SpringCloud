@@ -1,11 +1,13 @@
 package cn.edu.tongji.gohome.stayinformation.controller;
 
 import cn.edu.tongji.gohome.stayinformation.dto.StayCommentInfoDto;
+import cn.edu.tongji.gohome.stayinformation.dto.StayInfoDto;
 import cn.edu.tongji.gohome.stayinformation.model.LabelEntity;
 import cn.edu.tongji.gohome.stayinformation.model.StayEntity;
 import cn.edu.tongji.gohome.stayinformation.repository.LabelRepository;
 import cn.edu.tongji.gohome.stayinformation.repository.StayRepository;
 import cn.edu.tongji.gohome.stayinformation.service.StayCommentService;
+import cn.edu.tongji.gohome.stayinformation.service.StayService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,9 +40,13 @@ public class StayController {
     @Resource
     private StayCommentService stayCommentService;
 
+    @Resource
+    private StayService stayService;
+
     @RequestMapping
-    public StayEntity getStayById(@RequestParam Long stayId) {
-        return stayRepository.getById(stayId);
+    public ResponseEntity<StayInfoDto> getStayById(@RequestParam Long stayId) {
+        return new ResponseEntity<>(stayService.searchStayDetailedInfoForStayId(stayId),
+                HttpStatus.OK);
     }
 
     @RequestMapping("/comment")

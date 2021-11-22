@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 
 public interface StayRepository extends JpaRepository<StayEntity, Long> {
+
+    StayEntity findFirstByStayId(long stayId);
 }
