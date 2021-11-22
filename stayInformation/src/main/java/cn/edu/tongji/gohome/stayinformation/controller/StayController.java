@@ -54,6 +54,16 @@ public class StayController {
                 HttpStatus.OK);
     }
 
+    @RequestMapping("/positions")
+    public ResponseEntity<HashMap<String, Object>> getAllPositionsWithinArea(
+            @RequestParam double westLng, @RequestParam double southLat,
+            @RequestParam double eastLng, @RequestParam double northLat
+    ){
+        return new ResponseEntity<>(
+                stayService.getStayPositionsWithinArea(westLng, southLat, eastLng, northLat),
+                HttpStatus.OK);
+    }
+
     @RequestMapping("/comment")
     public ResponseEntity<StayCommentInfoDto> getStayCommentList(@RequestParam Long stayId) {
 

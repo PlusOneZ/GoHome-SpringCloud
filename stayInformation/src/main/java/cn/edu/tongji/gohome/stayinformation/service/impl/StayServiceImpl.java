@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -160,5 +161,58 @@ public class StayServiceImpl implements StayService {
 
 
         return stayInfoDto;
+    }
+
+    @Override
+    public HashMap<String, Object>  getStayPositionsWithinArea(double westLng, double southLat, double eastLng, double northLat) {
+        List<HashMap<String, Object>> stayPositionInfo = new ArrayList<>();
+
+        List<StayEntity> stayEntityList = stayRepository.findAllByLongitudeBetweenAndLatitudeBetween(
+                BigDecimal.valueOf(westLng), BigDecimal.valueOf(eastLng),
+                BigDecimal.valueOf(southLat), BigDecimal.valueOf(northLat)
+        );
+
+
+
+        for(StayEntity stayEntity: stayEntityList){
+            HashMap<String, Object> objectHashMap = new HashMap<>();
+            objectHashMap.put("stayID", stayEntity.getStayId());
+            objectHashMap.put("stayPrice", getLowestRoomForStayId(
+                    stayEntity.getStayId()
+            ));
+
+            List<BigDecimal> position = new ArrayList<>();
+            position.add(stayEntity.getLongitude());
+            position.add(stayEntity.getLatitude());
+            objectHashMap.put("stayPosition",position);
+
+            stayPositionInfo.add(objectHashMap);
+        }
+
+        HashMap<String, Object> res= new HashMap<>();
+        res.put("stayPositionNum", stayEntityList.size());
+        res.put("stayPositionInfo", stayPositionInfo);
+
+        return res;
+    }
+
+    /**
+     * 获取一个房源中价格最低的房间
+     * @param stayId
+     * @return
+     */
+    @Override
+    public BigDecimal getLowestRoomForStayId(long stayId){
+        List<RoomEntity> roomEntityList = roomRepository.getAllByStayId(stayId);
+        if(roomEntityList.size() == 0){
+            return BigDecimal.valueOf(0);
+        }
+        BigDecimal lowestMoney = roomEntityList.get(0).getPrice();
+        for(int i = 1; i < roomEntityList.size(); ++i){
+            if (lowestMoney.compareTo(roomEntityList.get(i).getPrice()) > 0){
+                lowestMoney = roomEntityList.get(i).getPrice();
+            }
+        }
+        return lowestMoney;
     }
 }

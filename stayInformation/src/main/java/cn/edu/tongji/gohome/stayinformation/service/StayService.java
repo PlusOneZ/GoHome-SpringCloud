@@ -2,6 +2,11 @@ package cn.edu.tongji.gohome.stayinformation.service;
 
 import cn.edu.tongji.gohome.stayinformation.dto.StayInfoDto;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * StayService类
@@ -12,4 +17,9 @@ import org.springframework.stereotype.Service;
 @Service
 public interface StayService {
     StayInfoDto searchStayDetailedInfoForStayId(long stayId);
+
+    BigDecimal getLowestRoomForStayId(long stayId);
+
+    HashMap<String, Object> getStayPositionsWithinArea(double westLng, double southLat,
+                                             double eastLng, double northLat);
 }
