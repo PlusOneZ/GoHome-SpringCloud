@@ -43,6 +43,11 @@ public class StayController {
     @Resource
     private StayService stayService;
 
+    /**
+     * <b>Example: http://localhost:8090/api/v1/stay?stayId=10059</b><br>
+     * @param stayId
+     * @return
+     */
     @RequestMapping
     public ResponseEntity<StayInfoDto> getStayById(@RequestParam Long stayId) {
         return new ResponseEntity<>(stayService.searchStayDetailedInfoForStayId(stayId),

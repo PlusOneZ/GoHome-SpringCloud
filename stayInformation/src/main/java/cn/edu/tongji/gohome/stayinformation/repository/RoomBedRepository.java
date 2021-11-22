@@ -15,5 +15,5 @@ import java.util.List;
  */
 public interface RoomBedRepository extends JpaRepository<RoomBedEntity, RoomBedEntityPK>,
         JpaSpecificationExecutor<RoomBedEntity> {
-    List<RoomBedEntity> findAllByRoomId(int roomId);
+    List<RoomBedEntity> findAllByRoomIdAndStayId(int roomId, long stayId);
 }

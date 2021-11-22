@@ -6,6 +6,7 @@ import cn.edu.tongji.gohome.stayinformation.dto.StayInfoDto;
 import cn.edu.tongji.gohome.stayinformation.dto.mapper.RoomInfoMapper;
 import cn.edu.tongji.gohome.stayinformation.model.*;
 import cn.edu.tongji.gohome.stayinformation.repository.*;
+import cn.edu.tongji.gohome.stayinformation.service.StayCommentService;
 import cn.edu.tongji.gohome.stayinformation.service.StayService;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +49,9 @@ public class StayServiceImpl implements StayService {
 
     @Resource
     private HostGroupRepository hostGroupRepository;
+
+    @Resource
+    StayCommentService stayCommentService;
 
     @Override
     public StayInfoDto searchStayDetailedInfoForStayId(long stayId) {
@@ -95,12 +99,18 @@ public class StayServiceImpl implements StayService {
         for(RoomEntity room: roomList){
             // 获取到该房间对应的roomPhoto
             RoomPhotoEntity roomPhoto =
-                    roomPhotoRepository.findFirstByRoomId(room.getRoomId());
+                    roomPhotoRepository.findFirstByRoomIdAndStayId(
+                            room.getRoomId(),
+                            stayEntity.getStayId()
+                            );
             // 获取bedList
             List<BedEntity> bedEntityList = new ArrayList<>();
 
             List<RoomBedEntity> roomBedList =
-                    roomBedRepository.findAllByRoomId(room.getRoomId());
+                    roomBedRepository.findAllByRoomIdAndStayId(
+                            room.getRoomId(),
+                            stayId
+                    );
 
             for(RoomBedEntity roomBed: roomBedList){
                 bedEntityList.add(bedRepository.getById(roomBed.getBedType()));
@@ -143,8 +153,11 @@ public class StayServiceImpl implements StayService {
 
         stayInfoDto.setHostName(host.getHostRealName());
 
-        // TODO:根据房东id获取其名下所有房源对应订单的评价总数
-        stayInfoDto.setHostCommentNum(0);
+        // 根据房东id获取其名下所有房源对应订单的评价总数
+        stayInfoDto.setHostCommentNum(
+                stayCommentService.getCommentNumberForHostId(host.getHostId())
+        );
+
 
         return stayInfoDto;
     }
