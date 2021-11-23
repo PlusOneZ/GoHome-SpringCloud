@@ -13,4 +13,6 @@ public interface OrderStayRepository extends JpaRepository<OrderStayEntity, Orde
     OrderStayEntity findFirstByOrderId(long orderId);
 
     List<OrderStayEntity> findAllByStayId(long StayId);
+
+    List<OrderStayEntity> findAllByRoomId(int roomId);
 }

@@ -36,6 +36,8 @@ public class StayEntity {
     private BigInteger stayStatus;
     private int commentAmount;
     private int commentScore;
+    private int hostId;
+    private String stayTypeName;
 
     @Id
     @Column(name = "stay_id")
@@ -123,6 +125,10 @@ public class StayEntity {
         return publicBathroom;
     }
 
+    public void setPublicBathroom(byte publicBathroom) {
+        this.publicBathroom = publicBathroom;
+    }
+
     public void setPublicBathroom(int publicBathroom) {
         this.publicBathroom = publicBathroom;
     }
@@ -133,6 +139,10 @@ public class StayEntity {
         return publicToilet;
     }
 
+    public void setPublicToilet(byte publicToilet) {
+        this.publicToilet = publicToilet;
+    }
+
     public void setPublicToilet(int publicToilet) {
         this.publicToilet = publicToilet;
     }
@@ -141,6 +151,10 @@ public class StayEntity {
     @Column(name = "non_barrier_facility")
     public int getNonBarrierFacility() {
         return nonBarrierFacility;
+    }
+
+    public void setNonBarrierFacility(byte nonBarrierFacility) {
+        this.nonBarrierFacility = nonBarrierFacility;
     }
 
     public void setNonBarrierFacility(int nonBarrierFacility) {
@@ -281,5 +295,25 @@ public class StayEntity {
         result = 31 * result + commentAmount;
         result = 31 * result + commentScore;
         return result;
+    }
+
+    @Basic
+    @Column(name = "host_id")
+    public int getHostId() {
+        return hostId;
+    }
+
+    public void setHostId(int hostId) {
+        this.hostId = hostId;
+    }
+
+    @Basic
+    @Column(name = "stay_type_name")
+    public String getStayTypeName() {
+        return stayTypeName;
+    }
+
+    public void setStayTypeName(String stayTypeName) {
+        this.stayTypeName = stayTypeName;
     }
 }
