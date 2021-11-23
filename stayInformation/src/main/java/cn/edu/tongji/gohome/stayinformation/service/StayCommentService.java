@@ -13,4 +13,6 @@ import org.springframework.stereotype.Service;
 @Service
 public interface StayCommentService {
     StayCommentInfoDto searchCommentInfoForStayId(long stayId);
+
+    int getCommentNumberForHostId(int hostId);
 }

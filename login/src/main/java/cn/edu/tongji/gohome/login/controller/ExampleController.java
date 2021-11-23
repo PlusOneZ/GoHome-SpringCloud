@@ -4,10 +4,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 就是给你们一个例子
+ * ExampleController
  *
  * @author 卓正一
- * @since  2021/11/19 11:24 AM
+ * @since 2021/11/23 3:09 PM
  */
 
 @RestController

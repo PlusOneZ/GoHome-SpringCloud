@@ -13,6 +13,7 @@ import javax.persistence.*;
 public class FavoriteDirectoryEntity {
     private int favoriteDirectoryId;
     private String name;
+    private long customerId;
 
     @Id
     @Column(name = "favorite_directory_id")
@@ -52,5 +53,15 @@ public class FavoriteDirectoryEntity {
         int result = favoriteDirectoryId;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
+    }
+
+    @Basic
+    @Column(name = "customer_id")
+    public long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(long customerId) {
+        this.customerId = customerId;
     }
 }
