@@ -11,7 +11,7 @@ import java.util.Objects;
  * @since 2021/11/22 9:35 PM
  */
 @Entity
-@Table(name = "host", schema = "GoHome", catalog = "")
+@Table(name = "`host`", schema = "GoHome", catalog = "")
 public class HostEntity {
     private int hostId;
     private Timestamp hostCreateTime;
