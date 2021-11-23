@@ -9,27 +9,27 @@ import java.sql.Timestamp;
  *
  * @className: OrderReportEntity
  * @author: loey
- * @date: 2021-11-19 21:18
+ * @date: 2021-11-23 18:22
  **/
 @Entity
 @Table(name = "order_report", schema = "GoHome", catalog = "")
 public class OrderReportEntity {
-    private int reportId;
+    private long reportId;
     private long orderId;
     private Timestamp reportTime;
     private String reportReason;
-    private byte isDealt;
+    private boolean isDealt;
     private Integer adminId;
     private Timestamp dealTime;
     private String reply;
 
     @Id
     @Column(name = "report_id", nullable = false)
-    public int getReportId() {
+    public long getReportId() {
         return reportId;
     }
 
-    public void setReportId(int reportId) {
+    public void setReportId(long reportId) {
         this.reportId = reportId;
     }
 
@@ -65,12 +65,12 @@ public class OrderReportEntity {
 
     @Basic
     @Column(name = "is_dealt", nullable = false)
-    public byte getIsDealt() {
+    public boolean isDealt() {
         return isDealt;
     }
 
-    public void setIsDealt(byte isDealt) {
-        this.isDealt = isDealt;
+    public void setDealt(boolean dealt) {
+        isDealt = dealt;
     }
 
     @Basic
@@ -124,11 +124,11 @@ public class OrderReportEntity {
 
     @Override
     public int hashCode() {
-        int result = reportId;
+        int result = (int) (reportId ^ (reportId >>> 32));
         result = 31 * result + (int) (orderId ^ (orderId >>> 32));
         result = 31 * result + (reportTime != null ? reportTime.hashCode() : 0);
         result = 31 * result + (reportReason != null ? reportReason.hashCode() : 0);
-        result = 31 * result + (int) isDealt;
+        result = 31 * result + (isDealt ? 1 : 0);
         result = 31 * result + (adminId != null ? adminId.hashCode() : 0);
         result = 31 * result + (dealTime != null ? dealTime.hashCode() : 0);
         result = 31 * result + (reply != null ? reply.hashCode() : 0);
