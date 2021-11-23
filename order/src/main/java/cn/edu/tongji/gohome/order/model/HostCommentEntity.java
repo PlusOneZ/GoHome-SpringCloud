@@ -9,24 +9,24 @@ import java.sql.Timestamp;
  *
  * @className: HostCommentEntity
  * @author: loey
- * @date: 2021-11-19 21:18
+ * @date: 2021-11-23 18:01
  **/
 @Entity
 @Table(name = "host_comment", schema = "GoHome", catalog = "")
 public class HostCommentEntity {
-    private int hostCommentId;
+    private long hostCommentId;
     private long orderId;
     private Timestamp hostCommentTime;
     private String hostCommentContent;
-    private byte customerScore;
+    private int customerScore;
 
     @Id
     @Column(name = "host_comment_id", nullable = false)
-    public int getHostCommentId() {
+    public long getHostCommentId() {
         return hostCommentId;
     }
 
-    public void setHostCommentId(int hostCommentId) {
+    public void setHostCommentId(long hostCommentId) {
         this.hostCommentId = hostCommentId;
     }
 
@@ -62,11 +62,11 @@ public class HostCommentEntity {
 
     @Basic
     @Column(name = "customer_score", nullable = false)
-    public byte getCustomerScore() {
+    public int getCustomerScore() {
         return customerScore;
     }
 
-    public void setCustomerScore(byte customerScore) {
+    public void setCustomerScore(int customerScore) {
         this.customerScore = customerScore;
     }
 
@@ -90,11 +90,11 @@ public class HostCommentEntity {
 
     @Override
     public int hashCode() {
-        int result = hostCommentId;
+        int result = (int) (hostCommentId ^ (hostCommentId >>> 32));
         result = 31 * result + (int) (orderId ^ (orderId >>> 32));
         result = 31 * result + (hostCommentTime != null ? hostCommentTime.hashCode() : 0);
         result = 31 * result + (hostCommentContent != null ? hostCommentContent.hashCode() : 0);
-        result = 31 * result + (int) customerScore;
+        result = 31 * result + customerScore;
         return result;
     }
 }

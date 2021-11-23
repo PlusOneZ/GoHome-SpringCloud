@@ -1,13 +1,12 @@
-package cn.edu.tongji.gohome.login.model;
+package cn.edu.tongji.gohome.stayinformation.model;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 /**
- * HostGroupEntity: JPA 自动生成
+ * TODO:此处写HostGroupEntity类的描述
  *
- * @author 卓正一
- * @since  2021/11/19 6:47 PM
+ * @author 汪明杰
+ * @date 2021/11/19 17:17
  */
 @Entity
 @Table(name = "host_group", schema = "GoHome", catalog = "")
@@ -50,12 +49,23 @@ public class HostGroupEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         HostGroupEntity that = (HostGroupEntity) o;
-        return hostLevel == that.hostLevel && Objects.equals(hostLevelName, that.hostLevelName) && Objects.equals(hostLevelDegree, that.hostLevelDegree);
+
+        if (hostLevel != that.hostLevel) return false;
+        if (hostLevelName != null ? !hostLevelName.equals(that.hostLevelName) : that.hostLevelName != null)
+            return false;
+        if (hostLevelDegree != null ? !hostLevelDegree.equals(that.hostLevelDegree) : that.hostLevelDegree != null)
+            return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hostLevel, hostLevelName, hostLevelDegree);
+        int result = hostLevel;
+        result = 31 * result + (hostLevelName != null ? hostLevelName.hashCode() : 0);
+        result = 31 * result + (hostLevelDegree != null ? hostLevelDegree.hashCode() : 0);
+        return result;
     }
 }

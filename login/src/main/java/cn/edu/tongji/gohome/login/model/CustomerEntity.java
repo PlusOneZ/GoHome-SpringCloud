@@ -1,21 +1,18 @@
 package cn.edu.tongji.gohome.login.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
- * CustomerEntity: JPA 自动生成
+ * CustomerEntity
  *
  * @author 卓正一
- * @since  2021/11/19 6:47 PM
+ * @since 2021/11/22 9:35 PM
  */
 @Entity
 @Table(name = "customer", schema = "GoHome", catalog = "")
-@JsonIgnoreProperties(value = { "hibernateLazyInitializer"})
 public class CustomerEntity {
     private long customerId;
     private String customerName;

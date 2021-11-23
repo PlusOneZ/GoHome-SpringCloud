@@ -1,13 +1,12 @@
-package cn.edu.tongji.gohome.login.model;
+package cn.edu.tongji.gohome.stayinformation.model;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 /**
- * CustomerGroupEntity: JPA 自动生成
+ * TODO:此处写CustomerGroupEntity类的描述
  *
- * @author 卓正一
- * @since  2021/11/19 6:47 PM
+ * @author 汪明杰
+ * @date 2021/11/19 17:17
  */
 @Entity
 @Table(name = "customer_group", schema = "GoHome", catalog = "")
@@ -50,12 +49,22 @@ public class CustomerGroupEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         CustomerGroupEntity that = (CustomerGroupEntity) o;
-        return customerLevel == that.customerLevel && customerLevelDegree == that.customerLevelDegree && Objects.equals(customerLevelName, that.customerLevelName);
+
+        if (customerLevel != that.customerLevel) return false;
+        if (customerLevelDegree != that.customerLevelDegree) return false;
+        if (customerLevelName != null ? !customerLevelName.equals(that.customerLevelName) : that.customerLevelName != null)
+            return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(customerLevel, customerLevelName, customerLevelDegree);
+        int result = customerLevel;
+        result = 31 * result + (customerLevelName != null ? customerLevelName.hashCode() : 0);
+        result = 31 * result + (int) (customerLevelDegree ^ (customerLevelDegree >>> 32));
+        return result;
     }
 }

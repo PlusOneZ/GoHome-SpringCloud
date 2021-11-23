@@ -1,16 +1,12 @@
 package
         cn.edu.tongji.gohome.order.service.impl;
 
+import cn.edu.tongji.gohome.order.dto.OrderDetailedInfoDto;
 import cn.edu.tongji.gohome.order.dto.OrderInfoDto;
+import cn.edu.tongji.gohome.order.dto.mapper.OrderDetailedInfoMapper;
 import cn.edu.tongji.gohome.order.dto.mapper.OrderInfoMapper;
-import cn.edu.tongji.gohome.order.model.CustomerCommentEntity;
-import cn.edu.tongji.gohome.order.model.OrderEntity;
-import cn.edu.tongji.gohome.order.model.OrderStayEntity;
-import cn.edu.tongji.gohome.order.model.RoomPhotoEntity;
-import cn.edu.tongji.gohome.order.repository.CustomerCommentRepository;
-import cn.edu.tongji.gohome.order.repository.OrderRepository;
-import cn.edu.tongji.gohome.order.repository.OrderStayRepository;
-import cn.edu.tongji.gohome.order.repository.RoomPhotoRepository;
+import cn.edu.tongji.gohome.order.model.*;
+import cn.edu.tongji.gohome.order.repository.*;
 import cn.edu.tongji.gohome.order.service.OrderService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -44,6 +40,31 @@ public class OrderServiceImpl implements OrderService {
     @Resource
     private RoomPhotoRepository roomPhotoRepository;
 
+    @Resource
+    private VOrderStayRepository vOrderStayRepository;
+
+    @Resource
+    private StayRepository stayRepository;
+
+
+    /**
+    * @description: A private function for searching order information list... to reduce the same code...
+    * @param order: orderEntity to get orderId and other information...
+    * @return: cn.edu.tongji.gohome.order.dto.OrderInfoDto
+    * @author: leoy
+    * @date: 2021/11/22 19:31
+    **/
+    private OrderInfoDto getInfoFromOrderEntity(OrderEntity order){
+        long orderId = order.getOrderId();
+        CustomerCommentEntity customerComment = customerCommentRepository.findFirstByOrderId(orderId);
+        OrderStayEntity orderStay = orderStayRepository.findFirstByOrderId(orderId);
+        RoomPhotoEntity roomPhoto = null;
+        if (orderStay != null) {
+            roomPhoto = roomPhotoRepository.findFirstByStayIdAndRoomId(orderStay.getStayId(), orderStay.getRoomId());
+        }
+        return OrderInfoMapper.getInstance().toDto(order, customerComment, roomPhoto);
+    }
+
     /**
      * @param customerId : customer's id.
      * @description: the implements for searching the order information by customer id...
@@ -54,35 +75,109 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public HashMap<String, Object> searchOrderInfoForCustomerId(long customerId, Integer currentPage, Integer pageSize) {
 
-        Pageable pageable = PageRequest.of(currentPage,pageSize);
+        Pageable pageable = PageRequest.of(currentPage, pageSize);
 
-        HashMap<String,Object> results = new HashMap<>();
+        HashMap<String, Object> results = new HashMap<>();
 
         List<OrderInfoDto> orderInfoDtoList = new ArrayList<>();
         Page<OrderEntity> orderEntityList = orderRepository.findAllByCustomerId(customerId, pageable);
 
         // there is no order for customer whose id = ...
         if (orderEntityList == null) {
-            results.put("totalPage",0);
-            results.put("orderInfo",orderInfoDtoList);
+            results.put("totalPage", 0);
+            results.put("orderInfo", orderInfoDtoList);
             return results;
         }
 
-        results.put("totalPage",orderEntityList.getTotalPages());
+        results.put("totalPage", orderEntityList.getTotalPages());
 
         for (OrderEntity order : orderEntityList) {
-            long orderId = order.getOrderId();
-            CustomerCommentEntity customerComment = customerCommentRepository.findFirstByOrderId(orderId);
-            OrderStayEntity orderStay = orderStayRepository.findFirstByOrderId(orderId);
-            RoomPhotoEntity roomPhoto = null;
-            if (orderStay != null){
-                roomPhoto = roomPhotoRepository.findFirstByStayIdAndRoomId(orderStay.getStayId(),orderStay.getRoomId());
-            }
-            orderInfoDtoList.add(OrderInfoMapper.getInstance().toDto(order,customerComment,roomPhoto));
+            orderInfoDtoList.add(getInfoFromOrderEntity(order));
         }
 
-        results.put("orderInfo",orderInfoDtoList);
+        results.put("orderInfo", orderInfoDtoList);
         return results;
 
+    }
+
+    /**
+     * @param stayId: stay id for searching the order.
+     * @param currentPage: current page for info.
+     * @param pageSize: the count of data every page.
+     * @description: search the order info for the host when he clicks one stay...
+     * @return: java.util.HashMap<java.lang.String, java.lang.Object>
+     * @author: leoy
+     * @date: 2021/11/22 10:59
+     **/
+    @Override
+    public HashMap<String, Object> searchOrderInfoForStayId(long stayId, Integer currentPage, Integer pageSize) {
+
+        // get all the order info
+        Pageable pageable = PageRequest.of(currentPage, pageSize);
+
+        HashMap<String, Object> results = new HashMap<>();
+        List<OrderInfoDto> orderInfoDtoList = new ArrayList<>();
+
+        Page<VOrderStayEntity> vOrderStayEntityPageable = vOrderStayRepository.findAllByStayId(stayId, pageable);
+
+        // there is no order for customer whose id = ...
+        if (vOrderStayEntityPageable == null) {
+            results.put("totalPage", 0);
+            results.put("orderInfo", orderInfoDtoList);
+            return results;
+        }
+        results.put("totalPage", vOrderStayEntityPageable.getTotalPages());
+        List<OrderEntity> orderEntityList = new ArrayList<>();
+        for(VOrderStayEntity vOrderStayEntity:vOrderStayEntityPageable){
+            orderEntityList.add(orderRepository.findFirstByOrderId(vOrderStayEntity.getOrderId()));
+        }
+
+        for(OrderEntity order : orderEntityList){
+            orderInfoDtoList.add(getInfoFromOrderEntity(order));
+        }
+        results.put("orderInfo", orderInfoDtoList);
+        return results;
+    }
+
+
+    /**
+    * @description: When the customer or host clicks the order, the back-end should return the detailed information for order and stay-room...
+    * @param orderId: the id for order...
+    * @param currentPage the current page of all...
+    * @param pageSize: number for the record every page...
+    * @return: java.util.HashMap<java.lang.String,java.lang.Object>
+    * @author: leoy
+    * @date: 2021/11/22 19:33
+    **/
+    @Override
+    public HashMap<String, Object> searchOrderDetailedInfoForOrderId(long orderId, Integer currentPage, Integer pageSize){
+
+        // get all room info by order id...
+        HashMap<String, Object> results = new HashMap<>();
+        List<OrderDetailedInfoDto> orderDetailedInfoDtoList = new ArrayList<>();
+
+        Pageable pageable = PageRequest.of(currentPage,pageSize);
+        Page<OrderStayEntity> orderStayEntityPage = orderStayRepository.findAllByOrderId(orderId, pageable);
+
+        if (orderStayEntityPage == null){
+            results.put("totalPage",0);
+            return results;
+        }
+
+        results.put("totalPage",orderStayEntityPage.getTotalPages());
+
+        long stayId = vOrderStayRepository.findFirstByOrderId(orderId).getStayId();
+        String stayName = stayRepository.findFirstByStayId(stayId).getStayName();
+        results.put("stayName",stayName);
+
+        for (OrderStayEntity stayInfo : orderStayEntityPage){
+
+            int roomId = stayInfo.getRoomId();
+            RoomPhotoEntity roomPhoto = roomPhotoRepository.findFirstByStayIdAndRoomId(stayId,roomId);
+            orderDetailedInfoDtoList.add(OrderDetailedInfoMapper.getInstance().toDto(stayInfo,roomPhoto));
+        }
+        results.put("orderDetailedInfo",orderDetailedInfoDtoList);
+
+        return results;
     }
 }

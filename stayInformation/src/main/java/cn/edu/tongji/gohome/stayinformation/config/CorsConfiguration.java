@@ -1,4 +1,4 @@
-package cn.edu.tongji.gohome.login.config;
+package cn.edu.tongji.gohome.stayinformation.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
@@ -9,8 +9,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * CorsConfiguration类
  * <p>允许所有跨域访问</p>
  * <b>TODO: 改成允许部分域访问</b>
- * @author 卓正一
- * @since  2021/11/19 5:20 PM
+ * @author 汪明杰
+ * @since  2021/11/22 5:20 PM
  */
 public class CorsConfiguration implements WebMvcConfigurer {
     @Bean
