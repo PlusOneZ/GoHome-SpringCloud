@@ -10,7 +10,7 @@ import java.sql.Timestamp;
  * @date 2021/11/19 17:17
  */
 @Entity
-@Table(name = "host", schema = "GoHome", catalog = "")
+@Table(name = "`host`", schema = "GoHome", catalog = "")
 public class HostEntity {
     private int hostId;
     private Timestamp hostCreateTime;

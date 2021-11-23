@@ -7,25 +7,35 @@ import java.sql.Timestamp;
  * TODO:此处写CustomerCommentEntity类的描述
  *
  * @author 汪明杰
- * @date 2021/11/19 17:17
+ * @date 2021/11/23 20:56
  */
 @Entity
 @Table(name = "customer_comment", schema = "GoHome", catalog = "")
 public class CustomerCommentEntity {
-    private int customerCommentId;
+    private long customerCommentId;
+    private long orderId;
     private Timestamp customerCommentTime;
     private String customerCommentContent;
-    private byte stayScore;
-    private long orderId;
+    private int stayScore;
 
     @Id
     @Column(name = "customer_comment_id")
-    public int getCustomerCommentId() {
+    public long getCustomerCommentId() {
         return customerCommentId;
     }
 
-    public void setCustomerCommentId(int customerCommentId) {
+    public void setCustomerCommentId(long customerCommentId) {
         this.customerCommentId = customerCommentId;
+    }
+
+    @Basic
+    @Column(name = "order_id")
+    public long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(long orderId) {
+        this.orderId = orderId;
     }
 
     @Basic
@@ -50,11 +60,11 @@ public class CustomerCommentEntity {
 
     @Basic
     @Column(name = "stay_score")
-    public byte getStayScore() {
+    public int getStayScore() {
         return stayScore;
     }
 
-    public void setStayScore(byte stayScore) {
+    public void setStayScore(int stayScore) {
         this.stayScore = stayScore;
     }
 
@@ -66,6 +76,7 @@ public class CustomerCommentEntity {
         CustomerCommentEntity that = (CustomerCommentEntity) o;
 
         if (customerCommentId != that.customerCommentId) return false;
+        if (orderId != that.orderId) return false;
         if (stayScore != that.stayScore) return false;
         if (customerCommentTime != null ? !customerCommentTime.equals(that.customerCommentTime) : that.customerCommentTime != null)
             return false;
@@ -77,20 +88,11 @@ public class CustomerCommentEntity {
 
     @Override
     public int hashCode() {
-        int result = customerCommentId;
+        int result = (int) (customerCommentId ^ (customerCommentId >>> 32));
+        result = 31 * result + (int) (orderId ^ (orderId >>> 32));
         result = 31 * result + (customerCommentTime != null ? customerCommentTime.hashCode() : 0);
         result = 31 * result + (customerCommentContent != null ? customerCommentContent.hashCode() : 0);
-        result = 31 * result + (int) stayScore;
+        result = 31 * result + stayScore;
         return result;
-    }
-
-    @Basic
-    @Column(name = "order_id")
-    public long getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(long orderId) {
-        this.orderId = orderId;
     }
 }
