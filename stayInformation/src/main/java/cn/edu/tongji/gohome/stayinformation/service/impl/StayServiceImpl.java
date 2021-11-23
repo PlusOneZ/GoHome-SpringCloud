@@ -61,6 +61,9 @@ public class StayServiceImpl implements StayService {
     @Resource
     FavoriteDirectoryStayRepository favoriteDirectoryStayRepository;
 
+    @Resource
+    StayLabelRepository stayLabelRepository;
+
     @Override
     public StayInfoDto searchStayDetailedInfoForStayId(long stayId) {
         StayInfoDto stayInfoDto = new StayInfoDto();
@@ -328,8 +331,44 @@ public class StayServiceImpl implements StayService {
 
     }
 
+    /**
+     * 获取房源粗略信息
+     * @param stayId
+     * @param customerId
+     * @return
+     */
     @Override
     public HashMap<String, Object> getStayBriefInfoByStayId(Long stayId, long customerId){
+        HashMap<String, Object> res = getStayMapInfoByStayId(stayId, customerId);
+
+        if (res == null){
+            return null;
+        }
+
+        // stayLabel
+        res.put("stayLabel", getAllLabelByStayId(stayId));
+
+        // stayPrice
+        res.put("stayPrice", getLowestRoomForStayId(stayId));
+
+        StayEntity stayEntity = stayRepository.getById(stayId);
+        // stayCommentNum
+        res.put("stayCommentNum", stayEntity.getCommentAmount());
+
+        // stayScore
+        res.put("stayScore", stayEntity.getCommentScore());
+
+        // stayPosition
+        List<BigDecimal> stayPosition = new ArrayList<>();
+        stayPosition.add(stayEntity.getLongitude());
+        stayPosition.add(stayEntity.getLatitude());
+        res.put("stayPosition", stayPosition);
+
+        return res;
+    }
+
+    @Override
+    public HashMap<String, Object> getStayMapInfoByStayId(Long stayId, long customerId){
         HashMap<String, Object> res = new HashMap<>();
         StayEntity stayEntity = stayRepository.findFirstByStayId(stayId);
 
@@ -352,6 +391,21 @@ public class StayServiceImpl implements StayService {
         // 是否收藏
         res.put("isLike", isHostFavoriteByCustomerId(stayId, customerId));
 
+        return res;
+    }
+
+    /**
+     * 根据stayId查到其全部label
+     * @param stayId
+     * @return
+     */
+    @Override
+    public List<String> getAllLabelByStayId(Long stayId){
+        List<StayLabelEntity> stayLabelEntityList = stayLabelRepository.findAllByStayId(stayId);
+        List<String> res = new ArrayList<>();
+        for(StayLabelEntity stayLabelEntity: stayLabelEntityList){
+            res.add(stayLabelEntity.getLabelName());
+        }
         return res;
     }
 }

@@ -29,9 +29,13 @@ public interface StayService {
 
     List<String> getAllPhotoByStayId(Long stayId);
 
-    HashMap<String, Object> getHostInfoByStayId(Long StayId);
+    HashMap<String, Object> getHostInfoByStayId(Long stayId);
 
     boolean isHostFavoriteByCustomerId(Long stayId, long customerId);
 
+    HashMap<String, Object> getStayMapInfoByStayId(Long stayId, long customerId);
+
     HashMap<String, Object> getStayBriefInfoByStayId(Long stayId, long customerId);
+
+    List<String> getAllLabelByStayId(Long stayId);
 }

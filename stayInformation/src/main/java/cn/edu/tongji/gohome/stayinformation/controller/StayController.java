@@ -55,9 +55,14 @@ public class StayController {
                 HttpStatus.OK);
     }
 
+    /**
+     * <b>http://localhost:8090/api/v1/stay/brief?stayId=10144</b>
+     * @param stayId
+     * @return
+     */
     @RequestMapping("/brief")
-    public ResponseEntity<HashMap<String, Object>> getStayBriefInfoById
-            (@RequestParam Long stayId){
+    public ResponseEntity<HashMap<String, Object>> getStaBriefInfoById
+    (@RequestParam Long stayId){
         HashMap<String, Object> hashMap = new HashMap<>();
 
         //TODO: change to token
@@ -66,6 +71,27 @@ public class StayController {
         hashMap.put("stayPositionNum", 1);
         hashMap.put("stayPositionInfo",
                 stayService.getStayBriefInfoByStayId(stayId, customerId)
+        );
+        return new ResponseEntity<>(hashMap,
+                HttpStatus.OK);
+    }
+
+    /**
+     * <b>http://localhost:8090/api/v1/stay/map?stayId=10144</b>
+     * @param stayId
+     * @return
+     */
+    @RequestMapping("/map")
+    public ResponseEntity<HashMap<String, Object>> getStayMapInfoById
+            (@RequestParam Long stayId){
+        HashMap<String, Object> hashMap = new HashMap<>();
+
+        //TODO: change to token
+        long customerId = 1;
+
+        hashMap.put("stayPositionNum", 1);
+        hashMap.put("stayPositionInfo",
+                stayService.getStayMapInfoByStayId(stayId, customerId)
                 );
         return new ResponseEntity<>(hashMap,
                 HttpStatus.OK);
