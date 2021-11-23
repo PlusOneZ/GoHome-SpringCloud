@@ -6,6 +6,7 @@ import cn.edu.tongji.gohome.stayinformation.dto.mapper.CommentMapper;
 import cn.edu.tongji.gohome.stayinformation.model.CustomerCommentEntity;
 import cn.edu.tongji.gohome.stayinformation.model.CustomerEntity;
 import cn.edu.tongji.gohome.stayinformation.model.OrderStayEntity;
+import cn.edu.tongji.gohome.stayinformation.model.StayEntity;
 import cn.edu.tongji.gohome.stayinformation.repository.CustomerCommentRepository;
 import cn.edu.tongji.gohome.stayinformation.repository.CustomerRepository;
 import cn.edu.tongji.gohome.stayinformation.repository.OrderStayRepository;
@@ -14,7 +15,6 @@ import cn.edu.tongji.gohome.stayinformation.service.StayCommentService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.xml.stream.events.Comment;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +39,11 @@ public class StayCommentServiceImpl implements StayCommentService {
     @Resource
     private CustomerRepository customerRepository;
 
+    /**
+     * 获取某一个stayId的评论集
+     * @param stayId
+     * @return
+     */
     @Override
     public StayCommentInfoDto searchCommentInfoForStayId(long stayId){
 
@@ -88,5 +93,21 @@ public class StayCommentServiceImpl implements StayCommentService {
 
         return stayCommentInfoDto;
 
+    }
+
+    /**
+     * 获取hostId所拥有房源收到的全部评价
+     * @param hostId
+     * @return
+     */
+    @Override
+    public int getCommentNumberForHostId(int hostId) {
+        List<StayEntity> stayEntityList = stayRepository.findAllByHostId(hostId);
+        int sumNum = 0;
+        for(int i = 0; i < stayEntityList.size(); ++i){
+            sumNum += searchCommentInfoForStayId(stayEntityList.get(i).getStayId())
+                    .getCommentNum();
+        }
+        return sumNum;
     }
 }

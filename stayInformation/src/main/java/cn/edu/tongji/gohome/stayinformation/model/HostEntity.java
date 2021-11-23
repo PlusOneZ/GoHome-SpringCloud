@@ -18,6 +18,8 @@ public class HostEntity {
     private String hostRealName;
     private int hostScore;
     private int hostState;
+    private Integer hostLevel;
+    private long customerId;
 
     @Id
     @Column(name = "host_id")
@@ -107,5 +109,25 @@ public class HostEntity {
         result = 31 * result + hostScore;
         result = 31 * result + hostState;
         return result;
+    }
+
+    @Basic
+    @Column(name = "host_level")
+    public Integer getHostLevel() {
+        return hostLevel;
+    }
+
+    public void setHostLevel(Integer hostLevel) {
+        this.hostLevel = hostLevel;
+    }
+
+    @Basic
+    @Column(name = "customer_id")
+    public long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(long customerId) {
+        this.customerId = customerId;
     }
 }

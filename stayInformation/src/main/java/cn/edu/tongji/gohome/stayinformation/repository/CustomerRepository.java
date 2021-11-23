@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * @author 汪明杰
  * @date 2021/11/22 19:10
  */
-public interface CustomerRepository extends JpaRepository<CustomerEntity, Integer>,
+public interface CustomerRepository extends JpaRepository<CustomerEntity, Long>,
         JpaSpecificationExecutor<CustomerEntity> {
 
     CustomerEntity findCustomerEntityByCustomerId(long customerId);
