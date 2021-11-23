@@ -2,6 +2,7 @@ package
         cn.edu.tongji.gohome.order.controller;
 
 import cn.edu.tongji.gohome.order.dto.Comment;
+import cn.edu.tongji.gohome.order.dto.OrderContent;
 import cn.edu.tongji.gohome.order.dto.Report;
 import cn.edu.tongji.gohome.order.model.CustomerCommentEntity;
 import cn.edu.tongji.gohome.order.model.HostCommentEntity;
@@ -111,6 +112,13 @@ public class OrderController {
 
         orderReportRepository.save(orderReportEntity);
 
+        return HttpStatus.OK;
+    }
+
+    @RequestMapping(value = "order",method = RequestMethod.POST)
+    public HttpStatus addOrder(@RequestBody OrderContent orderContent){
+
+        orderService.addOrderAndDetailedInformation(orderContent);
         return HttpStatus.OK;
     }
 
