@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,4 +23,19 @@ public interface StayService {
 
     HashMap<String, Object> getStayPositionsWithinArea(double westLng, double southLat,
                                              double eastLng, double northLat);
+
+    List<HashMap<String, Object>> getAllStayByHostIdAndStatus
+            (int hostId, BigInteger stayStatus);
+
+    List<String> getAllPhotoByStayId(Long stayId);
+
+    HashMap<String, Object> getHostInfoByStayId(Long stayId);
+
+    boolean isHostFavoriteByCustomerId(Long stayId, long customerId);
+
+    HashMap<String, Object> getStayMapInfoByStayId(Long stayId, long customerId);
+
+    HashMap<String, Object> getStayBriefInfoByStayId(Long stayId, long customerId);
+
+    List<String> getAllLabelByStayId(Long stayId);
 }

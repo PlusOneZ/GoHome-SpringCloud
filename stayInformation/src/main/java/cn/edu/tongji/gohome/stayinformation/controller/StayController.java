@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +55,50 @@ public class StayController {
                 HttpStatus.OK);
     }
 
+    /**
+     * <b>http://localhost:8090/api/v1/stay/brief?stayId=10144</b>
+     * @param stayId
+     * @return
+     */
+    @RequestMapping("/brief")
+    public ResponseEntity<HashMap<String, Object>> getStaBriefInfoById
+    (@RequestParam Long stayId){
+        HashMap<String, Object> hashMap = new HashMap<>();
+
+        //TODO: change to token
+        long customerId = 1;
+
+        hashMap.put("stayPositionNum", 1);
+        hashMap.put("stayPositionInfo",
+                stayService.getStayBriefInfoByStayId(stayId, customerId)
+        );
+        return new ResponseEntity<>(hashMap,
+                HttpStatus.OK);
+    }
+
+    /**
+     * <b>http://localhost:8090/api/v1/stay/map?stayId=10144</b>
+     * @param stayId
+     * @return
+     */
+    @RequestMapping("/map")
+    public ResponseEntity<HashMap<String, Object>> getStayMapInfoById
+            (@RequestParam Long stayId){
+        HashMap<String, Object> hashMap = new HashMap<>();
+
+        //TODO: change to token
+        long customerId = 1;
+
+        hashMap.put("stayPositionNum", 1);
+        hashMap.put("stayPositionInfo",
+                stayService.getStayMapInfoByStayId(stayId, customerId)
+                );
+        return new ResponseEntity<>(hashMap,
+                HttpStatus.OK);
+    }
+
+
+
     @RequestMapping("/positions")
     public ResponseEntity<HashMap<String, Object>> getAllPositionsWithinArea(
             @RequestParam double westLng, @RequestParam double southLat,
@@ -86,6 +131,25 @@ public class StayController {
         return new ResponseEntity<>(hashMap,
                 HttpStatus.OK);
     }
+
+    @RequestMapping("/host")
+    public ResponseEntity<HashMap<String, Object>> getStayBriefInfoByHostId
+            (@RequestParam int hostId){
+        HashMap<String, Object> hashMap = new HashMap<>();
+
+        // 0 代表保存但未提交， 1 表示待审核， 2 表示审核通过
+
+        hashMap.put("unpublishedStayInfo",
+                stayService.getAllStayByHostIdAndStatus(hostId, BigInteger.valueOf(0)));
+        hashMap.put("pendingStayInfo",
+                stayService.getAllStayByHostIdAndStatus(hostId, BigInteger.valueOf(1)));
+        hashMap.put("publishedHouseInfo",
+                stayService.getAllStayByHostIdAndStatus(hostId, BigInteger.valueOf(2)));
+
+        return new ResponseEntity<>(hashMap,
+                HttpStatus.OK);
+    }
+
 
 
 }

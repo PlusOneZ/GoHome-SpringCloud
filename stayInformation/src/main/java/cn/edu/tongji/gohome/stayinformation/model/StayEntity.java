@@ -37,6 +37,7 @@ public class StayEntity {
     private int commentAmount;
     private int commentScore;
     private int hostId;
+    private String stayTypeName;
 
     @Id
     @Column(name = "stay_id")
@@ -304,5 +305,15 @@ public class StayEntity {
 
     public void setHostId(int hostId) {
         this.hostId = hostId;
+    }
+
+    @Basic
+    @Column(name = "stay_type_name")
+    public String getStayTypeName() {
+        return stayTypeName;
+    }
+
+    public void setStayTypeName(String stayTypeName) {
+        this.stayTypeName = stayTypeName;
     }
 }
