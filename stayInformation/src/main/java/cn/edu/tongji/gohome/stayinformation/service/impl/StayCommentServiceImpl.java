@@ -72,7 +72,8 @@ public class StayCommentServiceImpl implements StayCommentService {
                     customerRepository.findCustomerEntityByCustomerId(customerCommentEntity.getCustomerCommentId());
 
             // 新增CommentDto
-            CommentDto commentDto = CommentMapper.getInstance().toDto(customerEntity, customerCommentEntity);
+            CommentDto commentDto = CommentMapper.getInstance().
+                    toDto(customerEntity, customerCommentEntity);
 
             commentDtoList.add(commentDto);
             aveRatings += customerCommentEntity.getStayScore();

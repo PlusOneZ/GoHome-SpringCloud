@@ -11,6 +11,7 @@ import cn.edu.tongji.gohome.stayinformation.service.StayService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -97,7 +98,15 @@ public class StayController {
                 HttpStatus.OK);
     }
 
-
+    @RequestMapping("type")
+    public ResponseEntity<HashMap<String,Object>> getStayTypeById
+            (@RequestParam Long stayId){
+        List<String> stayType = stayService.getAllLabelByStayId(stayId);
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("typeList", stayType);
+        return new ResponseEntity<>(hashMap,
+                HttpStatus.OK);
+    }
 
     @RequestMapping("/positions")
     public ResponseEntity<HashMap<String, Object>> getAllPositionsWithinArea(
@@ -150,6 +159,12 @@ public class StayController {
                 HttpStatus.OK);
     }
 
+
+    //TODO: 最复杂的一个API
+    @RequestMapping(value = "",method = RequestMethod.POST)
+    public ResponseEntity<Boolean> createStay(){
+        return null;
+    }
 
 
 }

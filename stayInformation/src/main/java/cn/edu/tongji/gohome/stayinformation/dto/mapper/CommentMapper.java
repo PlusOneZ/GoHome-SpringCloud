@@ -29,7 +29,7 @@ public class CommentMapper {
         CommentDto commentDto = new CommentDto();
         commentDto.setId(customerCommentEntity.getCustomerCommentId());
         // 用户是否已注销
-        if (customerCommentEntity == null){
+        if (customerEntity == null){
             commentDto.setNickName("已注销");
             commentDto.setAvatar("");
         }
