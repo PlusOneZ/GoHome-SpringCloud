@@ -55,6 +55,12 @@ public class StayServiceImpl implements StayService {
     @Resource
     StayCommentService stayCommentService;
 
+    @Resource
+    FavoriteDirectoryRepository favoriteDirectoryRepository;
+
+    @Resource
+    FavoriteDirectoryStayRepository favoriteDirectoryStayRepository;
+
     @Override
     public StayInfoDto searchStayDetailedInfoForStayId(long stayId) {
         StayInfoDto stayInfoDto = new StayInfoDto();
@@ -243,6 +249,108 @@ public class StayServiceImpl implements StayService {
 
             res.add(hashMap);
         }
+
+        return res;
+    }
+
+    /**
+     * 根据stayId获取该房源的全部图片
+     * @param stayId
+     * @return
+     */
+    @Override
+    public List<String> getAllPhotoByStayId(Long stayId){
+        List<RoomEntity> roomList = roomRepository.getAllByStayId(stayId);
+        List<String> photoList = new ArrayList<>();
+        for(RoomEntity room: roomList) {
+            // 获取到该房间对应的roomPhoto
+            RoomPhotoEntity roomPhoto =
+                    roomPhotoRepository.findFirstByRoomIdAndStayId(
+                            room.getRoomId(),
+                            stayId
+                    );
+            if (roomPhoto != null){
+                photoList.add(roomPhoto.getRoomPhotoLink());
+            }
+        }
+        return photoList;
+    }
+
+    /**
+     * 根据stayId获取房东信息
+     * @param stayId
+     * @return
+     */
+    @Override
+    public HashMap<String, Object> getHostInfoByStayId(Long stayId){
+        StayEntity stayEntity = stayRepository.findFirstByStayId(stayId);
+
+        if(stayEntity == null){
+            return null;
+        }
+
+        HostEntity hostEntity = hostRepository.getById(stayEntity.getHostId());
+        CustomerEntity customerEntity = customerRepository.getById(hostEntity.getCustomerId());
+
+        HashMap<String, Object> res = new HashMap<>();
+        res.put("avatar", customerEntity.getCustomerAvatarLink());
+
+        return res;
+    }
+
+    /**
+     * 判断指定房源是否被指定顾客收藏
+     * @param stayId
+     * @param customerId
+     * @return
+     */
+    @Override
+    public boolean isHostFavoriteByCustomerId(Long stayId, long customerId){
+        List<FavoriteDirectoryEntity> favoriteDirectoryEntityList
+                = favoriteDirectoryRepository.findAllByCustomerId(customerId);
+
+        for(FavoriteDirectoryEntity favoriteDirectoryEntity:
+        favoriteDirectoryEntityList){
+            List<FavoriteDirectoryStayEntity> favoriteDirectoryStayEntityList
+                    = favoriteDirectoryStayRepository
+                    .findAllByFavoriteDirectoryId(
+                            favoriteDirectoryEntity.getFavoriteDirectoryId()
+                    );
+            // 在favoriteDirectoryStayEntityList中查找是否有该stayId
+            for (int i = 0;i <favoriteDirectoryStayEntityList.size(); ++i){
+                if(favoriteDirectoryStayEntityList.get(i).getStayId() == stayId){
+                    return true;
+                }
+            }
+        }
+
+        return false;
+
+    }
+
+    @Override
+    public HashMap<String, Object> getStayBriefInfoByStayId(Long stayId, long customerId){
+        HashMap<String, Object> res = new HashMap<>();
+        StayEntity stayEntity = stayRepository.findFirstByStayId(stayId);
+
+        if (stayEntity == null){
+            return null;
+        }
+
+        res.put("stayName", stayEntity.getStayName());
+        res.put("stayDescribe", stayEntity.getCharacteristic());
+
+        // 图片
+        res.put("stayPhoto", getAllPhotoByStayId(stayId));
+
+        // 房东头像
+        res.put("hostAvatar", getHostInfoByStayId(stayId).get("avatar"));
+
+        // 房源评分
+        res.put("stayScore", stayEntity.getCommentScore());
+
+        // 是否收藏
+        res.put("isLike", isHostFavoriteByCustomerId(stayId, customerId));
 
         return res;
     }

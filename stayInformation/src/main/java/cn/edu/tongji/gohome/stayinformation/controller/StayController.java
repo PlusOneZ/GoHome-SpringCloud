@@ -55,7 +55,23 @@ public class StayController {
                 HttpStatus.OK);
     }
 
-    
+    @RequestMapping("/brief")
+    public ResponseEntity<HashMap<String, Object>> getStayBriefInfoById
+            (@RequestParam Long stayId){
+        HashMap<String, Object> hashMap = new HashMap<>();
+
+        //TODO: change to token
+        long customerId = 1;
+
+        hashMap.put("stayPositionNum", 1);
+        hashMap.put("stayPositionInfo",
+                stayService.getStayBriefInfoByStayId(stayId, customerId)
+                );
+        return new ResponseEntity<>(hashMap,
+                HttpStatus.OK);
+    }
+
+
 
     @RequestMapping("/positions")
     public ResponseEntity<HashMap<String, Object>> getAllPositionsWithinArea(
