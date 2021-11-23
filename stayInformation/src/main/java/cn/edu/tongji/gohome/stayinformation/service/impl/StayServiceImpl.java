@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -214,5 +215,35 @@ public class StayServiceImpl implements StayService {
             }
         }
         return lowestMoney;
+    }
+
+    /**
+     * 根据房东id和房源状态获取所有的房源
+     * @param hostId
+     * @param stayStatus
+     * @return
+     */
+    @Override
+    public List<HashMap<String, Object>> getAllStayByHostIdAndStatus
+            (int hostId, BigInteger stayStatus){
+        List<HashMap<String, Object>> res = new ArrayList<>();
+
+        List<StayEntity> stayEntityList = stayRepository.
+                findAllByHostIdAndStayStatus(hostId, stayStatus);
+        for(StayEntity stayEntity: stayEntityList){
+            HashMap<String, Object> hashMap = new HashMap<>();
+            StayInfoDto stayInfoDto = searchStayDetailedInfoForStayId(stayEntity.getStayId());
+            hashMap.put("stayId", stayEntity.getStayId());
+            hashMap.put("imgListNum", stayInfoDto.getStayImages().size());
+            hashMap.put("stayType", stayEntity.getStayTypeName());
+            hashMap.put("stayNickName", stayInfoDto.getStayName());
+            hashMap.put("stayPlace", stayEntity.getDetailedAddress());
+            hashMap.put("stayPrice", getLowestRoomForStayId(stayEntity.getStayId()));
+            hashMap.put("stayImgList", stayInfoDto.getStayImages());
+
+            res.add(hashMap);
+        }
+
+        return res;
     }
 }

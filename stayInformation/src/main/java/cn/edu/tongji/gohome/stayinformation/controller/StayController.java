@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +55,8 @@ public class StayController {
                 HttpStatus.OK);
     }
 
+    
+
     @RequestMapping("/positions")
     public ResponseEntity<HashMap<String, Object>> getAllPositionsWithinArea(
             @RequestParam double westLng, @RequestParam double southLat,
@@ -86,6 +89,25 @@ public class StayController {
         return new ResponseEntity<>(hashMap,
                 HttpStatus.OK);
     }
+
+    @RequestMapping("/host")
+    public ResponseEntity<HashMap<String, Object>> getStayBriefInfoByHostId
+            (@RequestParam int hostId){
+        HashMap<String, Object> hashMap = new HashMap<>();
+
+        // 0 代表保存但未提交， 1 表示待审核， 2 表示审核通过
+
+        hashMap.put("unpublishedStayInfo",
+                stayService.getAllStayByHostIdAndStatus(hostId, BigInteger.valueOf(0)));
+        hashMap.put("pendingStayInfo",
+                stayService.getAllStayByHostIdAndStatus(hostId, BigInteger.valueOf(1)));
+        hashMap.put("publishedHouseInfo",
+                stayService.getAllStayByHostIdAndStatus(hostId, BigInteger.valueOf(2)));
+
+        return new ResponseEntity<>(hashMap,
+                HttpStatus.OK);
+    }
+
 
 
 }
