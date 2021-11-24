@@ -7,9 +7,6 @@ import cn.edu.tongji.gohome.order.model.OrderEntity;
 import cn.edu.tongji.gohome.order.model.RoomPhotoEntity;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-
 /**
  * It's a class to map the orderInfoDto with the information of order, comment and so on...
  *

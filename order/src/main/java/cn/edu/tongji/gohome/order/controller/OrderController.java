@@ -1,12 +1,19 @@
 package
         cn.edu.tongji.gohome.order.controller;
 
+import cn.edu.tongji.gohome.order.dto.Comment;
+import cn.edu.tongji.gohome.order.dto.Report;
+import cn.edu.tongji.gohome.order.model.CustomerCommentEntity;
+import cn.edu.tongji.gohome.order.model.HostCommentEntity;
+import cn.edu.tongji.gohome.order.model.OrderReportEntity;
+import cn.edu.tongji.gohome.order.repository.CustomerCommentRepository;
+import cn.edu.tongji.gohome.order.repository.HostCommentRepository;
+import cn.edu.tongji.gohome.order.repository.OrderReportRepository;
 import cn.edu.tongji.gohome.order.service.OrderService;
+import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -25,6 +32,16 @@ public class OrderController {
 
     @Resource
     private OrderService orderService;
+
+    @Resource
+    private CustomerCommentRepository customerCommentRepository;
+
+    @Resource
+    private HostCommentRepository hostCommentRepository;
+
+    @Resource
+    private OrderReportRepository orderReportRepository;
+
 
     /**
      * <b>example: /api/v1/orders/customer?currentPage=1&pageSize=5 </b><br>
@@ -57,6 +74,45 @@ public class OrderController {
             @RequestParam(value = "currentPage") int currentPage,
             @RequestParam(value = "pageSize", defaultValue = "3") int pageSize) {
         return new ResponseEntity<>(orderService.searchOrderDetailedInfoForOrderId(orderId, currentPage, pageSize), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "order/comment/customer", method = RequestMethod.POST)
+    public HttpStatus addOrderCustomerComment(@RequestBody Comment comment){
+        CustomerCommentEntity customerCommentEntity = new CustomerCommentEntity();
+
+        customerCommentEntity.setOrderId(comment.getOrderId());
+        customerCommentEntity.setCustomerCommentContent(comment.getCommentContent());
+        customerCommentEntity.setCustomerCommentTime(comment.getCommentTime());
+        customerCommentEntity.setStayScore(comment.getCommentScore());
+
+        customerCommentRepository.save(customerCommentEntity);
+        return HttpStatus.OK;
+    }
+
+    @RequestMapping(value = "order/comment/host", method = RequestMethod.POST)
+    public HttpStatus addOrderHostComment(@RequestBody Comment comment){
+        HostCommentEntity hostCommentEntity = new HostCommentEntity();
+
+        hostCommentEntity.setOrderId(comment.getOrderId());
+        hostCommentEntity.setHostCommentContent(comment.getCommentContent());
+        hostCommentEntity.setHostCommentTime(comment.getCommentTime());
+        hostCommentEntity.setCustomerScore(comment.getCommentScore());
+
+        hostCommentRepository.save(hostCommentEntity);
+        return HttpStatus.OK;
+    }
+
+    @RequestMapping(value = "order/report",method = RequestMethod.POST)
+    public HttpStatus addOrderReport(@RequestBody Report report){
+        OrderReportEntity orderReportEntity = new OrderReportEntity();
+
+        orderReportEntity.setOrderId(report.getOrderId());
+        orderReportEntity.setReportReason(report.getReportReason());
+        orderReportEntity.setReportTime(report.getReportTime());
+
+        orderReportRepository.save(orderReportEntity);
+
+        return HttpStatus.OK;
     }
 
 }

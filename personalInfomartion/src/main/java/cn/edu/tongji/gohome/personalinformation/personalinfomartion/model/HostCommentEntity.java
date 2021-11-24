@@ -1,16 +1,14 @@
-package
-        cn.edu.tongji.gohome.order.model;
+package cn.edu.tongji.gohome.personalinformation.personalinfomartion.model;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 /**
- * TODO
- *
- * @className: HostCommentEntity
- * @author: loey
- * @date: 2021-11-23 18:01
- **/
+ * HostCommentEntity类
+ * @author 梁乔
+ * @date 2021/11/23 11:31 
+ */
 @Entity
 @Table(name = "host_comment", schema = "GoHome", catalog = "")
 public class HostCommentEntity {
@@ -21,7 +19,7 @@ public class HostCommentEntity {
     private int customerScore;
 
     @Id
-    @Column(name = "host_comment_id", nullable = false)
+    @Column(name = "host_comment_id")
     public long getHostCommentId() {
         return hostCommentId;
     }
@@ -31,7 +29,7 @@ public class HostCommentEntity {
     }
 
     @Basic
-    @Column(name = "order_id", nullable = false)
+    @Column(name = "order_id")
     public long getOrderId() {
         return orderId;
     }
@@ -41,7 +39,7 @@ public class HostCommentEntity {
     }
 
     @Basic
-    @Column(name = "host_comment_time", nullable = false)
+    @Column(name = "host_comment_time")
     public Timestamp getHostCommentTime() {
         return hostCommentTime;
     }
@@ -51,7 +49,7 @@ public class HostCommentEntity {
     }
 
     @Basic
-    @Column(name = "host_comment_content", nullable = false, length = 400)
+    @Column(name = "host_comment_content")
     public String getHostCommentContent() {
         return hostCommentContent;
     }
@@ -61,7 +59,7 @@ public class HostCommentEntity {
     }
 
     @Basic
-    @Column(name = "customer_score", nullable = false)
+    @Column(name = "customer_score")
     public int getCustomerScore() {
         return customerScore;
     }
@@ -74,27 +72,12 @@ public class HostCommentEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         HostCommentEntity that = (HostCommentEntity) o;
-
-        if (hostCommentId != that.hostCommentId) return false;
-        if (orderId != that.orderId) return false;
-        if (customerScore != that.customerScore) return false;
-        if (hostCommentTime != null ? !hostCommentTime.equals(that.hostCommentTime) : that.hostCommentTime != null)
-            return false;
-        if (hostCommentContent != null ? !hostCommentContent.equals(that.hostCommentContent) : that.hostCommentContent != null)
-            return false;
-
-        return true;
+        return hostCommentId == that.hostCommentId && orderId == that.orderId && customerScore == that.customerScore && Objects.equals(hostCommentTime, that.hostCommentTime) && Objects.equals(hostCommentContent, that.hostCommentContent);
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (hostCommentId ^ (hostCommentId >>> 32));
-        result = 31 * result + (int) (orderId ^ (orderId >>> 32));
-        result = 31 * result + (hostCommentTime != null ? hostCommentTime.hashCode() : 0);
-        result = 31 * result + (hostCommentContent != null ? hostCommentContent.hashCode() : 0);
-        result = 31 * result + customerScore;
-        return result;
+        return Objects.hash(hostCommentId, orderId, hostCommentTime, hostCommentContent, customerScore);
     }
 }

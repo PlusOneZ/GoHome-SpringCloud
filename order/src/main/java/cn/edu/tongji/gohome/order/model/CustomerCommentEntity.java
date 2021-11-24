@@ -9,12 +9,12 @@ import java.sql.Timestamp;
  *
  * @className: CustomerCommentEntity
  * @author: loey
- * @date: 2021-11-19 21:18
+ * @date: 2021-11-23 18:01
  **/
 @Entity
 @Table(name = "customer_comment", schema = "GoHome", catalog = "")
 public class CustomerCommentEntity {
-    private int customerCommentId;
+    private long customerCommentId;
     private long orderId;
     private Timestamp customerCommentTime;
     private String customerCommentContent;
@@ -22,11 +22,11 @@ public class CustomerCommentEntity {
 
     @Id
     @Column(name = "customer_comment_id", nullable = false)
-    public int getCustomerCommentId() {
+    public long getCustomerCommentId() {
         return customerCommentId;
     }
 
-    public void setCustomerCommentId(int customerCommentId) {
+    public void setCustomerCommentId(long customerCommentId) {
         this.customerCommentId = customerCommentId;
     }
 
@@ -90,7 +90,7 @@ public class CustomerCommentEntity {
 
     @Override
     public int hashCode() {
-        int result = customerCommentId;
+        int result = (int) (customerCommentId ^ (customerCommentId >>> 32));
         result = 31 * result + (int) (orderId ^ (orderId >>> 32));
         result = 31 * result + (customerCommentTime != null ? customerCommentTime.hashCode() : 0);
         result = 31 * result + (customerCommentContent != null ? customerCommentContent.hashCode() : 0);
