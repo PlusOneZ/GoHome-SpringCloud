@@ -15,6 +15,8 @@ public interface SignupService {
 
     void changeCustomerPassword(String phoneCode, String phone, String newPassword);
 
+    void changeCustomerPassword(Long userId, String newPassword);
+
     // TODO 分割一个发送短信的服务接口
     // TODO 一个身份证照片检验服务
 

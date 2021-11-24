@@ -8,6 +8,7 @@ import cn.edu.tongji.gohome.login.repository.HostRepository;
 import cn.edu.tongji.gohome.login.service.SignupService;
 import cn.edu.tongji.gohome.login.service.exception.UserAlreadyExists;
 import cn.edu.tongji.gohome.login.service.exception.UserNotExistException;
+import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -49,6 +50,18 @@ public class SignupServiceImpl implements SignupService {
     }
 
     @Override
+    public void changeCustomerPassword(Long userId, String newPassword) {
+        Optional<CustomerEntity> customer = customerRepository.findById(userId);
+        if (customer.isPresent()) {
+            CustomerEntity customerEntity = customer.get();
+            customerEntity.setCustomerPassword(newPassword);
+            customerRepository.save(customerEntity);
+        } else {
+            throw new UserNotExistException();
+        }
+    }
+
+    @Override
     public Long customerSignup(String phoneCode, String phone, String password, String username) {
         return customerSignup(phoneCode, phone, password, username, null);
     }
@@ -62,7 +75,7 @@ public class SignupServiceImpl implements SignupService {
 
         CustomerEntity customer = new CustomerEntity();
 
-        customer.setCustomerId(1); // TODO:自动生成
+        customer.setCustomerId(YitIdHelper.nextId()); // 自动生成
         customer.setCustomerPassword(password);
         customer.setCustomerName(username);
         customer.setCustomerPhone(phone);
