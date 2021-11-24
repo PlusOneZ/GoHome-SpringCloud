@@ -7,11 +7,11 @@ import java.math.BigInteger;
 import java.sql.Time;
 
 /**
- * TODO
+ * class description
  *
- * @className: StayEntity
- * @author: loey
- * @date: 2021-11-19 21:18
+ * @author : loey
+ * @className : StayEntity
+ * @since : 2021-11-24 13:55
  **/
 @Entity
 @Table(name = "stay", schema = "GoHome", catalog = "")
@@ -19,6 +19,7 @@ public class StayEntity {
     private long stayId;
     private int hostId;
     private String stayName;
+    private String stayTypeName;
     private String detailedAddress;
     private BigDecimal longitude;
     private BigDecimal latitude;
@@ -35,7 +36,7 @@ public class StayEntity {
     private int durationMax;
     private BigInteger stayStatus;
     private int commentAmount;
-    private int commentScore;
+    private BigDecimal commentScore;
 
     @Id
     @Column(name = "stay_id", nullable = false)
@@ -65,6 +66,16 @@ public class StayEntity {
 
     public void setStayName(String stayName) {
         this.stayName = stayName;
+    }
+
+    @Basic
+    @Column(name = "stay_type_name", nullable = true, length = 32)
+    public String getStayTypeName() {
+        return stayTypeName;
+    }
+
+    public void setStayTypeName(String stayTypeName) {
+        this.stayTypeName = stayTypeName;
     }
 
     @Basic
@@ -228,12 +239,12 @@ public class StayEntity {
     }
 
     @Basic
-    @Column(name = "comment_score", nullable = false)
-    public int getCommentScore() {
+    @Column(name = "comment_score", nullable = false, precision = 2)
+    public BigDecimal getCommentScore() {
         return commentScore;
     }
 
-    public void setCommentScore(int commentScore) {
+    public void setCommentScore(BigDecimal commentScore) {
         this.commentScore = commentScore;
     }
 
@@ -255,8 +266,8 @@ public class StayEntity {
         if (durationMin != that.durationMin) return false;
         if (durationMax != that.durationMax) return false;
         if (commentAmount != that.commentAmount) return false;
-        if (commentScore != that.commentScore) return false;
         if (stayName != null ? !stayName.equals(that.stayName) : that.stayName != null) return false;
+        if (stayTypeName != null ? !stayTypeName.equals(that.stayTypeName) : that.stayTypeName != null) return false;
         if (detailedAddress != null ? !detailedAddress.equals(that.detailedAddress) : that.detailedAddress != null)
             return false;
         if (longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) return false;
@@ -266,6 +277,7 @@ public class StayEntity {
         if (checkInTime != null ? !checkInTime.equals(that.checkInTime) : that.checkInTime != null) return false;
         if (checkOutTime != null ? !checkOutTime.equals(that.checkOutTime) : that.checkOutTime != null) return false;
         if (stayStatus != null ? !stayStatus.equals(that.stayStatus) : that.stayStatus != null) return false;
+        if (commentScore != null ? !commentScore.equals(that.commentScore) : that.commentScore != null) return false;
 
         return true;
     }
@@ -275,6 +287,7 @@ public class StayEntity {
         int result = (int) (stayId ^ (stayId >>> 32));
         result = 31 * result + hostId;
         result = 31 * result + (stayName != null ? stayName.hashCode() : 0);
+        result = 31 * result + (stayTypeName != null ? stayTypeName.hashCode() : 0);
         result = 31 * result + (detailedAddress != null ? detailedAddress.hashCode() : 0);
         result = 31 * result + (longitude != null ? longitude.hashCode() : 0);
         result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
@@ -291,7 +304,7 @@ public class StayEntity {
         result = 31 * result + durationMax;
         result = 31 * result + (stayStatus != null ? stayStatus.hashCode() : 0);
         result = 31 * result + commentAmount;
-        result = 31 * result + commentScore;
+        result = 31 * result + (commentScore != null ? commentScore.hashCode() : 0);
         return result;
     }
 }
