@@ -1,4 +1,4 @@
-package cn.edu.tongji.gohome.login.model;
+package cn.edu.tongji.gohome.personalinformation.personalinfomartion.model;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -6,12 +6,11 @@ import java.util.Objects;
 
 /**
  * HostEntity
- *
- * @author 卓正一
- * @since 2021/11/22 9:35 PM
+ * @author 梁乔
+ * @date 2021/11/23 17:01 
  */
 @Entity
-@Table(name = "`host`", schema = "GoHome", catalog = "")
+@Table(name = "host", schema = "GoHome", catalog = "")
 public class HostEntity {
     private int hostId;
     private Timestamp hostCreateTime;
@@ -19,6 +18,7 @@ public class HostEntity {
     private String hostRealName;
     private int hostScore;
     private int hostState;
+    private Integer hostLevel;
     private long customerId;
 
     @Id
@@ -82,6 +82,16 @@ public class HostEntity {
     }
 
     @Basic
+    @Column(name = "host_level")
+    public Integer getHostLevel() {
+        return hostLevel;
+    }
+
+    public void setHostLevel(Integer hostLevel) {
+        this.hostLevel = hostLevel;
+    }
+
+    @Basic
     @Column(name = "customer_id")
     public long getCustomerId() {
         return customerId;
@@ -96,11 +106,11 @@ public class HostEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         HostEntity that = (HostEntity) o;
-        return hostId == that.hostId && hostScore == that.hostScore && hostState == that.hostState && customerId == that.customerId && Objects.equals(hostCreateTime, that.hostCreateTime) && Objects.equals(hostResidentId, that.hostResidentId) && Objects.equals(hostRealName, that.hostRealName);
+        return hostId == that.hostId && hostScore == that.hostScore && hostState == that.hostState && customerId == that.customerId && Objects.equals(hostCreateTime, that.hostCreateTime) && Objects.equals(hostResidentId, that.hostResidentId) && Objects.equals(hostRealName, that.hostRealName) && Objects.equals(hostLevel, that.hostLevel);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hostId, hostCreateTime, hostResidentId, hostRealName, hostScore, hostState, customerId);
+        return Objects.hash(hostId, hostCreateTime, hostResidentId, hostRealName, hostScore, hostState, hostLevel, customerId);
     }
 }
