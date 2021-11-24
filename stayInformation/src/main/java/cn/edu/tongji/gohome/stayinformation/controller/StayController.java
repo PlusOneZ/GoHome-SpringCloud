@@ -156,12 +156,36 @@ public class StayController {
     }
 
 
-    //TODO: 最复杂的一个API
+    //TODO: 测试API
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Boolean> createStay(@RequestBody HostStay hostStay){
-        System.out.println(hostStay.getStayTags().get(0));
-        System.out.println(hostStay.getRoomInfo().get(0).getPrice());
-        return null;
+        try{
+            System.out.println(hostStay.getStayTags().get(0));
+            System.out.println(hostStay.getRoomInfo().get(0).getPrice());
+
+            // TODO: 改变hostId
+            stayService.insertIntoStay(hostStay, 1);
+            return new ResponseEntity<>(true,
+                    HttpStatus.OK);
+        }
+        catch(Exception error){
+            return new ResponseEntity<>(false,
+                    HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE)
+    public ResponseEntity<Boolean> deleteStayFromStayId(@RequestParam long stayId){
+        try{
+            // 删除房源
+
+            return new ResponseEntity<>(true,
+                    HttpStatus.OK);
+        }
+        catch(Exception error){
+            return new ResponseEntity<>(false,
+                    HttpStatus.EXPECTATION_FAILED);
+        }
     }
 
 

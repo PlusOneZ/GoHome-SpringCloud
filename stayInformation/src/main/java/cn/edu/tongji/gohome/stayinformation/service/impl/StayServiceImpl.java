@@ -1,18 +1,25 @@
 package cn.edu.tongji.gohome.stayinformation.service.impl;
 
-
+import cn.dev33.satoken.stp.StpUtil;
+import cn.edu.tongji.gohome.stayinformation.dto.HostStay;
+import cn.edu.tongji.gohome.stayinformation.dto.HostStayRoom;
 import cn.edu.tongji.gohome.stayinformation.dto.RoomInfoDto;
 import cn.edu.tongji.gohome.stayinformation.dto.StayInfoDto;
 import cn.edu.tongji.gohome.stayinformation.dto.mapper.RoomInfoMapper;
 import cn.edu.tongji.gohome.stayinformation.model.*;
 import cn.edu.tongji.gohome.stayinformation.repository.*;
+import cn.edu.tongji.gohome.stayinformation.service.ImageService;
 import cn.edu.tongji.gohome.stayinformation.service.StayCommentService;
 import cn.edu.tongji.gohome.stayinformation.service.StayService;
+import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,6 +70,9 @@ public class StayServiceImpl implements StayService {
 
     @Resource
     StayLabelRepository stayLabelRepository;
+
+    @Resource
+    ImageService imageService;
 
     @Override
     public StayInfoDto searchStayDetailedInfoForStayId(long stayId) {
@@ -413,4 +423,122 @@ public class StayServiceImpl implements StayService {
         }
         return res;
     }
+
+    @Override
+    public void insertIntoStay(HostStay hostStay, int hostId){
+
+        Long stayId = YitIdHelper.nextId();
+
+        // 添加一个新的stay
+        StayEntity newStay = new StayEntity();
+        newStay.setStayId(stayId);
+        newStay.setHostId(hostId);
+        newStay.setStayName(hostStay.getStayName());
+        newStay.setStayTypeName(hostStay.getStayType());
+        newStay.setDetailedAddress(hostStay.getStruPos());
+        newStay.setLongitude(hostStay.getLongitude());
+        newStay.setLatitude(hostStay.getLatitude());
+
+        newStay.setRoomAmount(hostStay.getRoomNum());
+        newStay.setBedAmount(hostStay.getBedNum());
+        newStay.setPublicBathroom(hostStay.getPubBathNum());
+        newStay.setPublicToilet(hostStay.getPubRestNum());
+        newStay.setNonBarrierFacility(hostStay.getBarrierFree());
+        newStay.setCharacteristic(hostStay.getStayChars());
+
+        // 入住时间和离房时间
+        try{
+            Time checkInTime = Time.valueOf(
+                    hostStay.getStartTime()+":00"
+            );
+            newStay.setCheckInTime(checkInTime);
+        }
+        catch (Exception err){
+            newStay.setCheckInTime(Time.valueOf("08:00:00"));
+        }
+        try{
+            Time checkOutTime = Time.valueOf(
+                    hostStay.getEndTime()+":00"
+            );
+            newStay.setCheckOutTime(checkOutTime);
+        }
+        catch (Exception err){
+            newStay.setCheckOutTime(Time.valueOf("15:00:00"));
+        }
+
+        newStay.setDurationMin(hostStay.getMinDay());
+        newStay.setDurationMax(hostStay.getMaxDay());
+        newStay.setStayStatus(BigInteger.valueOf(hostStay.getStayStatus()));
+
+        newStay.setCommentAmount(0);
+        newStay.setCommentScore(BigDecimal.valueOf(0));
+
+        stayRepository.save(newStay);
+
+        List<HostStayRoom> stayRooms = hostStay.getRoomInfo();
+
+
+        int sumRoomArea=0;
+        // 房间号从1开始编号
+        for(int i = 1; i<=stayRooms.size(); ++i){
+            RoomEntity newRoom = new RoomEntity();
+            HostStayRoom hostStayRoom = stayRooms.get(i-1);
+            System.out.println("room:"+hostStayRoom.getPrice());
+            newRoom.setStayId(stayId);
+            newRoom.setRoomId(i);
+            newRoom.setPrice(BigDecimal.valueOf(hostStayRoom.getPrice()));
+            newRoom.setRoomArea(BigDecimal.valueOf(hostStayRoom.getRoomArea()));
+            sumRoomArea += hostStayRoom.getRoomArea();
+            newRoom.setBathroomAmount(hostStayRoom.getBathNum());
+            roomRepository.save(newRoom);
+
+            // 图片表
+            List<String> roomImages = stayRooms.get(i-1).getImages();
+            for(int j = 0; j < roomImages.size(); ++j){
+                RoomPhotoEntity roomPhoto = new RoomPhotoEntity();
+                roomPhoto.setRoomId(i);
+                roomPhoto.setStayId(stayId);
+
+                roomPhoto.setRoomPhotoLink(
+                        imageService.base64UploadFile(roomImages.get(j),
+                                "roomPhoto:"+stayId+"-"+i
+                                )
+                );
+
+                roomPhotoRepository.save(roomPhoto);
+            }
+
+            // 床表
+            List<String> bedTypes = stayRooms.get(i-1).getBedTypes();
+            List<Integer> bedNums = stayRooms.get(i-1).getBedNums();
+            for(int j = 0; j < bedTypes.size(); ++j){
+                if(bedNums.get(j) <= 0){
+                    continue;
+                }
+                RoomBedEntity roomBed = new RoomBedEntity();
+                roomBed.setRoomId(i);
+                roomBed.setStayId(stayId);
+                roomBed.setBedAmount(bedNums.get(j));
+                roomBed.setBedType(bedTypes.get(j));
+                roomBedRepository.save(roomBed);
+            }
+
+
+        }
+        // 房间面积
+        newStay.setStayCapacity(sumRoomArea);
+
+        // label表
+        List<String> labels = hostStay.getStayTags();
+        for(int i = 0; i < labels.size(); ++i){
+            StayLabelEntity stayLabel = new StayLabelEntity();
+            stayLabel.setStayId(stayId);
+            stayLabel.setLabelName(labels.get(i));
+
+            stayLabelRepository.save(stayLabel);
+        }
+
+    }
+
+    
 }
