@@ -4,7 +4,6 @@ import cn.edu.tongji.gohome.stayinformation.dto.HostStay;
 import cn.edu.tongji.gohome.stayinformation.dto.StayCommentInfoDto;
 import cn.edu.tongji.gohome.stayinformation.dto.StayInfoDto;
 import cn.edu.tongji.gohome.stayinformation.model.LabelEntity;
-import cn.edu.tongji.gohome.stayinformation.model.StayEntity;
 import cn.edu.tongji.gohome.stayinformation.repository.LabelRepository;
 import cn.edu.tongji.gohome.stayinformation.repository.StayRepository;
 import cn.edu.tongji.gohome.stayinformation.service.StayCommentService;
@@ -18,7 +17,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 和房源信息查询相关的api
@@ -162,6 +160,7 @@ public class StayController {
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Boolean> createStay(@RequestBody HostStay hostStay){
         System.out.println(hostStay.getStayTags().get(0));
+        System.out.println(hostStay.getRoomInfo().get(0).getPrice());
         return null;
     }
 
