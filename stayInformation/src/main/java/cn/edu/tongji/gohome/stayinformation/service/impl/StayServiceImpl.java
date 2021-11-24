@@ -377,7 +377,12 @@ public class StayServiceImpl implements StayService {
         }
 
         res.put("stayName", stayEntity.getStayName());
-        res.put("stayDescribe", stayEntity.getCharacteristic());
+        res.put("stayDescribe",
+                stayEntity.getRoomAmount()+"室"+
+                stayEntity.getPublicBathroom()+"卫"
+                );
+
+
 
         // 图片
         res.put("stayPhoto", getAllPhotoByStayId(stayId));

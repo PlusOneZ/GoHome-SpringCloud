@@ -1,5 +1,6 @@
 package cn.edu.tongji.gohome.stayinformation.controller;
 
+import cn.edu.tongji.gohome.stayinformation.dto.HostStay;
 import cn.edu.tongji.gohome.stayinformation.dto.StayCommentInfoDto;
 import cn.edu.tongji.gohome.stayinformation.dto.StayInfoDto;
 import cn.edu.tongji.gohome.stayinformation.model.LabelEntity;
@@ -10,10 +11,7 @@ import cn.edu.tongji.gohome.stayinformation.service.StayCommentService;
 import cn.edu.tongji.gohome.stayinformation.service.StayService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.math.BigInteger;
@@ -161,8 +159,9 @@ public class StayController {
 
 
     //TODO: 最复杂的一个API
-    @RequestMapping(value = "",method = RequestMethod.POST)
-    public ResponseEntity<Boolean> createStay(){
+    @RequestMapping(method = RequestMethod.POST)
+    public ResponseEntity<Boolean> createStay(@RequestBody HostStay hostStay){
+        System.out.println(hostStay.getStayTags().get(0));
         return null;
     }
 
