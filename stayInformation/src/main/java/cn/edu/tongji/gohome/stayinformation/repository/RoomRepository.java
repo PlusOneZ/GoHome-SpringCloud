@@ -12,4 +12,6 @@ public interface RoomRepository extends JpaRepository<RoomEntity, RoomEntityPK>,
         JpaSpecificationExecutor<RoomEntity> {
 
     List<RoomEntity> getAllByStayId(long stayId);
+
+    void deleteAllByStayId(long stayId);
 }

@@ -84,6 +84,9 @@ public class StayServiceImpl implements StayService {
         if (stayEntity == null){
             return null;
         }
+        else if (stayEntity.getStayStatus() != BigInteger.valueOf(2)){
+            return null;
+        }
 
         stayInfoDto.setStayName(stayEntity.getStayName());
         // description
@@ -392,8 +395,6 @@ public class StayServiceImpl implements StayService {
                 stayEntity.getPublicBathroom()+"卫"
                 );
 
-
-
         // 图片
         res.put("stayPhoto", getAllPhotoByStayId(stayId));
 
@@ -431,6 +432,7 @@ public class StayServiceImpl implements StayService {
 
         // 添加一个新的stay
         StayEntity newStay = new StayEntity();
+        System.out.println(stayId);
         newStay.setStayId(stayId);
         newStay.setHostId(hostId);
         newStay.setStayName(hostStay.getStayName());
@@ -472,8 +474,8 @@ public class StayServiceImpl implements StayService {
 
         newStay.setCommentAmount(0);
         newStay.setCommentScore(BigDecimal.valueOf(0));
-
         stayRepository.save(newStay);
+
 
         List<HostStayRoom> stayRooms = hostStay.getRoomInfo();
 
@@ -483,13 +485,14 @@ public class StayServiceImpl implements StayService {
         for(int i = 1; i<=stayRooms.size(); ++i){
             RoomEntity newRoom = new RoomEntity();
             HostStayRoom hostStayRoom = stayRooms.get(i-1);
-            System.out.println("room:"+hostStayRoom.getPrice());
+
             newRoom.setStayId(stayId);
             newRoom.setRoomId(i);
             newRoom.setPrice(BigDecimal.valueOf(hostStayRoom.getPrice()));
             newRoom.setRoomArea(BigDecimal.valueOf(hostStayRoom.getRoomArea()));
             sumRoomArea += hostStayRoom.getRoomArea();
             newRoom.setBathroomAmount(hostStayRoom.getBathNum());
+
             roomRepository.save(newRoom);
 
             // 图片表
@@ -501,7 +504,7 @@ public class StayServiceImpl implements StayService {
 
                 roomPhoto.setRoomPhotoLink(
                         imageService.base64UploadFile(roomImages.get(j),
-                                "roomPhoto:"+stayId+"-"+i
+                                "roomPhoto/"+stayId+"-"+i
                                 )
                 );
 
@@ -540,5 +543,8 @@ public class StayServiceImpl implements StayService {
 
     }
 
-    
+    @Override
+    public void deleteFromStayId(long stayId){
+        stayRepository.getById(stayId).setStayStatus(BigInteger.valueOf(4));
+    }
 }

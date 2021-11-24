@@ -4,8 +4,12 @@ import cn.edu.tongji.gohome.stayinformation.dto.HostStay;
 import cn.edu.tongji.gohome.stayinformation.dto.StayCommentInfoDto;
 import cn.edu.tongji.gohome.stayinformation.dto.StayInfoDto;
 import cn.edu.tongji.gohome.stayinformation.model.LabelEntity;
+import cn.edu.tongji.gohome.stayinformation.model.StayLabelEntity;
+import cn.edu.tongji.gohome.stayinformation.model.StayTypeEntity;
 import cn.edu.tongji.gohome.stayinformation.repository.LabelRepository;
+import cn.edu.tongji.gohome.stayinformation.repository.StayLabelRepository;
 import cn.edu.tongji.gohome.stayinformation.repository.StayRepository;
+import cn.edu.tongji.gohome.stayinformation.repository.StayTypeRepository;
 import cn.edu.tongji.gohome.stayinformation.service.StayCommentService;
 import cn.edu.tongji.gohome.stayinformation.service.StayService;
 import org.springframework.http.HttpStatus;
@@ -41,6 +45,12 @@ public class StayController {
     @Resource
     private StayService stayService;
 
+    @Resource
+    private StayLabelRepository stayLabelRepository;
+
+    @Resource
+    private StayTypeRepository stayTypeRepository;
+
     /**
      * <b>Example: http://localhost:8090/api/v1/stay?stayId=10059</b><br>
      * @param stayId
@@ -48,7 +58,8 @@ public class StayController {
      */
     @RequestMapping
     public ResponseEntity<StayInfoDto> getStayById(@RequestParam Long stayId) {
-        return new ResponseEntity<>(stayService.searchStayDetailedInfoForStayId(stayId),
+        StayInfoDto stayInfoDto = stayService.searchStayDetailedInfoForStayId(stayId);
+        return new ResponseEntity<>(stayInfoDto,
                 HttpStatus.OK);
     }
 
@@ -94,12 +105,51 @@ public class StayController {
                 HttpStatus.OK);
     }
 
-    @RequestMapping("type")
-    public ResponseEntity<HashMap<String,Object>> getStayTypeById
-            (@RequestParam Long stayId){
-        List<String> stayType = stayService.getAllLabelByStayId(stayId);
+    @RequestMapping("/type")
+    public ResponseEntity<HashMap<String,Object>> getAllStayType(){
+
+        List<StayTypeEntity> labelEntities = stayTypeRepository.findAll();
+        List<String> stayTypeList = new ArrayList<>();
+        for(int i = 0;i <labelEntities.size();++i){
+            stayTypeList.add(labelEntities.get(i).getStayTypeName());
+        }
+
+        List<String> stayType = new ArrayList<>();
         HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("typeList", stayType);
+        hashMap.put("typeList", stayTypeList);
+
+        return new ResponseEntity<>(hashMap,
+                HttpStatus.OK);
+    }
+
+    @RequestMapping("/tag")
+    public ResponseEntity<HashMap<String,Object>> getStayTagById
+            (@RequestParam Long stayId){
+        List<StayLabelEntity> stayLabelEntities = stayLabelRepository.findAllByStayId(
+                stayId);
+        List<String> stayTypeList = new ArrayList<>();
+        for(int i = 0;i <stayLabelEntities.size();++i){
+            stayTypeList.add(stayLabelEntities.get(i).getLabelName());
+        }
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("typeList", stayTypeList);
+        return new ResponseEntity<>(hashMap,
+                HttpStatus.OK);
+    }
+
+    @RequestMapping("/tag/all")
+    public ResponseEntity<HashMap<String,Object>> getAllStayTag(){
+
+        List<LabelEntity> labelEntities = labelRepository.findAll();
+        List<String> stayTypeList = new ArrayList<>();
+        for(int i = 0;i <labelEntities.size();++i){
+            stayTypeList.add(labelEntities.get(i).getLabelName());
+        }
+
+        List<String> stayType = new ArrayList<>();
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("typeList", stayTypeList);
+
         return new ResponseEntity<>(hashMap,
                 HttpStatus.OK);
     }
@@ -121,21 +171,7 @@ public class StayController {
                 HttpStatus.OK);
     }
 
-    @RequestMapping("/tag")
-    public ResponseEntity<HashMap<String, Object>> getAllTag() {
-        List<LabelEntity> labelEntityList = labelRepository.findAll();
 
-        List<String> res = new ArrayList<>();
-        for(int i=0;i<labelEntityList.size();++i){
-            res.add(labelEntityList.get(i).getLabelName());
-        }
-
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("tagList", res);
-
-        return new ResponseEntity<>(hashMap,
-                HttpStatus.OK);
-    }
 
     @RequestMapping("/host")
     public ResponseEntity<HashMap<String, Object>> getStayBriefInfoByHostId
@@ -156,12 +192,9 @@ public class StayController {
     }
 
 
-    //TODO: 测试API
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Boolean> createStay(@RequestBody HostStay hostStay){
         try{
-            System.out.println(hostStay.getStayTags().get(0));
-            System.out.println(hostStay.getRoomInfo().get(0).getPrice());
 
             // TODO: 改变hostId
             stayService.insertIntoStay(hostStay, 1);
@@ -178,6 +211,7 @@ public class StayController {
     public ResponseEntity<Boolean> deleteStayFromStayId(@RequestParam long stayId){
         try{
             // 删除房源
+            stayService.deleteFromStayId(stayId);
 
             return new ResponseEntity<>(true,
                     HttpStatus.OK);

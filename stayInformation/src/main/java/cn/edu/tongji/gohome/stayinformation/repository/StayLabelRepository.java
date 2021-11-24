@@ -11,4 +11,8 @@ public interface StayLabelRepository
         extends JpaRepository<StayLabelEntity, StayLabelEntityPK>,
         JpaSpecificationExecutor<StayLabelEntity> {
     List<StayLabelEntity> findAllByStayId(Long stayId);
+
+    void deleteAllByStayId(long stayId);
+
+
 }

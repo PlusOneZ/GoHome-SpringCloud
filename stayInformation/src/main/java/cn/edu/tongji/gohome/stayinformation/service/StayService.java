@@ -41,4 +41,6 @@ public interface StayService {
     List<String> getAllLabelByStayId(Long stayId);
 
     void insertIntoStay(HostStay hostStay, int hostId);
+
+    void deleteFromStayId(long stayId);
 }
