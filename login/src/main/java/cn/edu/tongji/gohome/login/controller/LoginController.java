@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * LoginController
@@ -68,4 +69,15 @@ public class LoginController {
     }
 
     //TODO: Write API to get all permissions
+
+    @GetMapping("permission")
+    public ResponseEntity<List<String>> getUserPermissions() {
+        return ResponseEntity.ok(StpUtil.getPermissionList());
+    }
+
+    @GetMapping("userRole")
+    public ResponseEntity<List<String>> getUserRoles() {
+        return ResponseEntity.ok(StpUtil.getRoleList());
+    }
+
 }
