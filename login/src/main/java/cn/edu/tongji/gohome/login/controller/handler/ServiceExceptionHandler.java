@@ -1,8 +1,6 @@
 package cn.edu.tongji.gohome.login.controller.handler;
 
-import cn.edu.tongji.gohome.login.service.exception.LoginRequiredException;
-import cn.edu.tongji.gohome.login.service.exception.UserAlreadyExists;
-import cn.edu.tongji.gohome.login.service.exception.UserNotExistException;
+import cn.edu.tongji.gohome.login.service.exception.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,4 +28,10 @@ public class ServiceExceptionHandler {
     public ResponseEntity<String> handleLoginRequired(LoginRequiredException e) {
         return ResponseEntity.status(401).body(e.getMessage());
     }
+
+    @ExceptionHandler(DataFormatException.class)
+    public ResponseEntity<String> handleDataFormatError(DataFormatException e) {
+        return ResponseEntity.status(400).body(e.getMessage());
+    }
+
 }
