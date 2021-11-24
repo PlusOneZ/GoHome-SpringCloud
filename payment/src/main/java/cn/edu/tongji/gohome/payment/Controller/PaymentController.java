@@ -3,19 +3,14 @@ package
 
 import cn.edu.tongji.gohome.payment.Dto.OrderPaymentInfo;
 import cn.edu.tongji.gohome.payment.Service.PaymentService;
-import cn.edu.tongji.gohome.payment.config.AlipayConfig;
-import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
-import com.alipay.api.AlipayClient;
-import com.alipay.api.DefaultAlipayClient;
-import com.alipay.api.request.AlipayTradePagePayRequest;
-import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.alipay.api.response.AlipayTradeRefundResponse;
-import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * The controller contains payment APIs...
@@ -54,6 +49,21 @@ public class PaymentController {
             System.out.println("退款失败");
         }
         return response.getBody();
+    }
+
+    @RequestMapping(value = "notify",method = RequestMethod.POST)
+    public void notifyOrder(HttpServletRequest httpServletRequest) throws AlipayApiException {
+
+        Map<String,String[]> requestParams = httpServletRequest.getParameterMap();
+        boolean signVerified = paymentService.orderNotify(requestParams);
+
+        // 验签通过
+        if (signVerified) {
+            //支付成功后进行操作
+            System.out.println("支付成功!");
+            //TODO: 调用Order接口将支付成功的信息插入进数据库
+        }
+
     }
 
 }

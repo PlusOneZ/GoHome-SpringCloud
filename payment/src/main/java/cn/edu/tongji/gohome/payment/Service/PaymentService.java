@@ -7,12 +7,17 @@ import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * class description
@@ -72,6 +77,24 @@ public class PaymentService {
         alipayTradeRefundRequest.setBizContent(bizContent.toString());
 
         return alipayClient.pageExecute(alipayTradeRefundRequest);
+    }
 
+    public boolean orderNotify(Map<String,String[]> requestParams) throws AlipayApiException {
+
+        Map<String,String> map = new HashMap<>();
+        if(requestParams.isEmpty()){
+            return false;
+        }
+        for (String name : requestParams.keySet()) {
+            String[] values = requestParams.get(name);
+            String valueStr = "";
+            for (int i = 0; i < values.length; i++) {
+                valueStr = (i == values.length - 1) ? valueStr + values[i] : valueStr + values[i] + ",";
+            }
+            map.put(name, valueStr);
+        }
+        // 验签
+        return AlipaySignature.rsaCheckV1(map, AlipayConfig.ALIPAY_PUBLIC_KEY, AlipayConfig.CHARSET,
+                AlipayConfig.sign_type);
     }
 }
