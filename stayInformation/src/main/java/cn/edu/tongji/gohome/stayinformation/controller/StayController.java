@@ -1,6 +1,7 @@
 package cn.edu.tongji.gohome.stayinformation.controller;
 
 import cn.edu.tongji.gohome.stayinformation.dto.HostStay;
+import cn.edu.tongji.gohome.stayinformation.dto.HostStayUpdate;
 import cn.edu.tongji.gohome.stayinformation.dto.StayCommentInfoDto;
 import cn.edu.tongji.gohome.stayinformation.dto.StayInfoDto;
 import cn.edu.tongji.gohome.stayinformation.model.LabelEntity;
@@ -198,6 +199,22 @@ public class StayController {
 
             // TODO: 改变hostId
             stayService.insertIntoStay(hostStay, 1);
+            return new ResponseEntity<>(true,
+                    HttpStatus.OK);
+        }
+        catch(Exception error){
+            return new ResponseEntity<>(false,
+                    HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.PUT)
+    public ResponseEntity<Boolean> updateStay(@RequestBody HostStayUpdate
+                                                          hostStayUpdate){
+        try{
+
+            // TODO: 改变hostId
+            stayService.updateAStay(hostStayUpdate.getUpdateInfo(), hostStayUpdate.getStayId(),1);
             return new ResponseEntity<>(true,
                     HttpStatus.OK);
         }

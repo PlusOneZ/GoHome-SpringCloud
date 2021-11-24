@@ -198,6 +198,10 @@ public class StayServiceImpl implements StayService {
 
 
         for(StayEntity stayEntity: stayEntityList){
+            // 只展示状态为2的房源
+            if(stayEntity.getStayStatus() != BigInteger.valueOf(2)){
+                continue;
+            }
             HashMap<String, Object> objectHashMap = new HashMap<>();
             objectHashMap.put("stayID", stayEntity.getStayId());
             objectHashMap.put("stayPrice", getLowestRoomForStayId(
@@ -541,6 +545,14 @@ public class StayServiceImpl implements StayService {
             stayLabelRepository.save(stayLabel);
         }
 
+    }
+
+    @Override
+    public void updateAStay(HostStay hostStay, long stayId, int hostId){
+        StayEntity originStay = stayRepository.findFirstByStayId(stayId);
+        // 将原来的房源设为4 状态，并创建一个新的房源
+        originStay.setStayStatus(BigInteger.valueOf(4));
+        insertIntoStay(hostStay,hostId);
     }
 
     @Override

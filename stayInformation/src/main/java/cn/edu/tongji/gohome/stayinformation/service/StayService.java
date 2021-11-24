@@ -42,5 +42,7 @@ public interface StayService {
 
     void insertIntoStay(HostStay hostStay, int hostId);
 
+    void updateAStay(HostStay hostStay, long stayId, int hostId);
+
     void deleteFromStayId(long stayId);
 }
