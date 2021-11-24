@@ -1,13 +1,16 @@
 package
         cn.edu.tongji.gohome.order.service.impl;
 
+import cn.edu.tongji.gohome.order.dto.OrderContent;
 import cn.edu.tongji.gohome.order.dto.OrderDetailedInfoDto;
 import cn.edu.tongji.gohome.order.dto.OrderInfoDto;
+import cn.edu.tongji.gohome.order.dto.OrderStayInfoDto;
 import cn.edu.tongji.gohome.order.dto.mapper.OrderDetailedInfoMapper;
 import cn.edu.tongji.gohome.order.dto.mapper.OrderInfoMapper;
 import cn.edu.tongji.gohome.order.model.*;
 import cn.edu.tongji.gohome.order.repository.*;
 import cn.edu.tongji.gohome.order.service.OrderService;
+import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -179,5 +182,53 @@ public class OrderServiceImpl implements OrderService {
         results.put("orderDetailedInfo",orderDetailedInfoDtoList);
 
         return results;
+    }
+
+
+    private OrderEntity getInformationFromOrderContent(OrderContent orderContent){
+
+        OrderEntity order = new OrderEntity();
+
+        order.setOrderId(YitIdHelper.nextId());
+        order.setOrderTime(orderContent.getOrderTime());
+        order.setCustomerId(orderContent.getCustomerId());
+        order.setMemberAmount(orderContent.getMemberAmount());
+        order.setTotalCost(orderContent.getTotalCost());
+        order.setOrderStatus(orderContent.getOrderStatus());
+
+        return order;
+    }
+
+    private List<OrderStayEntity> getRoomInfoFromOrderContent(long orderId, List<OrderStayInfoDto> orderStayInfoDtoList){
+        List<OrderStayEntity> orderStayEntityList = new ArrayList<>();
+
+        for(OrderStayInfoDto orderStayInfoDto : orderStayInfoDtoList){
+            OrderStayEntity orderStayEntity = new OrderStayEntity();
+            orderStayEntity.setOrderId(orderId);
+            orderStayEntity.setStayId(orderStayInfoDto.getStayId());
+            orderStayEntity.setRoomId(orderStayInfoDto.getRoomId());
+            orderStayEntity.setStartTime(orderStayInfoDto.getStartTime());
+            orderStayEntity.setEndTime(orderStayInfoDto.getEndTime());
+            orderStayEntity.setMoneyAmount(orderStayInfoDto.getMoneyAmount());
+            orderStayEntityList.add(orderStayEntity);
+        }
+        return orderStayEntityList;
+    }
+
+
+    /**
+    * add one order in db...
+    * @param orderContent: the detailed information for order.
+    * @return : void
+    * @author : leoy
+    * @since : 2021/11/23 22:28
+    **/
+    @Override
+    public void addOrderAndDetailedInformation(OrderContent orderContent){
+
+        OrderEntity order = getInformationFromOrderContent(orderContent);
+        List<OrderStayEntity> orderStayEntityList = getRoomInfoFromOrderContent(order.getOrderId(),orderContent.getOrderStayEntityList());
+        orderRepository.save(order);
+        orderStayRepository.saveAll(orderStayEntityList);
     }
 }
