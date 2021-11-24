@@ -1,6 +1,8 @@
 package cn.edu.tongji.gohome.personalinformation.personalinfomartion.controller;
 
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.CustomerInfoService;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +19,7 @@ import java.util.HashMap;
  */
 @RestController
 @RequestMapping("api/v1/personinfo/")
+
 public class CustomerDetailController {
 
     @Resource

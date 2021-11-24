@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class ApplicationConfigRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception{
-        IdGeneratorOptions options = new IdGeneratorOptions((short) 233);
+        IdGeneratorOptions options = new IdGeneratorOptions((short) 1);
         YitIdHelper.setIdGenerator(options);
         System.out.println("Id生成器初始化配置完成");
     }
