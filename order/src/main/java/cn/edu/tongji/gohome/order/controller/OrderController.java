@@ -11,7 +11,6 @@ import cn.edu.tongji.gohome.order.repository.CustomerCommentRepository;
 import cn.edu.tongji.gohome.order.repository.HostCommentRepository;
 import cn.edu.tongji.gohome.order.repository.OrderReportRepository;
 import cn.edu.tongji.gohome.order.service.OrderService;
-import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
