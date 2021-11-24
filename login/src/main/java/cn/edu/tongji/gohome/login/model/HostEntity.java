@@ -5,13 +5,13 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
- * HostEntity: JPA 自动生成
+ * HostEntity
  *
  * @author 卓正一
- * @since  2021/11/19 6:47 PM
+ * @since 2021/11/22 9:35 PM
  */
 @Entity
-@Table(name = "host", schema = "GoHome", catalog = "")
+@Table(name = "`host`", schema = "GoHome", catalog = "")
 public class HostEntity {
     private int hostId;
     private Timestamp hostCreateTime;
@@ -19,6 +19,7 @@ public class HostEntity {
     private String hostRealName;
     private int hostScore;
     private int hostState;
+    private long customerId;
 
     @Id
     @Column(name = "host_id")
@@ -80,16 +81,26 @@ public class HostEntity {
         this.hostState = hostState;
     }
 
+    @Basic
+    @Column(name = "customer_id")
+    public long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(long customerId) {
+        this.customerId = customerId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         HostEntity that = (HostEntity) o;
-        return hostId == that.hostId && hostScore == that.hostScore && hostState == that.hostState && Objects.equals(hostCreateTime, that.hostCreateTime) && Objects.equals(hostResidentId, that.hostResidentId) && Objects.equals(hostRealName, that.hostRealName);
+        return hostId == that.hostId && hostScore == that.hostScore && hostState == that.hostState && customerId == that.customerId && Objects.equals(hostCreateTime, that.hostCreateTime) && Objects.equals(hostResidentId, that.hostResidentId) && Objects.equals(hostRealName, that.hostRealName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(hostId, hostCreateTime, hostResidentId, hostRealName, hostScore, hostState);
+        return Objects.hash(hostId, hostCreateTime, hostResidentId, hostRealName, hostScore, hostState, customerId);
     }
 }
