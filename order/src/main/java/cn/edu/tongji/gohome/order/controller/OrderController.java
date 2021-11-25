@@ -2,6 +2,7 @@ package
         cn.edu.tongji.gohome.order.controller;
 
 import cn.edu.tongji.gohome.order.dto.Comment;
+import cn.edu.tongji.gohome.order.dto.OrderContent;
 import cn.edu.tongji.gohome.order.dto.Report;
 import cn.edu.tongji.gohome.order.model.CustomerCommentEntity;
 import cn.edu.tongji.gohome.order.model.HostCommentEntity;
@@ -10,7 +11,6 @@ import cn.edu.tongji.gohome.order.repository.CustomerCommentRepository;
 import cn.edu.tongji.gohome.order.repository.HostCommentRepository;
 import cn.edu.tongji.gohome.order.repository.OrderReportRepository;
 import cn.edu.tongji.gohome.order.service.OrderService;
-import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -112,6 +112,13 @@ public class OrderController {
 
         orderReportRepository.save(orderReportEntity);
 
+        return HttpStatus.OK;
+    }
+
+    @RequestMapping(value = "order",method = RequestMethod.POST)
+    public HttpStatus addOrder(@RequestBody OrderContent orderContent){
+
+        orderService.addOrderAndDetailedInformation(orderContent);
         return HttpStatus.OK;
     }
 
