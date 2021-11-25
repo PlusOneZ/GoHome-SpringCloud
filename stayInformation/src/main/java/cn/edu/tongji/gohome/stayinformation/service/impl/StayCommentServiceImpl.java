@@ -3,14 +3,8 @@ package cn.edu.tongji.gohome.stayinformation.service.impl;
 import cn.edu.tongji.gohome.stayinformation.dto.CommentDto;
 import cn.edu.tongji.gohome.stayinformation.dto.StayCommentInfoDto;
 import cn.edu.tongji.gohome.stayinformation.dto.mapper.CommentMapper;
-import cn.edu.tongji.gohome.stayinformation.model.CustomerCommentEntity;
-import cn.edu.tongji.gohome.stayinformation.model.CustomerEntity;
-import cn.edu.tongji.gohome.stayinformation.model.OrderStayEntity;
-import cn.edu.tongji.gohome.stayinformation.model.StayEntity;
-import cn.edu.tongji.gohome.stayinformation.repository.CustomerCommentRepository;
-import cn.edu.tongji.gohome.stayinformation.repository.CustomerRepository;
-import cn.edu.tongji.gohome.stayinformation.repository.OrderStayRepository;
-import cn.edu.tongji.gohome.stayinformation.repository.StayRepository;
+import cn.edu.tongji.gohome.stayinformation.model.*;
+import cn.edu.tongji.gohome.stayinformation.repository.*;
 import cn.edu.tongji.gohome.stayinformation.service.StayCommentService;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +32,9 @@ public class StayCommentServiceImpl implements StayCommentService {
 
     @Resource
     private CustomerRepository customerRepository;
+
+    @Resource
+    private OrderRepository orderRepository;
 
     /**
      * 获取某一个stayId的评论集
@@ -67,12 +64,27 @@ public class StayCommentServiceImpl implements StayCommentService {
             if (customerCommentEntity == null){
                 continue;
             }
-            // 根据customerId获取其昵称和头像
+
+
+            // 根据orderId找customerId
+            OrderEntity orderEntity =
+                orderRepository.findById(
+                        customerCommentEntity.getOrderId())
+                        .orElse(null);
+
+            if (orderEntity == null){
+                continue;
+            }
+
             CustomerEntity customerEntity =
-                    customerRepository.findCustomerEntityByCustomerId(customerCommentEntity.getCustomerCommentId());
+                    customerRepository.
+                            findCustomerEntityByCustomerId(
+                                    orderEntity.getCustomerId()
+                            );
 
             // 新增CommentDto
-            CommentDto commentDto = CommentMapper.getInstance().toDto(customerEntity, customerCommentEntity);
+            CommentDto commentDto = CommentMapper.getInstance().
+                    toDto(customerEntity, customerCommentEntity);
 
             commentDtoList.add(commentDto);
             aveRatings += customerCommentEntity.getStayScore();

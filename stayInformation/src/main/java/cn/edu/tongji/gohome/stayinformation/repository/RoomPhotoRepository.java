@@ -5,6 +5,8 @@ import cn.edu.tongji.gohome.stayinformation.model.RoomPhotoEntityPK;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import java.util.List;
+
 /**
  * RoomPhotoRepository类
  *
@@ -14,4 +16,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface RoomPhotoRepository extends JpaRepository<RoomPhotoEntity, RoomPhotoEntityPK>,
         JpaSpecificationExecutor<RoomPhotoEntity> {
     RoomPhotoEntity findFirstByRoomIdAndStayId(int roomId, long stayId);
+
+    List<RoomPhotoEntity> findAllByStayId(long stayId);
+
+    void deleteAllByStayId(long stayId);
 }
