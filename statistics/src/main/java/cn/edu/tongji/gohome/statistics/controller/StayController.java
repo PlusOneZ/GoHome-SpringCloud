@@ -1,13 +1,17 @@
 package cn.edu.tongji.gohome.statistics.controller;
 
+import cn.edu.tongji.gohome.statistics.Service.StayService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * StayController类
@@ -17,12 +21,18 @@ import java.util.HashMap;
  */
 
 @RestController
-@RequestMapping("/api/v1/stay")
+@RequestMapping("/api/v1/statistics/stay")
 public class StayController {
-    @RequestMapping("/host")
-    public ResponseEntity<HashMap<String, Object>> getHighestScoreStay(){
-        HashMap<String, Object> hashMap = new HashMap<>();
 
+    @Resource
+    StayService stayService;
+
+    @RequestMapping("/score")
+    public ResponseEntity<HashMap<String, Object>> getHighestScoreStay(){
+        List<Long> stayIdList = stayService.getHighestScoreStay();
+
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("stayList", stayIdList);
 
         return new ResponseEntity<>(hashMap,
                 HttpStatus.OK);
