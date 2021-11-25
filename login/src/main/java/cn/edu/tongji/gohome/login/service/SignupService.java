@@ -27,4 +27,6 @@ public interface SignupService {
     void hostSignup(String phoneCode, String phone, String password, String username, String IdCardNum, String realName, String gender);
 
     void hostSignup(String residentId, String realName, Long customerId);
+
+    void setCustomerGender(Long customerId, String gender);
 }
