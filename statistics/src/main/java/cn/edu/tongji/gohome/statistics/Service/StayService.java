@@ -17,4 +17,8 @@ import java.util.List;
 @Service
 public interface StayService {
     List<Long> getHighestScoreStay();
+
+    List<Long> getMostOrdersStay();
+
+    List<Long> getMinPriceStay();
 }
