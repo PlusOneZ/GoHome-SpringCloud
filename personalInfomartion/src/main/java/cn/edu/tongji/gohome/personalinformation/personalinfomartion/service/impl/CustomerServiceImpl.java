@@ -109,7 +109,9 @@ public class CustomerServiceImpl implements CustomerInfoService {
         CustomerEntity customer = customerRepository.findFirstByCustomerId(customerId);
 
         customer.setCustomerAvatarLink(imageService.base64UploadFile(base64File,
-                "avatar"+"/"+customerId.toString()));
+                "avatar/"+customerId.toString()+".png"));
+        customerRepository.save(customer);
+
     }
 
 
