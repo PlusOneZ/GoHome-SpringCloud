@@ -5,6 +5,7 @@ import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.mapper.H
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.model.*;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.repository.*;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.CustomerInfoService;
+import cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.ImageService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -39,6 +40,8 @@ public class CustomerServiceImpl implements CustomerInfoService {
     @Resource
     private OrderStayRepository orderStayRepository;
 
+    @Resource
+    private ImageService imageService;
     /**
     * 通过SA-Token获取到的用户id去获取用户的基本信息
      * @param customerId : 顾客id
@@ -92,6 +95,23 @@ public class CustomerServiceImpl implements CustomerInfoService {
 
 
     }
+
+    /**
+    * 更改某位顾客的头像Url
+     * @param customerId : 顾客Id
+     * @param base64File : 图片的base64格式字符串
+     * @return : void
+    * @author 梁乔
+    * @since 23:27 2021-11-25
+    */
+    @Override
+    public void updateAvatar(Long customerId, String base64File) {
+        CustomerEntity customer = customerRepository.findFirstByCustomerId(customerId);
+
+        customer.setCustomerAvatarLink(imageService.base64UploadFile(base64File,
+                "avatar"+"/"+customerId.toString()));
+    }
+
 
     private String dateToString(Timestamp timestamp){
         String dateStr = "";
