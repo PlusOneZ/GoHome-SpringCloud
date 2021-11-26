@@ -508,7 +508,7 @@ public class StayServiceImpl implements StayService {
 
                 roomPhoto.setRoomPhotoLink(
                         imageService.base64UploadFile(roomImages.get(j),
-                                "roomPhoto/"+stayId+"-"+i
+                                "roomPhoto/"+stayId+"-"+i + ".png"
                                 )
                 );
 

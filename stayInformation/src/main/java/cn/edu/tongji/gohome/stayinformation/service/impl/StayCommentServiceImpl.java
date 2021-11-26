@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * StayCommentServiceImpl类
@@ -53,8 +55,17 @@ public class StayCommentServiceImpl implements StayCommentService {
         double aveRatings = 0;
         int sumComment = 0;
 
+        Set<Long> orderIdSet = new HashSet<>();
+
         for(int i = 0; i<orderStayEntityList.size(); ++i){
             long orderId = orderStayEntityList.get(i).getOrderId();
+
+            if (orderIdSet.contains(orderId)){
+                continue;
+            }
+            else{
+                orderIdSet.add(orderId);
+            }
 
             // 根据orderId找到对应的评论实体
             CustomerCommentEntity customerCommentEntity =
@@ -87,6 +98,7 @@ public class StayCommentServiceImpl implements StayCommentService {
                     toDto(customerEntity, customerCommentEntity);
 
             commentDtoList.add(commentDto);
+
             aveRatings += customerCommentEntity.getStayScore();
             sumComment += 1;
         }
