@@ -1,12 +1,13 @@
 package
-        cn.edu.tongji.gohome.payment.Controller;
+        cn.edu.tongji.gohome.payment.controller;
 
-import cn.edu.tongji.gohome.payment.Dto.OrderPaymentInfo;
-import cn.edu.tongji.gohome.payment.Service.PaymentService;
+import cn.edu.tongji.gohome.payment.dto.OrderPaymentInfo;
+import cn.edu.tongji.gohome.payment.service.PaymentService;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.alipay.api.response.AlipayTradeRefundResponse;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +26,9 @@ public class PaymentController {
 
     @Resource
     private PaymentService paymentService;
+
+    @Resource
+    private RestTemplate restTemplate;
 
     @RequestMapping(value = "payment", method = RequestMethod.POST)
     public String alipayForOrder(@RequestBody OrderPaymentInfo orderPaymentInfo) throws AlipayApiException {
@@ -62,6 +66,7 @@ public class PaymentController {
             //支付成功后进行操作
             System.out.println("支付成功!");
             //TODO: 调用Order接口将支付成功的信息插入进数据库
+            restTemplate.
         }
 
     }

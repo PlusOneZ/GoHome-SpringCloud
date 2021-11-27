@@ -224,11 +224,22 @@ public class OrderServiceImpl implements OrderService {
     * @since : 2021/11/23 22:28
     **/
     @Override
-    public void addOrderAndDetailedInformation(OrderContent orderContent){
+    public Long addOrderAndDetailedInformation(OrderContent orderContent){
 
         OrderEntity order = getInformationFromOrderContent(orderContent);
         List<OrderStayEntity> orderStayEntityList = getRoomInfoFromOrderContent(order.getOrderId(),orderContent.getOrderStayEntityList());
         orderRepository.save(order);
         orderStayRepository.saveAll(orderStayEntityList);
+
+        return order.getOrderId();
     }
+
+    @Override
+    public void updateOrderStatus(long orderId, int orderStatus){
+
+        OrderEntity order = orderRepository.getById(orderId);
+        order.setOrderStatus(orderStatus);
+        orderRepository.save(order);
+    }
+
 }

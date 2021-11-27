@@ -1,7 +1,7 @@
 package
-        cn.edu.tongji.gohome.payment.Service;
+        cn.edu.tongji.gohome.payment.service;
 
-import cn.edu.tongji.gohome.payment.Dto.OrderPaymentInfo;
+import cn.edu.tongji.gohome.payment.dto.OrderPaymentInfo;
 import cn.edu.tongji.gohome.payment.config.AlipayConfig;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
@@ -16,7 +16,6 @@ import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**

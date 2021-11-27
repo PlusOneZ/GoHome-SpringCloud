@@ -1,5 +1,5 @@
 package
-        cn.edu.tongji.gohome.payment.Dto;
+        cn.edu.tongji.gohome.payment.dto;
 
 import java.math.BigDecimal;
 

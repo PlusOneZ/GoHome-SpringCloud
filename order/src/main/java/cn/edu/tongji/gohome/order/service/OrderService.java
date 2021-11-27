@@ -14,5 +14,7 @@ public interface OrderService {
 
     HashMap<String, Object> searchOrderDetailedInfoForOrderId(long orderId, Integer currentPage, Integer pageSize);
 
-    void addOrderAndDetailedInformation(OrderContent orderContent);
+    Long addOrderAndDetailedInformation(OrderContent orderContent);
+
+    void updateOrderStatus(long OrderId, int OrderStatus);
 }

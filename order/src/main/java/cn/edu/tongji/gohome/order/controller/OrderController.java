@@ -3,6 +3,7 @@ package
 
 import cn.edu.tongji.gohome.order.dto.Comment;
 import cn.edu.tongji.gohome.order.dto.OrderContent;
+import cn.edu.tongji.gohome.order.dto.OrderStatus;
 import cn.edu.tongji.gohome.order.dto.Report;
 import cn.edu.tongji.gohome.order.model.CustomerCommentEntity;
 import cn.edu.tongji.gohome.order.model.HostCommentEntity;
@@ -10,6 +11,7 @@ import cn.edu.tongji.gohome.order.model.OrderReportEntity;
 import cn.edu.tongji.gohome.order.repository.CustomerCommentRepository;
 import cn.edu.tongji.gohome.order.repository.HostCommentRepository;
 import cn.edu.tongji.gohome.order.repository.OrderReportRepository;
+import cn.edu.tongji.gohome.order.repository.OrderRepository;
 import cn.edu.tongji.gohome.order.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,9 @@ public class OrderController {
     private OrderService orderService;
 
     @Resource
+    private OrderRepository orderRepository;
+
+    @Resource
     private CustomerCommentRepository customerCommentRepository;
 
     @Resource
@@ -46,9 +51,10 @@ public class OrderController {
     /**
      * <b>example: /api/v1/orders/customer?currentPage=1&pageSize=5 </b><br>
      * return all the order information for the customer.
+     *
      * @return : org.springframework.http.ResponseEntity<cn.edu.tongji.gohome.order.entity.OrderEntity>
      * @author : leoy
-     * @since  : 2021/11/19 20:07
+     * @since : 2021/11/19 20:07
      **/
     @RequestMapping("orders/customer")
     public ResponseEntity<HashMap<String, Object>> getCustomerOrderList(
@@ -77,7 +83,7 @@ public class OrderController {
     }
 
     @RequestMapping(value = "order/comment/customer", method = RequestMethod.POST)
-    public HttpStatus addOrderCustomerComment(@RequestBody Comment comment){
+    public HttpStatus addOrderCustomerComment(@RequestBody Comment comment) {
         CustomerCommentEntity customerCommentEntity = new CustomerCommentEntity();
 
         customerCommentEntity.setOrderId(comment.getOrderId());
@@ -85,12 +91,14 @@ public class OrderController {
         customerCommentEntity.setCustomerCommentTime(comment.getCommentTime());
         customerCommentEntity.setStayScore(comment.getCommentScore());
 
+        orderService.updateOrderStatus(comment.getOrderId(), OrderStatus.ORDER_TRANSACTION_COMPLETED);
+
         customerCommentRepository.save(customerCommentEntity);
         return HttpStatus.OK;
     }
 
     @RequestMapping(value = "order/comment/host", method = RequestMethod.POST)
-    public HttpStatus addOrderHostComment(@RequestBody Comment comment){
+    public HttpStatus addOrderHostComment(@RequestBody Comment comment) {
         HostCommentEntity hostCommentEntity = new HostCommentEntity();
 
         hostCommentEntity.setOrderId(comment.getOrderId());
@@ -102,23 +110,40 @@ public class OrderController {
         return HttpStatus.OK;
     }
 
-    @RequestMapping(value = "order/report",method = RequestMethod.POST)
-    public HttpStatus addOrderReport(@RequestBody Report report){
+    @RequestMapping(value = "order/report", method = RequestMethod.POST)
+    public HttpStatus addOrderReport(@RequestBody Report report) {
         OrderReportEntity orderReportEntity = new OrderReportEntity();
 
         orderReportEntity.setOrderId(report.getOrderId());
         orderReportEntity.setReportReason(report.getReportReason());
         orderReportEntity.setReportTime(report.getReportTime());
 
+        orderService.updateOrderStatus(report.getOrderId(), OrderStatus.ORDER_BUSINESS_REPORTED);
+
         orderReportRepository.save(orderReportEntity);
 
         return HttpStatus.OK;
     }
 
-    @RequestMapping(value = "order",method = RequestMethod.POST)
-    public HttpStatus addOrder(@RequestBody OrderContent orderContent){
+    @RequestMapping(value = "order", method = RequestMethod.POST)
+    public Long addOrder(@RequestBody OrderContent orderContent) {
 
-        orderService.addOrderAndDetailedInformation(orderContent);
+        return orderService.addOrderAndDetailedInformation(orderContent);
+    }
+
+    @RequestMapping(value = "order", method = RequestMethod.DELETE)
+    public HttpStatus deleteOrder(@RequestParam long orderId) {
+
+        orderRepository.deleteAllByOrderId(orderId);
+
+        return HttpStatus.OK;
+    }
+
+    @RequestMapping(value = "order/status", method = RequestMethod.PUT)
+    public HttpStatus modifyOrderStatus(@RequestParam long orderId, @RequestParam int orderStatus) {
+
+        orderService.updateOrderStatus(orderId, orderStatus);
+
         return HttpStatus.OK;
     }
 
