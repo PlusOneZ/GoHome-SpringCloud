@@ -12,4 +12,6 @@ import java.util.HashMap;
 @Service
 public interface CustomerInfoService {
     HashMap<String,Object> searchCustomerInfoByCustomerId(Long customerId);
+
+    void updateAvatar(Long customerId, String base64File);
 }

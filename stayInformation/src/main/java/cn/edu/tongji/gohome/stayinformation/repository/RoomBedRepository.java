@@ -16,4 +16,6 @@ import java.util.List;
 public interface RoomBedRepository extends JpaRepository<RoomBedEntity, RoomBedEntityPK>,
         JpaSpecificationExecutor<RoomBedEntity> {
     List<RoomBedEntity> findAllByRoomIdAndStayId(int roomId, long stayId);
+
+    void deleteAllByStayId(long stayId);
 }

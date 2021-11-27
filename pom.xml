@@ -12,6 +12,9 @@
     <modules>
         <module>eureka</module>
         <module>login</module>
+        <module>post</module>
+        <module>admin</module>
+        <module>order</module>
     </modules>
 
     <build>

@@ -1,25 +1,27 @@
 package cn.edu.tongji.gohome.stayinformation.controller;
 
+import cn.edu.tongji.gohome.stayinformation.dto.HostStay;
+import cn.edu.tongji.gohome.stayinformation.dto.HostStayUpdate;
 import cn.edu.tongji.gohome.stayinformation.dto.StayCommentInfoDto;
 import cn.edu.tongji.gohome.stayinformation.dto.StayInfoDto;
 import cn.edu.tongji.gohome.stayinformation.model.LabelEntity;
-import cn.edu.tongji.gohome.stayinformation.model.StayEntity;
+import cn.edu.tongji.gohome.stayinformation.model.StayLabelEntity;
+import cn.edu.tongji.gohome.stayinformation.model.StayTypeEntity;
 import cn.edu.tongji.gohome.stayinformation.repository.LabelRepository;
+import cn.edu.tongji.gohome.stayinformation.repository.StayLabelRepository;
 import cn.edu.tongji.gohome.stayinformation.repository.StayRepository;
+import cn.edu.tongji.gohome.stayinformation.repository.StayTypeRepository;
 import cn.edu.tongji.gohome.stayinformation.service.StayCommentService;
 import cn.edu.tongji.gohome.stayinformation.service.StayService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 和房源信息查询相关的api
@@ -44,6 +46,12 @@ public class StayController {
     @Resource
     private StayService stayService;
 
+    @Resource
+    private StayLabelRepository stayLabelRepository;
+
+    @Resource
+    private StayTypeRepository stayTypeRepository;
+
     /**
      * <b>Example: http://localhost:8090/api/v1/stay?stayId=10059</b><br>
      * @param stayId
@@ -51,7 +59,9 @@ public class StayController {
      */
     @RequestMapping
     public ResponseEntity<StayInfoDto> getStayById(@RequestParam Long stayId) {
-        return new ResponseEntity<>(stayService.searchStayDetailedInfoForStayId(stayId),
+        StayInfoDto stayInfoDto = stayService.
+                searchStayDetailedInfoForStayId(stayId,2);
+        return new ResponseEntity<>(stayInfoDto,
                 HttpStatus.OK);
     }
 
@@ -97,7 +107,54 @@ public class StayController {
                 HttpStatus.OK);
     }
 
+    @RequestMapping("/type")
+    public ResponseEntity<HashMap<String,Object>> getAllStayType(){
 
+        List<StayTypeEntity> labelEntities = stayTypeRepository.findAll();
+        List<String> stayTypeList = new ArrayList<>();
+        for(int i = 0;i <labelEntities.size();++i){
+            stayTypeList.add(labelEntities.get(i).getStayTypeName());
+        }
+
+        List<String> stayType = new ArrayList<>();
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("typeList", stayTypeList);
+
+        return new ResponseEntity<>(hashMap,
+                HttpStatus.OK);
+    }
+
+    @RequestMapping("/tag")
+    public ResponseEntity<HashMap<String,Object>> getStayTagById
+            (@RequestParam Long stayId){
+        List<StayLabelEntity> stayLabelEntities = stayLabelRepository.findAllByStayId(
+                stayId);
+        List<String> stayTypeList = new ArrayList<>();
+        for(int i = 0;i <stayLabelEntities.size();++i){
+            stayTypeList.add(stayLabelEntities.get(i).getLabelName());
+        }
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("typeList", stayTypeList);
+        return new ResponseEntity<>(hashMap,
+                HttpStatus.OK);
+    }
+
+    @RequestMapping("/tag/all")
+    public ResponseEntity<HashMap<String,Object>> getAllStayTag(){
+
+        List<LabelEntity> labelEntities = labelRepository.findAll();
+        List<String> stayTypeList = new ArrayList<>();
+        for(int i = 0;i <labelEntities.size();++i){
+            stayTypeList.add(labelEntities.get(i).getLabelName());
+        }
+
+        List<String> stayType = new ArrayList<>();
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("typeList", stayTypeList);
+
+        return new ResponseEntity<>(hashMap,
+                HttpStatus.OK);
+    }
 
     @RequestMapping("/positions")
     public ResponseEntity<HashMap<String, Object>> getAllPositionsWithinArea(
@@ -116,21 +173,7 @@ public class StayController {
                 HttpStatus.OK);
     }
 
-    @RequestMapping("/tag")
-    public ResponseEntity<HashMap<String, Object>> getAllTag() {
-        List<LabelEntity> labelEntityList = labelRepository.findAll();
 
-        List<String> res = new ArrayList<>();
-        for(int i=0;i<labelEntityList.size();++i){
-            res.add(labelEntityList.get(i).getLabelName());
-        }
-
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("tagList", res);
-
-        return new ResponseEntity<>(hashMap,
-                HttpStatus.OK);
-    }
 
     @RequestMapping("/host")
     public ResponseEntity<HashMap<String, Object>> getStayBriefInfoByHostId
@@ -150,6 +193,52 @@ public class StayController {
                 HttpStatus.OK);
     }
 
+
+    @RequestMapping(method = RequestMethod.POST)
+    public ResponseEntity<Boolean> createStay(@RequestBody HostStay hostStay){
+        try{
+
+            // TODO: 改变hostId
+            stayService.insertIntoStay(hostStay, 1);
+            return new ResponseEntity<>(true,
+                    HttpStatus.OK);
+        }
+        catch(Exception error){
+            return new ResponseEntity<>(false,
+                    HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.PUT)
+    public ResponseEntity<Boolean> updateStay(@RequestBody HostStayUpdate
+                                                          hostStayUpdate){
+        try{
+
+            // TODO: 改变hostId
+            stayService.updateAStay(hostStayUpdate.getUpdateInfo(), hostStayUpdate.getStayId(),1);
+            return new ResponseEntity<>(true,
+                    HttpStatus.OK);
+        }
+        catch(Exception error){
+            return new ResponseEntity<>(false,
+                    HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE)
+    public ResponseEntity<Boolean> deleteStayFromStayId(@RequestParam long stayId){
+        try{
+            // 删除房源
+            stayService.deleteFromStayId(stayId);
+
+            return new ResponseEntity<>(true,
+                    HttpStatus.OK);
+        }
+        catch(Exception error){
+            return new ResponseEntity<>(false,
+                    HttpStatus.EXPECTATION_FAILED);
+        }
+    }
 
 
 }

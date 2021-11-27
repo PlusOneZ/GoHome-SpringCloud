@@ -35,8 +35,8 @@ class LoginApplicationTests {
         /*配置文件中配置的password*/
         standardPBEStringEncryptor.setPassword("kao^QUan^yaNG^a^En");
         /*要加密的文本*/
-        String name = standardPBEStringEncryptor.encrypt("nearby_place_service");
-        String password =standardPBEStringEncryptor.encrypt("uniplus_nearby_service");
+        String name = standardPBEStringEncryptor.encrypt("");
+        String password =standardPBEStringEncryptor.encrypt("");
         /*将加密的文本写到配置文件中*/
         System.out.println("name="+name);
         System.out.println("password="+password);

@@ -1,13 +1,8 @@
 package cn.edu.tongji.gohome.stayinformation.dto.mapper;
 
 import cn.edu.tongji.gohome.stayinformation.dto.CommentDto;
-import cn.edu.tongji.gohome.stayinformation.dto.StayCommentInfoDto;
 import cn.edu.tongji.gohome.stayinformation.model.CustomerCommentEntity;
 import cn.edu.tongji.gohome.stayinformation.model.CustomerEntity;
-
-import javax.xml.stream.events.Comment;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * CommentMapper类
@@ -28,8 +23,9 @@ public class CommentMapper {
                                CustomerCommentEntity customerCommentEntity){
         CommentDto commentDto = new CommentDto();
         commentDto.setId(customerCommentEntity.getCustomerCommentId());
+        commentDto.setCommentScore(customerCommentEntity.getStayScore());
         // 用户是否已注销
-        if (customerCommentEntity == null){
+        if (customerEntity == null){
             commentDto.setNickName("已注销");
             commentDto.setAvatar("");
         }
