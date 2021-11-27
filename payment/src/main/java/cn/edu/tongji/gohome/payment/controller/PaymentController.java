@@ -1,11 +1,14 @@
 package
         cn.edu.tongji.gohome.payment.controller;
 
+import cn.edu.tongji.gohome.payment.dto.AlipyNotifyParam;
 import cn.edu.tongji.gohome.payment.dto.OrderPaymentInfo;
 import cn.edu.tongji.gohome.payment.service.PaymentService;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.alipay.api.response.AlipayTradeRefundResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -53,22 +56,6 @@ public class PaymentController {
             System.out.println("退款失败");
         }
         return response.getBody();
-    }
-
-    @RequestMapping(value = "notify",method = RequestMethod.POST)
-    public void notifyOrder(HttpServletRequest httpServletRequest) throws AlipayApiException {
-
-        Map<String,String[]> requestParams = httpServletRequest.getParameterMap();
-        boolean signVerified = paymentService.orderNotify(requestParams);
-
-        // 验签通过
-        if (signVerified) {
-            //支付成功后进行操作
-            System.out.println("支付成功!");
-            //TODO: 调用Order接口将支付成功的信息插入进数据库
-            restTemplate.
-        }
-
     }
 
 }

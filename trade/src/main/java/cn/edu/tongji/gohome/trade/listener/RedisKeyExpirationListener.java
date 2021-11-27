@@ -1,12 +1,14 @@
 package
         cn.edu.tongji.gohome.trade.listener;
 
+import cn.edu.tongji.gohome.trade.service.TradeService;
 import cn.edu.tongji.gohome.trade.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.listener.KeyExpirationEventMessageListener;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 
@@ -22,7 +24,8 @@ import javax.annotation.Resource;
 public class RedisKeyExpirationListener extends KeyExpirationEventMessageListener {
 
     @Resource
-    private RedisUtils redisUtils;
+    private TradeService tradeService;
+
 
     public RedisKeyExpirationListener(RedisMessageListenerContainer listenerContainer) {
         super(listenerContainer);
@@ -33,14 +36,7 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
 
         // get the order id to deal with the Timeout situation...
         long orderId = Long.parseLong(message.toString());
-        System.out.println("该订单已经超时支付取消, 订单Id为: " + orderId);
-        if(redisUtils.exists(String.valueOf(orderId))){
+        tradeService.cancelOrder(orderId);
 
-            System.out.println("the order in redis, orderId: "+orderId);
-            redisUtils.remove(String.valueOf(orderId));
-
-            //use order service to remove the order with order id = orderId;
-
-        }
     }
 }

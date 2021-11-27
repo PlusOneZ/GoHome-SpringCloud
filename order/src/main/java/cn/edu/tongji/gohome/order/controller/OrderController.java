@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.HashMap;
 
 /**
@@ -146,5 +147,11 @@ public class OrderController {
 
         return HttpStatus.OK;
     }
+
+    @RequestMapping(value = "order/coupons",method = RequestMethod.GET)
+    public ResponseEntity<HashMap<String, Object>> getUsableCouponList(
+            @RequestParam BigDecimal limitCost,
+            @RequestParam 
+            )
 
 }
