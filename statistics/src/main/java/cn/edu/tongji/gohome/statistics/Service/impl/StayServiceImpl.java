@@ -37,7 +37,7 @@ public class StayServiceImpl implements StayService {
 
     @Override
     public List<Long> getHighestScoreStay() {
-        Pageable pageable = PageRequest.of(0, 5);
+        Pageable pageable = PageRequest.of(0, 8);
 
         List<StayEntity> stayEntityList =
                 stayRepository.findByStayStatusOrderByCommentScoreDesc(

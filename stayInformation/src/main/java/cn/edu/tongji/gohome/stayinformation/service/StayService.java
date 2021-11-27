@@ -18,7 +18,7 @@ import java.util.List;
  */
 @Service
 public interface StayService {
-    StayInfoDto searchStayDetailedInfoForStayId(long stayId);
+    StayInfoDto searchStayDetailedInfoForStayId(long stayId,int stayStatus);
 
     BigDecimal getLowestRoomForStayId(long stayId);
 
