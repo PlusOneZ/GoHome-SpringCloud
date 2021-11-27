@@ -117,7 +117,7 @@ public class PaymentService {
                 try {
                     //此处做自己的业务处理
                     String outTradeNo = param.getOutTradeNo();
-                    restTemplate.put("http://order-service/api/vi/order/status/{orderId}&{orderStatus}",Long.parseLong(outTradeNo), OrderStatus.ORDER_PAYMENT_COMPLETED);
+                    restTemplate.put("http://order-service/api/vi/order/status?orderId={1}&orderStatus={2}",Long.parseLong(outTradeNo), OrderStatus.ORDER_PAYMENT_COMPLETED);
                     System.out.println("数据库中订单状态更改为支付完成");
                 } catch (Exception e) {
                     System.out.println("支付宝回调业务处理报错,params:" + param);

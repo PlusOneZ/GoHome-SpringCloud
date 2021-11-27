@@ -32,22 +32,19 @@ public class TradeService {
         }
         else{
             System.out.println("insert order into the redis");
-            redisUtils.set(String.valueOf(orderId),orderInfoDto,15L, TimeUnit.MINUTES);
+            redisUtils.set(String.valueOf(orderId),orderInfoDto,10L, TimeUnit.SECONDS);
             System.out.println("order has insert successfully !!");
         }
     }
 
     public void cancelOrder(long orderId){
         System.out.println("该订单已经超时支付取消, 订单Id为: " + orderId);
-        if (redisUtils.exists(String.valueOf(orderId))) {
+        System.out.println("the order in redis, orderId: " + orderId);
+        System.out.println("超时订单在redis中删除完成");
+//            redisUtils.remove(String.valueOf(orderId));
 
-            System.out.println("the order in redis, orderId: " + orderId);
-            redisUtils.remove(String.valueOf(orderId));
-            System.out.println("超时订单在redis中删除完成");
-
-            //use order service to remove the order with order id = orderId;
-            restTemplate.delete("http://order-service/order/{orderId}", orderId);
-            System.out.println("超时订单在数据库中删除完成");
-        }
+        //use order service to remove the order with order id = orderId;
+        restTemplate.delete("http://order-service/api/v1/order?orderId={1}", orderId);
+        System.out.println("超时订单在数据库中删除完成");
     }
 }

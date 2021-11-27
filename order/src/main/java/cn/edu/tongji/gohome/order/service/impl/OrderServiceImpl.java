@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * implements the service for order mainly.
@@ -248,25 +249,28 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
     }
 
-    public List<ViewCouponInformationEntity> searchUsableCouponForCustomerId(long customerId, BigDecimal couponLimit, Integer currentPage, Integer pageSize){
+    public Map<String,Object> searchUsableCouponForCustomerId(long customerId, BigDecimal couponLimit, Integer currentPage, Integer pageSize){
         Pageable pageable = PageRequest.of(currentPage,pageSize);
 
-
-        Specification specification = (root, query, criteriaBuilder) -> {
+        Specification<ViewCouponInformationEntity> specification = (root, query, criteriaBuilder) -> {
             List<Predicate> predicateList = new ArrayList<>();
 
             //customer_id
-            predicateList.add(criteriaBuilder.equal(root.get("customerId").as(Long.class),customerId));
+            predicateList.add(criteriaBuilder.equal(root.get("customerId"),customerId));
             //status
-            predicateList.add(criteriaBuilder.equal(root.get("couponStatus").as(Integer.class), CouponStatus.COUPON_UNUSED));
+            predicateList.add(criteriaBuilder.equal(root.get("couponStatus"), CouponStatus.COUPON_UNUSED));
             //couponLimit
-            predicateList.add(criteriaBuilder.greaterThanOrEqualTo(root.get("couponLimit").as(BigDecimal.class),couponLimit));
+            predicateList.add(criteriaBuilder.lessThanOrEqualTo(root.get("couponLimit"),couponLimit));
 
             Predicate[] pre = new Predicate[predicateList.size()];
             pre = predicateList.toArray(pre);
             return query.where(pre).getRestriction();
         };
-        return viewCouponInformationRepository.findAll(specification, pageable).toList();
+        Page<ViewCouponInformationEntity> page = viewCouponInformationRepository.findAll(specification, pageable);
+        Map<String,Object> map = new HashMap<>();
+        map.put("totalPage",page.getTotalPages());
+        map.put("couponInfo",page.toList());
+        return map;
     }
 
     public void updateOCouponStatus(long couponId, int couponStatus){

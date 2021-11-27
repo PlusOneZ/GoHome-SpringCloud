@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public interface OrderService {
@@ -22,7 +23,7 @@ public interface OrderService {
 
     void updateOrderStatus(long orderId, int orderStatus);
 
-    List<ViewCouponInformationEntity> searchUsableCouponForCustomerId(long customerId, BigDecimal couponLimit, Integer currentPage, Integer pageSize);
+    Map<String,Object> searchUsableCouponForCustomerId(long customerId, BigDecimal couponLimit, Integer currentPage, Integer pageSize);
 
     void updateOCouponStatus(long couponId, int couponStatus);
 }

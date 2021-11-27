@@ -23,6 +23,7 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Controller that handles order filtering and creation.
@@ -152,7 +153,7 @@ public class OrderController {
     }
 
     @RequestMapping(value = "order/coupons", method = RequestMethod.GET)
-    public ResponseEntity<List<ViewCouponInformationEntity>> getUsableCouponList(
+    public ResponseEntity<Map<String,Object>> getUsableCouponList(
             @RequestParam BigDecimal couponLimit,
             @RequestParam(value = "currentPage") int currentPage,
             @RequestParam(value = "pageSize", defaultValue = "3") int pageSize) {
