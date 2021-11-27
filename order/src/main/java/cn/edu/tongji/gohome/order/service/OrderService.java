@@ -1,9 +1,13 @@
 package cn.edu.tongji.gohome.order.service;
 
 import cn.edu.tongji.gohome.order.dto.OrderContent;
+import cn.edu.tongji.gohome.order.model.ViewCouponInformationEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 public interface OrderService {
@@ -16,5 +20,9 @@ public interface OrderService {
 
     Long addOrderAndDetailedInformation(OrderContent orderContent);
 
-    void updateOrderStatus(long OrderId, int OrderStatus);
+    void updateOrderStatus(long orderId, int orderStatus);
+
+    List<ViewCouponInformationEntity> searchUsableCouponForCustomerId(long customerId, BigDecimal couponLimit, Integer currentPage, Integer pageSize);
+
+    void updateOCouponStatus(long couponId, int couponStatus);
 }

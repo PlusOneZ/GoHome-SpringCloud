@@ -1,10 +1,7 @@
 package
         cn.edu.tongji.gohome.order.service.impl;
 
-import cn.edu.tongji.gohome.order.dto.OrderContent;
-import cn.edu.tongji.gohome.order.dto.OrderDetailedInfoDto;
-import cn.edu.tongji.gohome.order.dto.OrderInfoDto;
-import cn.edu.tongji.gohome.order.dto.OrderStayInfoDto;
+import cn.edu.tongji.gohome.order.dto.*;
 import cn.edu.tongji.gohome.order.dto.mapper.OrderDetailedInfoMapper;
 import cn.edu.tongji.gohome.order.dto.mapper.OrderInfoMapper;
 import cn.edu.tongji.gohome.order.model.*;
@@ -14,9 +11,12 @@ import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.persistence.criteria.Predicate;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +48,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Resource
     private StayRepository stayRepository;
+
+    @Resource
+    private ViewCouponInformationRepository viewCouponInformationRepository;
+
+    @Resource
+    private CouponRepository couponRepository;
 
 
     /**
@@ -242,4 +248,31 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
     }
 
+    public List<ViewCouponInformationEntity> searchUsableCouponForCustomerId(long customerId, BigDecimal couponLimit, Integer currentPage, Integer pageSize){
+        Pageable pageable = PageRequest.of(currentPage,pageSize);
+
+
+        Specification specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicateList = new ArrayList<>();
+
+            //customer_id
+            predicateList.add(criteriaBuilder.equal(root.get("customerId").as(Long.class),customerId));
+            //status
+            predicateList.add(criteriaBuilder.equal(root.get("couponStatus").as(Integer.class), CouponStatus.COUPON_UNUSED));
+            //couponLimit
+            predicateList.add(criteriaBuilder.greaterThanOrEqualTo(root.get("couponLimit").as(BigDecimal.class),couponLimit));
+
+            Predicate[] pre = new Predicate[predicateList.size()];
+            pre = predicateList.toArray(pre);
+            return query.where(pre).getRestriction();
+        };
+        return viewCouponInformationRepository.findAll(specification, pageable).toList();
+    }
+
+    public void updateOCouponStatus(long couponId, int couponStatus){
+
+        CouponEntity coupon = couponRepository.getById(couponId);
+        coupon.setCouponStatus(couponStatus);
+        couponRepository.save(coupon);
+    }
 }
