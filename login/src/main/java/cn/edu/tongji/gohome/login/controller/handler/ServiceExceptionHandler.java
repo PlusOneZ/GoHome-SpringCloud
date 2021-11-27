@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ServiceExceptionHandler {
 
-    @ExceptionHandler(UserNotExistException.class)
+    @ExceptionHandler
     public ResponseEntity<String> handleNotExist(UserNotExistException e) {
         return ResponseEntity.status(404).body(e.getMessage());
     }
