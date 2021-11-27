@@ -379,6 +379,9 @@ public class StayServiceImpl implements StayService {
         // stayScore
         res.put("stayScore", stayEntity.getCommentScore());
 
+        // hostId
+        res.put("hostId", stayEntity.getHostId());
+
         // stayPosition
         List<BigDecimal> stayPosition = new ArrayList<>();
         stayPosition.add(stayEntity.getLongitude());
