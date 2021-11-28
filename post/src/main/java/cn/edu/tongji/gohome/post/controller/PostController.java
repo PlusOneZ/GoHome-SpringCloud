@@ -1,5 +1,9 @@
 package cn.edu.tongji.gohome.post.controller;
 
+import cn.edu.tongji.gohome.post.dto.UploadedPostDetail;
+import cn.edu.tongji.gohome.post.dto.UploadedPostLike;
+import cn.edu.tongji.gohome.post.dto.UploadedReply;
+import cn.edu.tongji.gohome.post.dto.UploadedReplyLike;
 import cn.edu.tongji.gohome.post.model.CustomerEntity;
 import cn.edu.tongji.gohome.post.service.LikeService;
 import cn.edu.tongji.gohome.post.service.PostService;
@@ -97,33 +101,20 @@ public class PostController {
         return new ResponseEntity<>(postService.searchPostDetailForPostId(postId),HttpStatus.OK);
     }
 
-//    @RequestMapping("posts/postPost")
-//    public ResponseEntity<HashMap<String,Object>> getPostDetail(
-//    postId
-//    ) {
-//        return new ResponseEntity<>(postService,HttpStatus.OK);
-//    }
+
+    @RequestMapping(value = "posts/postPost", method = RequestMethod.POST)
+    public HttpStatus postDetailPost(
+            @RequestBody UploadedPostDetail uploadedPostDetail){
+        return postService.addPost(uploadedPostDetail);
+    }
 
 
-//    @RequestMapping(value = "posts/postPost", method = RequestMethod.POST)
-//    public HttpStatus postDetailPost(@RequestBody HashMap<String,Object> map){
-//
-//
-//
-//        return HttpStatus.OK;
-//    }
-
-
-//    @RequestMapping("posts/deletePost")
-//    public ResponseEntity<HashMap<String,Object>> getPostDetail(
-//    post
-//    tags
-//    images
-//    stays
-//    ) {
-//        return new ResponseEntity<>(postService,HttpStatus.OK);
-//    }
-
+    @RequestMapping(value="posts/deletePost", method = RequestMethod.DELETE)
+    public HttpStatus deletePersonalPost(
+            @RequestParam(value = "postId", defaultValue ="0") long postId,
+            @RequestParam(value = "customerId", defaultValue = "0") long customerId) {
+        return postService.removePost(postId,customerId);
+    }
 
 
     @RequestMapping("posts/reply/getPostReplyList")
@@ -144,24 +135,12 @@ public class PostController {
         return new ResponseEntity<>(replyService.searchSonReplyListForReplyId(replyId,currentPage, pageSize), HttpStatus.OK);
     }
 
-//    @RequestMapping("posts/reply/postReplyForPost")
-//    public ResponseEntity<HashMap<String, Object>> postReplyForPost(
-//            @RequestParam(value="postId", defaultValue ="0") int postId,
-//            @RequestParam(value = "currentPage", defaultValue = "0") int currentPage,
-//            @RequestParam(value = "pageSize", defaultValue = "30") int pageSize) {
-//
-//        return new ResponseEntity<>(postService.searchPostListForCustomerId(customerId,currentPage, pageSize), HttpStatus.OK);
-//    }
+    @RequestMapping("posts/reply/postReply")
+    public HttpStatus postReplyForPost(
+            @RequestBody UploadedReply uploadedReply) {
+        return replyService.addReply(uploadedReply);
+    }
 
-
-//    @RequestMapping("posts/reply/postReplyForReply")
-//    public ResponseEntity<HashMap<String, Object>> postReplyForReply(
-//            @RequestParam(value="postId", defaultValue ="0") int postId,
-//            @RequestParam(value = "currentPage", defaultValue = "0") int currentPage,
-//            @RequestParam(value = "pageSize", defaultValue = "30") int pageSize) {
-//
-//        return new ResponseEntity<>(postService.searchPostListForCustomerId(customerId,currentPage, pageSize), HttpStatus.OK);
-//    }
 
     @RequestMapping("posts/like/getPostLikeStatus")
     public ResponseEntity<HashMap<String, Object>> getPostLikeStatus(
@@ -171,15 +150,19 @@ public class PostController {
         return new ResponseEntity<>(likeService.searchPostLikeForPostIdAndCustomerId(postId,customerId), HttpStatus.OK);
     }
 
+    @RequestMapping("posts/like/postPostLike")
+    public HttpStatus postLikeForPost(
+            @RequestBody UploadedPostLike uploadedPostLike) {
+        return likeService.addLikeForPost(uploadedPostLike);
+    }
 
-//    @RequestMapping("posts/like/postPostLike")
-//    public ResponseEntity<HashMap<String, Object>> postPostLike(
-//            @RequestParam(value="postId", defaultValue ="0") int postId,
-//            @RequestParam(value = "currentPage", defaultValue = "0") int currentPage,
-//            @RequestParam(value = "pageSize", defaultValue = "30") int pageSize) {
-//
-//        return new ResponseEntity<>(postService.searchPostListForCustomerId(customerId,currentPage, pageSize), HttpStatus.OK);
-//    }
+    @RequestMapping(value="posts/like/deletePostLike", method = RequestMethod.DELETE)
+    public HttpStatus deleteLikeForPost(
+            @RequestParam(value = "postId", defaultValue ="0") long postId,
+            @RequestParam(value = "customerId", defaultValue = "0") long customerId) {
+        return likeService.removeLikeForPost(postId, customerId);
+    }
+
 
     @RequestMapping("posts/like/getReplyLikeStatus")
     public ResponseEntity<HashMap<String, Object>> getReplyLikeStatus(
@@ -188,11 +171,17 @@ public class PostController {
         return new ResponseEntity<>(likeService.searchReplyLikeForReplyIdAndCustomerId(replyId,customerId), HttpStatus.OK);
     }
 
-//    @RequestMapping("posts/like/postReplyLike")
-//    public ResponseEntity<HashMap<String, Object>> postReplyLike(
-//            @RequestParam(value="postId", defaultValue ="0") int postId) {
-//
-//        return new ResponseEntity<>(postService.searchPostListForCustomerId(customerId,currentPage, pageSize), HttpStatus.OK);
-//    }
+    @RequestMapping("posts/like/postReplyLike")
+    public HttpStatus postLikeForReply(
+            @RequestBody UploadedReplyLike uploadedReplyLike) {
+        return likeService.addLikeForReply(uploadedReplyLike);
+    }
+
+    @RequestMapping(value="posts/like/deleteReplyLike", method = RequestMethod.DELETE)
+    public HttpStatus deleteLikeForReply(
+            @RequestParam(value = "replyId", defaultValue ="0") long replyId,
+            @RequestParam(value = "customerId", defaultValue = "0") long customerId) {
+        return likeService.removeLikeForReply(replyId, customerId);
+    }
 
 }

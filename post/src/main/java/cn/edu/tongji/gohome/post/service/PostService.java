@@ -1,6 +1,9 @@
 package cn.edu.tongji.gohome.post.service;
 
+import cn.edu.tongji.gohome.post.dto.UploadedPostDetail;
+import cn.edu.tongji.gohome.post.dto.UploadedReply;
 import cn.edu.tongji.gohome.post.model.PostEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -18,5 +21,10 @@ public interface PostService {
     HashMap<String, Object> searchPostDetailForPostId(long postId);
 
     HashMap<String, Object> searchPostListForKeyWord(String key, int currentPage, int pageSize);
+
+    HttpStatus addPost(UploadedPostDetail uploadedPostDetail);
+
+    HttpStatus removePost(long postId, long customerId);
+
 
 }

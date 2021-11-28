@@ -1,15 +1,18 @@
 package cn.edu.tongji.gohome.post.service.impl;
 
 import cn.edu.tongji.gohome.post.dto.PostCustomer;
+import cn.edu.tongji.gohome.post.dto.UploadedReply;
 import cn.edu.tongji.gohome.post.dto.mapper.PostCustomerMapper;
 import cn.edu.tongji.gohome.post.model.PostReplyEntity;
 import cn.edu.tongji.gohome.post.repository.CustomerRepository;
 import cn.edu.tongji.gohome.post.repository.PostReplyRepository;
 import cn.edu.tongji.gohome.post.service.PostService;
 import cn.edu.tongji.gohome.post.service.ReplyService;
+import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -90,5 +93,26 @@ public class ReplyServiceImpl implements ReplyService {
 
         results.put("replyInfo", obj);
         return results;
+    }
+
+    @Override
+    public HttpStatus addReply(UploadedReply uploadedReply) {
+
+        PostReplyEntity postReplyEntity=new PostReplyEntity();
+
+        postReplyEntity.setReplyId(YitIdHelper.nextId());
+        postReplyEntity.setPostId(uploadedReply.getPostId());
+        postReplyEntity.setCustomerId(uploadedReply.getCustomerId());
+        postReplyEntity.setReplyContent(uploadedReply.getReplyContent());
+        postReplyEntity.setPreReplyId(uploadedReply.getPreReplyId());
+
+        try{
+            postReplyRepository.saveAndFlush(postReplyEntity);
+        }catch (Exception exception)
+        {
+            return HttpStatus.CONFLICT;
+        }
+
+        return HttpStatus.OK;
     }
 }

@@ -1,13 +1,18 @@
 package cn.edu.tongji.gohome.post.service.impl;
 import cn.edu.tongji.gohome.post.dto.PostCustomer;
+import cn.edu.tongji.gohome.post.dto.UploadedPost;
+import cn.edu.tongji.gohome.post.dto.UploadedPostDetail;
+import cn.edu.tongji.gohome.post.dto.UploadedReply;
 import cn.edu.tongji.gohome.post.dto.mapper.PostCustomerMapper;
 import cn.edu.tongji.gohome.post.service.LikeService;
 import cn.edu.tongji.gohome.post.service.PostService;
 import cn.edu.tongji.gohome.post.service.ReplyService;
 import cn.edu.tongji.gohome.post.service.TagService;
+import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,6 +23,7 @@ import cn.edu.tongji.gohome.post.model.*;
 import cn.edu.tongji.gohome.post.repository.*;
 
 import javax.annotation.Resource;
+import javax.persistence.criteria.CriteriaBuilder;
 
 @Service
 public class PostServiceImpl implements PostService{
@@ -38,13 +44,11 @@ public class PostServiceImpl implements PostService{
     private PostStayRepository postStayRepository;
 
     @Resource
+    private AdministratorEntityRepository administratorEntityRepository;
+
+    @Resource
     private TagService tagService;
 
-    @Resource
-    private ReplyService replyService;
-
-    @Resource
-    private LikeService likeService;
 
 
     @Override
@@ -133,6 +137,75 @@ public class PostServiceImpl implements PostService{
     @Override
     public HashMap<String, Object> searchPostListForKeyWord(String key, int currentPage, int pageSize) {
         return tagService.searchPostListForTag(key,currentPage,pageSize);
+    }
+
+    @Override
+    public HttpStatus addPost(UploadedPostDetail uploadedPostDetail) {
+
+        UploadedPost post=uploadedPostDetail.getPost();
+
+        PostEntity postEntity=new PostEntity();
+        postEntity.setPostId(YitIdHelper.nextId());
+        postEntity.setCustomerId(post.getCustomerId());
+        postEntity.setPostContent(post.getPostContent());
+        postEntity.setPostTheme(post.getPostTheme());
+
+        long postId=postEntity.getPostId();
+
+        try {
+            postRepository.saveAndFlush(postEntity);
+
+            uploadedPostDetail.getTags().forEach((String tag) -> {
+                PostTagEntity postTagEntity = new PostTagEntity();
+                postTagEntity.setPostTag(tag);
+                postTagEntity.setPostId(postId);
+
+                postTagRepository.save(postTagEntity);
+            });
+
+            uploadedPostDetail.getStays().forEach((Long stayId) -> {
+                PostStayEntity postStayEntity = new PostStayEntity();
+                postStayEntity.setPostId(postId);
+                postStayEntity.setStayId(stayId);
+
+                postStayRepository.save(postStayEntity);
+            });
+
+            uploadedPostDetail.getImages().forEach((String url) -> {
+                PostImgEntity postImgEntity = new PostImgEntity();
+                postImgEntity.setPostId(postId);
+                postImgEntity.setPostImgLink(url);
+
+                postImgRepository.save(postImgEntity);
+            });
+        }catch (Exception ex) {
+            return HttpStatus.CONFLICT;
+        }
+        return HttpStatus.OK;
+    }
+
+    @Override
+    public HttpStatus removePost(long postId, long customerId) {
+
+        PostEntity postEntity=postRepository.findOneByPostId(postId);
+        Boolean isAdmin=administratorEntityRepository.existsByAdminId(Long.valueOf(customerId).intValue());
+        Boolean isAuthor=customerId==postEntity.getCustomerId();
+
+        if(isAdmin||isAuthor) {
+            try {
+                postRepository.deleteByPostId(postId);
+            }catch (Exception exception)
+            {
+                return HttpStatus.NOT_MODIFIED;
+            }
+
+            return HttpStatus.OK;
+        }
+        else
+        {
+            return HttpStatus.FORBIDDEN;
+        }
+
     }
 
 
