@@ -18,11 +18,6 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * Controller that handles order filtering and creation.
- *
- * @className: PostController
- **/
 
 @RestController
 @RequestMapping("api/v1/")
