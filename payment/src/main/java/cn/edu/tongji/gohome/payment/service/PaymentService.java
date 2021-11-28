@@ -1,8 +1,11 @@
 package
-        cn.edu.tongji.gohome.payment.Service;
+        cn.edu.tongji.gohome.payment.service;
 
-import cn.edu.tongji.gohome.payment.Dto.OrderPaymentInfo;
+import cn.edu.tongji.gohome.payment.dto.AlipyNotifyParam;
+import cn.edu.tongji.gohome.payment.dto.OrderPaymentInfo;
 import cn.edu.tongji.gohome.payment.config.AlipayConfig;
+import cn.edu.tongji.gohome.payment.dto.OrderStatus;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
@@ -14,9 +17,10 @@ import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -28,6 +32,9 @@ import java.util.Map;
  **/
 @Service
 public class PaymentService {
+
+    @Resource
+    private RestTemplate restTemplate;
 
     public AlipayTradePagePayResponse payForOrderService(OrderPaymentInfo orderPaymentInfo) throws AlipayApiException {
         // create a default alipay client...
@@ -79,11 +86,11 @@ public class PaymentService {
         return alipayClient.pageExecute(alipayTradeRefundRequest);
     }
 
-    public boolean orderNotify(Map<String,String[]> requestParams) throws AlipayApiException {
+    public String orderNotify(Map<String, String[]> requestParams) throws AlipayApiException {
 
-        Map<String,String> map = new HashMap<>();
-        if(requestParams.isEmpty()){
-            return false;
+        Map<String, String> map = new HashMap<>();
+        if (requestParams.isEmpty()) {
+            return "failure";
         }
         for (String name : requestParams.keySet()) {
             String[] values = requestParams.get(name);
@@ -94,7 +101,32 @@ public class PaymentService {
             map.put(name, valueStr);
         }
         // 验签
-        return AlipaySignature.rsaCheckV1(map, AlipayConfig.ALIPAY_PUBLIC_KEY, AlipayConfig.CHARSET,
+        boolean signVerified = AlipaySignature.rsaCheckV1(map, AlipayConfig.ALIPAY_PUBLIC_KEY, AlipayConfig.CHARSET,
                 AlipayConfig.sign_type);
+
+        if (signVerified) {
+            System.out.println("支付宝回调签名认证成功");
+            // 校验成功后在response中返回success，校验失败返回failure
+            String mapJson = JSON.toJSONString(map);
+            AlipyNotifyParam param = JSON.parseObject(mapJson,AlipyNotifyParam.class);
+            String trade_status = param.getTradeStatus();
+            // 支付成功
+            if (trade_status.equals("TRADE_SUCCESS")
+                    || trade_status.equals("TRADE_FINISHED")) {
+                // 处理支付成功逻辑
+                try {
+                    //此处做自己的业务处理
+                    String outTradeNo = param.getOutTradeNo();
+                    restTemplate.put("http://order-service/api/vi/order/status?orderId={1}&orderStatus={2}",Long.parseLong(outTradeNo), OrderStatus.ORDER_PAYMENT_COMPLETED);
+                    System.out.println("数据库中订单状态更改为支付完成");
+                } catch (Exception e) {
+                    System.out.println("支付宝回调业务处理报错,params:" + param);
+                }
+            } else {
+                System.out.println("没有处理支付宝回调业务，支付宝交易状态：" + trade_status + "params:" + param);
+            }
+            return "success";
+        }
+        return "failure";
     }
 }
