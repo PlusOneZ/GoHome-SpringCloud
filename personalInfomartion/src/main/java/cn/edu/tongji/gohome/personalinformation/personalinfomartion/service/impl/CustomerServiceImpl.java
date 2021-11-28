@@ -7,6 +7,7 @@ import cn.edu.tongji.gohome.personalinformation.personalinfomartion.model.*;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.repository.*;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.CustomerInfoService;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.ImageService;
+import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -42,6 +43,9 @@ public class CustomerServiceImpl implements CustomerInfoService {
 
     @Resource
     private OrderStayRepository orderStayRepository;
+
+    @Resource
+    private FavoriteDirectoryRepository favoriteDirectoryRepository;
 
     @Resource
     private ImageService imageService;
@@ -148,6 +152,18 @@ public class CustomerServiceImpl implements CustomerInfoService {
 
     }
 
+    @Override
+    public HashMap<String,Object> insertNewFavorite(String favoriteName, Long customerId) {
+        FavoriteDirectoryEntity favoriteDirectoryEntity = new FavoriteDirectoryEntity();
+        favoriteDirectoryEntity.setName(favoriteName);
+        favoriteDirectoryEntity.setCustomerId(customerId);
+        favoriteDirectoryRepository.save(favoriteDirectoryEntity);
+        List<FavoriteDirectoryEntity> resultEntity = favoriteDirectoryRepository.findAllByName(favoriteName);
+        int size = resultEntity.size();
+        HashMap<String,Object> result = new HashMap<>();
+        result.put("favoriteId",resultEntity.get(size-1).getFavoriteDirectoryId());
+        return result;
+    }
 
 
     private String dateToString(Timestamp timestamp){
