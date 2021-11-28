@@ -2,6 +2,7 @@ package cn.edu.tongji.gohome.personalinformation.personalinfomartion.controller;
 
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.Base64Data;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.CustomerInfoDto;
+import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.FavoriteNameDto;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.CustomerInfoService;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -61,7 +62,11 @@ public class CustomerController {
 
     }
 
-
+    /**
+     * 更改用户的基本信息
+     * @param customerInfoDto 传入的json，转为用户信息对象dto
+     * @return 返回是否更改成功
+     */
     @RequestMapping(value = "customer/info", method = RequestMethod.PUT)
     public ResponseEntity<Boolean> updateUserInfo(
             @RequestBody CustomerInfoDto customerInfoDto
@@ -73,6 +78,16 @@ public class CustomerController {
         }catch (Exception error){
             return new ResponseEntity<>(false,HttpStatus.EXPECTATION_FAILED);
         }
+    }
+
+    @RequestMapping(value = "favorite/addition", method = RequestMethod.POST)
+    public ResponseEntity<HashMap<String,Object>> insertNewFavorite(
+            @RequestBody FavoriteNameDto favoriteNameDto
+            ){
+        Long customerId = 1L;
+
+            return new ResponseEntity<>(customerInfoService.insertNewFavorite(favoriteNameDto.getFavoriteName(),customerId),HttpStatus.OK);
+
     }
 
 }
