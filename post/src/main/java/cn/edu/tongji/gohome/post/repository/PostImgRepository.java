@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface PostImgRepository extends JpaRepository<PostImgEntity, Long>, JpaSpecificationExecutor<PostImgEntity> {
     List<PostImgEntity> findAllByPostId(long postId);
+
+    List<String> findDistinctByPostId(long postId);
 }

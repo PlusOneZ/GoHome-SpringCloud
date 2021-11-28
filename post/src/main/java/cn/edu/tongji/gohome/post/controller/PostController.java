@@ -105,6 +105,15 @@ public class PostController {
 //    }
 
 
+//    @RequestMapping(value = "posts/postPost", method = RequestMethod.POST)
+//    public HttpStatus postDetailPost(@RequestBody HashMap<String,Object> map){
+//
+//
+//
+//        return HttpStatus.OK;
+//    }
+
+
 //    @RequestMapping("posts/deletePost")
 //    public ResponseEntity<HashMap<String,Object>> getPostDetail(
 //    post

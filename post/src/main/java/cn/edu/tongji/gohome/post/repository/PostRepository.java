@@ -11,8 +11,6 @@ public interface PostRepository extends JpaRepository<PostEntity, Long>, JpaSpec
 
     Page<PostEntity> findAllByCustomerId(Long customerId, Pageable pageable);
 
-    @Query(value = "select p.post_id,p.post_time,p.post_content,p.post_theme,p.reply_count,p.like_count,p.customer_id from post_tag as t inner join post as p on p.post_id = t.post_id where t.post_tag = ?1",nativeQuery = true)
-    Page<PostEntity> findAllByPostTag(String tag, Pageable pageable);
-
     PostEntity findOneByPostId(long postId);
+
 }

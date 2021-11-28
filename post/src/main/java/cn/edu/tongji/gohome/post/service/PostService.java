@@ -1,5 +1,6 @@
 package cn.edu.tongji.gohome.post.service;
 
+import cn.edu.tongji.gohome.post.model.PostEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -7,6 +8,8 @@ import java.util.List;
 
 @Service
 public interface PostService {
+
+    HashMap<String, Object> searchBriefPostInfo(PostEntity postEntity);
 
     HashMap<String, Object> searchDefaultPostList(Integer currentPage, Integer pageSize);
 

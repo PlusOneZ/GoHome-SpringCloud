@@ -1,7 +1,7 @@
 package cn.edu.tongji.gohome.post.service;
 
 
-import cn.edu.tongji.gohome.post.model.PostEntity;
+import cn.edu.tongji.gohome.post.model.PostTagEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -13,5 +13,5 @@ public interface TagService {
 
     HashMap<String, Object> searchPostListForTag(String tag, int currentPage, int pageSize);
 
-    List<List<String>> searchTagListForPostList(List<PostEntity> postEntityList);
+    List<String> searchTagListForPostId(long postId);
 }

@@ -47,6 +47,19 @@ public class PostServiceImpl implements PostService{
     private LikeService likeService;
 
 
+    @Override
+    public HashMap<String, Object> searchBriefPostInfo(PostEntity postEntity) {
+        List<String> tags=tagService.searchTagListForPostId(postEntity.getPostId());
+        PostCustomer author=PostCustomerMapper.getInstance().toDto(customerRepository.findOneByCustomerId(postEntity.getCustomerId()));
+        List<String> imgList=postImgRepository.findDistinctByPostId(postEntity.getPostId());
+
+        HashMap<String,Object> result=new HashMap<>();
+        result.put("post",postEntity);
+        result.put("tags",tags);
+        result.put("author",author);
+        result.put("images",imgList);
+        return result;
+    }
 
     /**
      * returns all the default display posts
@@ -63,10 +76,9 @@ public class PostServiceImpl implements PostService{
         HashMap<String, Object> results = new HashMap<>();
 
         Page<PostEntity> postEntityList = postRepository.findAll(pageable);
-        List<List<String>> tagList=tagService.searchTagListForPostList(postEntityList.getContent());
-        results.put("tagsInfo",tagList);
+        Page<HashMap<String,Object>> postList=postEntityList.map(postEntity->{return searchBriefPostInfo(postEntity);});
 
-        results.put("postInfo", postEntityList);
+        results.put("postInfo", postList);
         return results;
     }
 
@@ -85,11 +97,9 @@ public class PostServiceImpl implements PostService{
         HashMap<String, Object> results = new HashMap<>();
 
         Page<PostEntity> postEntityList = postRepository.findAllByCustomerId(customerId,pageable);
-        List<List<String>> tagList=tagService.searchTagListForPostList(postEntityList.getContent());
+        Page<HashMap<String,Object>> postList=postEntityList.map(postEntity->{return searchBriefPostInfo(postEntity);});
 
-        results.put("postInfo", postEntityList);
-        results.put("tagsInfo",tagList);
-
+        results.put("postInfo", postList);
         return results;
     }
 
@@ -100,7 +110,7 @@ public class PostServiceImpl implements PostService{
 
         PostEntity post=postRepository.findOneByPostId(postId);
 
-        results.put("postDetail",post);
+        results.put("post",post);
 
         CustomerEntity customer=customerRepository.findOneByCustomerId(post.getCustomerId());
         PostCustomer postCustomer=PostCustomerMapper.getInstance().toDto(customer);
@@ -108,10 +118,10 @@ public class PostServiceImpl implements PostService{
 
         List<PostTagEntity> tagList=postTagRepository.findAllByPostId(post.getPostId());
 
-        results.put("tags",tagList);
+        results.put("tagsDetail",tagList);
 
         List<PostImgEntity> imgList=postImgRepository.findAllByPostId(post.getPostId());
-        results.put("images",imgList);
+        results.put("imagesDetail",imgList);
 
         List<PostStayEntity> stayList=postStayRepository.findAllByPostId(post.getPostId());
         results.put("stays",stayList);

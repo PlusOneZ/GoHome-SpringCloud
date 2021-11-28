@@ -14,11 +14,14 @@ import java.util.List;
 public interface PostTagRepository extends JpaRepository<PostTagEntity, Long>, JpaSpecificationExecutor<PostTagEntity> {
 
 
-    List<PostTagEntity> findAllByPostId(long postId);
-
-    @Query("select p.postTag from PostTagEntity p")
-    Page<String> findAllBy(Pageable pageable);
+    @Query("select distinct p.postTag from PostTagEntity p")
+    Page<String> findAllDistinctTag(Pageable pageable);
 
     @Query("select distinct p.postTag from PostTagEntity p where p.postId = ?1")
-    List<String> findDistinctByPostId(long postId);
+    List<String> findAllDistinctTagByPostId(long postId);
+
+    List<PostTagEntity> findAllByPostId(long postId);
+
+    @Query("select distinct p.postId from PostTagEntity p where p.postTag = ?1")
+    Page<Long> findAllDistinctPostIdByPostTag(String tag, Pageable pageable);
 }

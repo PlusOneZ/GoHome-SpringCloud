@@ -1,6 +1,7 @@
 package cn.edu.tongji.gohome.post.service.impl;
 
 import cn.edu.tongji.gohome.post.model.PostEntity;
+import cn.edu.tongji.gohome.post.model.PostTagEntity;
 import cn.edu.tongji.gohome.post.repository.PostRepository;
 import cn.edu.tongji.gohome.post.repository.PostTagRepository;
 import cn.edu.tongji.gohome.post.service.PostService;
@@ -11,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class TagServiceImpl implements TagService {
 
         HashMap<String, Object> results = new HashMap<>();
 
-        Page<String> tagList = postTagRepository.findAllBy(pageable);
+        Page<String> tagList = postTagRepository.findAllDistinctTag(pageable);
 
         results.put("tagList", tagList);
         return results;
@@ -48,26 +48,19 @@ public class TagServiceImpl implements TagService {
         Pageable pageable = PageRequest.of(currentPage, pageSize);
 
 
-        Page<PostEntity> postEntityList = postRepository.findAllByPostTag(tag,pageable);
-        List<List<String>> tagList=searchTagListForPostList(postEntityList.getContent());
+        Page<Long> postIdList = postTagRepository.findAllDistinctPostIdByPostTag(tag,pageable);
+        Page<HashMap<String,Object>> postList=postIdList.map(postId->{return postService.searchBriefPostInfo(postRepository.findOneByPostId(postId));});
 
-        results.put("postList", postEntityList);
-        results.put("tagsInfo",tagList);
-
+        results.put("postInfo", postList);
         return results;
     }
 
 
     @Override
-    public List<List<String>> searchTagListForPostList(List<PostEntity> postEntityList) {
+    public List<String> searchTagListForPostId(long postId){
 
-        List<List<String>> result=new ArrayList<>();
-        for(PostEntity postEntity:postEntityList)
-        {
-            List<String> tags=postTagRepository.findDistinctByPostId(postEntity.getPostId());
+        List<String> result=postTagRepository.findAllDistinctTagByPostId(postId);
 
-            result.add(tags.subList(0,Math.min(tags.size(),3)));
-        }
-        return result;
+        return result.subList(0,Math.min(3,result.size()));
     }
 }
