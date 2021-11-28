@@ -1,17 +1,21 @@
 package cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.impl;
 
+import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.CustomerInfoDto;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.HostCommentDto;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.mapper.HostCommentDtoMapper;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.model.*;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.repository.*;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.CustomerInfoService;
+import cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.ImageService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.sql.Date;
 
 /**
  * 实现顾客信息服务接口，处理有关顾客信息的后端业务逻辑，由 controller最终调用
@@ -39,6 +43,8 @@ public class CustomerServiceImpl implements CustomerInfoService {
     @Resource
     private OrderStayRepository orderStayRepository;
 
+    @Resource
+    private ImageService imageService;
     /**
     * 通过SA-Token获取到的用户id去获取用户的基本信息
      * @param customerId : 顾客id
@@ -92,6 +98,57 @@ public class CustomerServiceImpl implements CustomerInfoService {
 
 
     }
+
+    /**
+    * 更改某位顾客的头像Url
+     * @param customerId : 顾客Id
+     * @param base64File : 图片的base64格式字符串
+     * @return : void
+    * @author 梁乔
+    * @since 23:27 2021-11-25
+    */
+    @Override
+    public void updateAvatar(Long customerId, String base64File) {
+        CustomerEntity customer = customerRepository.findFirstByCustomerId(customerId);
+
+        customer.setCustomerAvatarLink(imageService.base64UploadFile(base64File,
+                "avatar/"+customerId.toString()+".png"));
+        customerRepository.save(customer);
+
+    }
+
+
+
+    /**
+    * 更改用户的基本信息
+     * @param customerInfoDto : 传入的Dto
+     * @param customerId : 要更改的用户的用户id
+     * @return : void
+    * @author 梁乔
+    * @since 13:28 2021-11-28
+    */
+    @Override
+    public void updateUserInfo(CustomerInfoDto customerInfoDto, Long customerId) throws ParseException {
+        CustomerEntity customer = customerRepository.findFirstByCustomerId(customerId);
+
+        customer.setCustomerName(customerInfoDto.getUserNickName());
+        if(customerInfoDto.getUserSex() != null){
+            customer.setCustomerGender(customerInfoDto.getUserSex());
+        }
+        if(customerInfoDto.getUserBirthDate() != null){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            java.util.Date d = sdf.parse(customerInfoDto.getUserBirthDate());
+            java.sql.Date date = new java.sql.Date(d.getTime());
+            customer.setCustomerBirthday(date);
+        }
+        if(customerInfoDto.getMood() != null){
+            customer.setCustomerMood(customerInfoDto.getMood());
+        }
+        customerRepository.save(customer);
+
+    }
+
+
 
     private String dateToString(Timestamp timestamp){
         String dateStr = "";

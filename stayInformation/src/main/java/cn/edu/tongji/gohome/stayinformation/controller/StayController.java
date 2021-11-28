@@ -59,7 +59,8 @@ public class StayController {
      */
     @RequestMapping
     public ResponseEntity<StayInfoDto> getStayById(@RequestParam Long stayId) {
-        StayInfoDto stayInfoDto = stayService.searchStayDetailedInfoForStayId(stayId);
+        StayInfoDto stayInfoDto = stayService.
+                searchStayDetailedInfoForStayId(stayId,2);
         return new ResponseEntity<>(stayInfoDto,
                 HttpStatus.OK);
     }

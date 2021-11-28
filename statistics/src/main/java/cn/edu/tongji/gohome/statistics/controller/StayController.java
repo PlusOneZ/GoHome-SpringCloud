@@ -37,4 +37,26 @@ public class StayController {
         return new ResponseEntity<>(hashMap,
                 HttpStatus.OK);
     }
+
+    @RequestMapping("/order")
+    public ResponseEntity<HashMap<String, Object>> getMostOrdersStay(){
+        List<Long> stayIdList = stayService.getMostOrdersStay();
+
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("stayList", stayIdList);
+
+        return new ResponseEntity<>(hashMap,
+                HttpStatus.OK);
+    }
+
+    @RequestMapping("/price")
+    public ResponseEntity<HashMap<String, Object>> getMinPriceStay(){
+        List<Long> stayIdList = stayService.getMinPriceStay();
+
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("stayList", stayIdList);
+
+        return new ResponseEntity<>(hashMap,
+                HttpStatus.OK);
+    }
 }

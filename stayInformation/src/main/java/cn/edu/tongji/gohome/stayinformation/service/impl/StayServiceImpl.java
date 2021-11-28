@@ -74,8 +74,10 @@ public class StayServiceImpl implements StayService {
     @Resource
     ImageService imageService;
 
+
     @Override
-    public StayInfoDto searchStayDetailedInfoForStayId(long stayId) {
+    public StayInfoDto searchStayDetailedInfoForStayId(long stayId,
+                                                       int stayStatus) {
         StayInfoDto stayInfoDto = new StayInfoDto();
         stayInfoDto.setStayId(stayId);
 
@@ -84,7 +86,7 @@ public class StayServiceImpl implements StayService {
         if (stayEntity == null){
             return null;
         }
-        else if (stayEntity.getStayStatus() != BigInteger.valueOf(2)){
+        else if (stayEntity.getStayStatus() != BigInteger.valueOf(stayStatus)){
             return null;
         }
 
@@ -258,7 +260,9 @@ public class StayServiceImpl implements StayService {
                 findAllByHostIdAndStayStatus(hostId, stayStatus);
         for(StayEntity stayEntity: stayEntityList){
             HashMap<String, Object> hashMap = new HashMap<>();
-            StayInfoDto stayInfoDto = searchStayDetailedInfoForStayId(stayEntity.getStayId());
+            StayInfoDto stayInfoDto =
+                    searchStayDetailedInfoForStayId(stayEntity.getStayId(),
+                            stayStatus.intValue());
             hashMap.put("stayId", stayEntity.getStayId());
             hashMap.put("imgListNum", stayInfoDto.getStayImages().size());
             hashMap.put("stayType", stayEntity.getStayTypeName());
@@ -374,6 +378,9 @@ public class StayServiceImpl implements StayService {
 
         // stayScore
         res.put("stayScore", stayEntity.getCommentScore());
+
+        // hostId
+        res.put("hostId", stayEntity.getHostId());
 
         // stayPosition
         List<BigDecimal> stayPosition = new ArrayList<>();
@@ -508,7 +515,7 @@ public class StayServiceImpl implements StayService {
 
                 roomPhoto.setRoomPhotoLink(
                         imageService.base64UploadFile(roomImages.get(j),
-                                "roomPhoto/"+stayId+"-"+i
+                                "roomPhoto/"+stayId+"-"+i + ".png"
                                 )
                 );
 
