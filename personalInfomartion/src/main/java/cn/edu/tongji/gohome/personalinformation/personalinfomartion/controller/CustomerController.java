@@ -1,6 +1,7 @@
 package cn.edu.tongji.gohome.personalinformation.personalinfomartion.controller;
 
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.Base64Data;
+import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.CustomerInfoDto;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.CustomerInfoService;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,7 +41,7 @@ public class CustomerController {
 
     /**
     * 更改用户的头像
-     * @param base64Data :
+     * @param base64Data :用户头像的base64字符串
      * @return : org.springframework.http.ResponseEntity<java.lang.Boolean>
     * @author 梁乔
     * @since 23:33 2021-11-25
@@ -58,6 +59,20 @@ public class CustomerController {
             return new ResponseEntity<>(false,HttpStatus.EXPECTATION_FAILED);
         }
 
+    }
+
+
+    @RequestMapping(value = "customer/info", method = RequestMethod.PUT)
+    public ResponseEntity<Boolean> updateUserInfo(
+            @RequestBody CustomerInfoDto customerInfoDto
+            ){
+        Long customerId = 1L;
+        try {
+            customerInfoService.updateUserInfo(customerInfoDto, customerId);
+            return new ResponseEntity<>(true,HttpStatus.OK);
+        }catch (Exception error){
+            return new ResponseEntity<>(false,HttpStatus.EXPECTATION_FAILED);
+        }
     }
 
 }
