@@ -26,4 +26,6 @@ public interface StayRepository extends JpaRepository<StayEntity, Long> {
     );
 
     List<StayEntity> findByStayStatusOrderByCommentScoreDesc(BigInteger stayStatus, Pageable pageable);
+
+
 }
