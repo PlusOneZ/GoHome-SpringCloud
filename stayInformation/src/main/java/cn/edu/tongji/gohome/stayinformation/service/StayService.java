@@ -1,5 +1,6 @@
 package cn.edu.tongji.gohome.stayinformation.service;
 
+import cn.edu.tongji.gohome.stayinformation.dto.HostStay;
 import cn.edu.tongji.gohome.stayinformation.dto.StayInfoDto;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,7 +18,7 @@ import java.util.List;
  */
 @Service
 public interface StayService {
-    StayInfoDto searchStayDetailedInfoForStayId(long stayId);
+    StayInfoDto searchStayDetailedInfoForStayId(long stayId,int stayStatus);
 
     BigDecimal getLowestRoomForStayId(long stayId);
 
@@ -38,4 +39,10 @@ public interface StayService {
     HashMap<String, Object> getStayBriefInfoByStayId(Long stayId, long customerId);
 
     List<String> getAllLabelByStayId(Long stayId);
+
+    void insertIntoStay(HostStay hostStay, int hostId);
+
+    void updateAStay(HostStay hostStay, long stayId, int hostId);
+
+    void deleteFromStayId(long stayId);
 }

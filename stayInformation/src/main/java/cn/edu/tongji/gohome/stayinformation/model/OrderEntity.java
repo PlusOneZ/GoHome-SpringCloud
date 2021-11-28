@@ -12,12 +12,14 @@ import java.sql.Timestamp;
  * @date 2021/11/19 17:17
  */
 @Entity
-@Table(name = "order", schema = "GoHome", catalog = "")
+@Table(name = "`order`", schema = "GoHome", catalog = "")
 public class OrderEntity {
     private long orderId;
     private Timestamp orderTime;
     private BigInteger memberAmount;
     private BigDecimal totalCost;
+    private long customerId;
+    private int orderStatus;
 
     @Id
     @Column(name = "order_id")
@@ -81,5 +83,25 @@ public class OrderEntity {
         result = 31 * result + (memberAmount != null ? memberAmount.hashCode() : 0);
         result = 31 * result + (totalCost != null ? totalCost.hashCode() : 0);
         return result;
+    }
+
+    @Basic
+    @Column(name = "customer_id")
+    public long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(long customerId) {
+        this.customerId = customerId;
+    }
+
+    @Basic
+    @Column(name = "order_status")
+    public int getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(int orderStatus) {
+        this.orderStatus = orderStatus;
     }
 }

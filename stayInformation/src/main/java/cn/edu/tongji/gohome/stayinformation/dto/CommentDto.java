@@ -14,6 +14,7 @@ public class CommentDto{
     private String avatar;
     private Timestamp date;
     private String commentContent;
+    private int commentScore;
 
     public long getId() {
         return id;
@@ -53,5 +54,13 @@ public class CommentDto{
 
     public void setCommentContent(String commentContent) {
         this.commentContent = commentContent;
+    }
+
+    public int getCommentScore() {
+        return commentScore;
+    }
+
+    public void setCommentScore(int commentScore) {
+        this.commentScore = commentScore;
     }
 }

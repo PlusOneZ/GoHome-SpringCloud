@@ -112,4 +112,15 @@ public class SignupServiceImpl implements SignupService {
 
         hostRepository.save(host);
     }
+
+    @Override
+    public void setCustomerGender(Long customerId, String gender) {
+        Optional<CustomerEntity> customer = customerRepository.findById(customerId);
+        if (customer.isEmpty()) {
+            throw new UserNotExistException();
+        }
+        CustomerEntity customerEntity = customer.get();
+        customerEntity.setCustomerGender(gender);
+        customerRepository.save(customerEntity);
+    }
 }

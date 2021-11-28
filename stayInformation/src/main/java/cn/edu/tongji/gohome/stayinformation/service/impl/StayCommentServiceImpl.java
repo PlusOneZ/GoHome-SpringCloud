@@ -3,20 +3,16 @@ package cn.edu.tongji.gohome.stayinformation.service.impl;
 import cn.edu.tongji.gohome.stayinformation.dto.CommentDto;
 import cn.edu.tongji.gohome.stayinformation.dto.StayCommentInfoDto;
 import cn.edu.tongji.gohome.stayinformation.dto.mapper.CommentMapper;
-import cn.edu.tongji.gohome.stayinformation.model.CustomerCommentEntity;
-import cn.edu.tongji.gohome.stayinformation.model.CustomerEntity;
-import cn.edu.tongji.gohome.stayinformation.model.OrderStayEntity;
-import cn.edu.tongji.gohome.stayinformation.model.StayEntity;
-import cn.edu.tongji.gohome.stayinformation.repository.CustomerCommentRepository;
-import cn.edu.tongji.gohome.stayinformation.repository.CustomerRepository;
-import cn.edu.tongji.gohome.stayinformation.repository.OrderStayRepository;
-import cn.edu.tongji.gohome.stayinformation.repository.StayRepository;
+import cn.edu.tongji.gohome.stayinformation.model.*;
+import cn.edu.tongji.gohome.stayinformation.repository.*;
 import cn.edu.tongji.gohome.stayinformation.service.StayCommentService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * StayCommentServiceImpl类
@@ -39,6 +35,9 @@ public class StayCommentServiceImpl implements StayCommentService {
     @Resource
     private CustomerRepository customerRepository;
 
+    @Resource
+    private OrderRepository orderRepository;
+
     /**
      * 获取某一个stayId的评论集
      * @param stayId
@@ -56,8 +55,17 @@ public class StayCommentServiceImpl implements StayCommentService {
         double aveRatings = 0;
         int sumComment = 0;
 
+        Set<Long> orderIdSet = new HashSet<>();
+
         for(int i = 0; i<orderStayEntityList.size(); ++i){
             long orderId = orderStayEntityList.get(i).getOrderId();
+
+            if (orderIdSet.contains(orderId)){
+                continue;
+            }
+            else{
+                orderIdSet.add(orderId);
+            }
 
             // 根据orderId找到对应的评论实体
             CustomerCommentEntity customerCommentEntity =
@@ -67,14 +75,30 @@ public class StayCommentServiceImpl implements StayCommentService {
             if (customerCommentEntity == null){
                 continue;
             }
-            // 根据customerId获取其昵称和头像
+
+
+            // 根据orderId找customerId
+            OrderEntity orderEntity =
+                orderRepository.findById(
+                        customerCommentEntity.getOrderId())
+                        .orElse(null);
+
+            if (orderEntity == null){
+                continue;
+            }
+
             CustomerEntity customerEntity =
-                    customerRepository.findCustomerEntityByCustomerId(customerCommentEntity.getCustomerCommentId());
+                    customerRepository.
+                            findCustomerEntityByCustomerId(
+                                    orderEntity.getCustomerId()
+                            );
 
             // 新增CommentDto
-            CommentDto commentDto = CommentMapper.getInstance().toDto(customerEntity, customerCommentEntity);
+            CommentDto commentDto = CommentMapper.getInstance().
+                    toDto(customerEntity, customerCommentEntity);
 
             commentDtoList.add(commentDto);
+
             aveRatings += customerCommentEntity.getStayScore();
             sumComment += 1;
         }

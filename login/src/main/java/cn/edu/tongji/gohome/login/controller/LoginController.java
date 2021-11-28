@@ -2,6 +2,7 @@ package cn.edu.tongji.gohome.login.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.edu.tongji.gohome.login.service.LoginService;
+import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,7 @@ import java.util.List;
  * @author 卓正一
  * @since 2021/11/22 8:47 PM
  */
+@Api(tags = "Login")
 @RestController
 @RequestMapping("api/v1/login/")
 public class LoginController {
@@ -24,11 +26,18 @@ public class LoginController {
     @Resource
     LoginService loginService;
 
+    @ApiOperation("Customer login")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "success!"),
+                    @ApiResponse(code = 401, message = "Wrong password or user not exist")
+            }
+    )
     @GetMapping("customer")
     public ResponseEntity<String> userCustomerLogin(
-            @RequestParam String phoneCode,
-            @RequestParam String phone,
-            @RequestParam String password) {
+            @ApiParam(value = "International Phone Code", defaultValue = "+86", example = "+86") @RequestParam String phoneCode,
+            @ApiParam(value = "Phone Number", example = "19946254155") @RequestParam String phone,
+            @ApiParam(value = "Password", example = "123456") @RequestParam String password) {
         if (loginService.checkUserLogin(phoneCode, phone, password)) {
             Long id = loginService.getCustomerIdByPhone(phoneCode, phone);
             StpUtil.login(id);
@@ -38,12 +47,18 @@ public class LoginController {
         }
     }
 
+    @ApiOperation("Host login")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "success!"),
+                    @ApiResponse(code = 401, message = "Wrong password or user not exist")
+            }
+    )
     @GetMapping("host")
     public ResponseEntity<String> userHostLogin(
-            @RequestParam String phoneCode,
-            @RequestParam String phone,
-            @RequestParam String password) {
-        //TODO: Test this
+            @ApiParam(value = "International Phone Code", example = "+86") @RequestParam String phoneCode,
+            @ApiParam(value = "Phone Number", example = "19946254155") @RequestParam String phone,
+            @ApiParam(value = "Password", example = "123456") @RequestParam String password) {
         // Duplicate code for stputil to recognize session
         if (loginService.checkUserLogin(phoneCode, phone, password)) {
             StpUtil.login(loginService.getCustomerIdByPhone(phoneCode, phone));
@@ -54,10 +69,17 @@ public class LoginController {
         }
     }
 
+    @ApiOperation("Administrator login")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "success!"),
+                    @ApiResponse(code = 401, message = "Wrong password or user not exist")
+            }
+    )
     @GetMapping("administrator")
     public ResponseEntity<String> userAdminLogin(
-            @RequestParam String adminName,
-            @RequestParam String password) {
+            @ApiParam(value = "Administrator's name", example = "19946254155") @RequestParam String adminName,
+            @ApiParam(value = "Password", example = "19946254155") @RequestParam String password) {
         if (loginService.checkAdminLogin(adminName, password)) {
             //TODO: Test this
             StpUtil.login((long) loginService.getAdminIdByName(adminName));
@@ -70,11 +92,25 @@ public class LoginController {
 
     //TODO: Write API to get all permissions
 
+    @ApiOperation("All permissions for user")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "OK"),
+                    @ApiResponse(code = 401, message = "Not Logged in.")
+            }
+    )
     @GetMapping("permission")
     public ResponseEntity<List<String>> getUserPermissions() {
         return ResponseEntity.ok(StpUtil.getPermissionList());
     }
 
+    @ApiOperation("Role for user")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "OK"),
+                    @ApiResponse(code = 401, message = "Not Logged in.")
+            }
+    )
     @GetMapping("userRole")
     public ResponseEntity<List<String>> getUserRoles() {
         return ResponseEntity.ok(StpUtil.getRoleList());

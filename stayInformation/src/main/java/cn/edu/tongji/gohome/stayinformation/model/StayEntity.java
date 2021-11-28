@@ -1,7 +1,5 @@
 package cn.edu.tongji.gohome.stayinformation.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -11,14 +9,15 @@ import java.sql.Time;
  * TODO:此处写StayEntity类的描述
  *
  * @author 汪明杰
- * @date 2021/11/19 17:17
+ * @date 2021/11/24 14:08
  */
 @Entity
-@JsonIgnoreProperties(value = { "hibernateLazyInitializer"})
 @Table(name = "stay", schema = "GoHome", catalog = "")
 public class StayEntity {
     private long stayId;
+    private int hostId;
     private String stayName;
+    private String stayTypeName;
     private String detailedAddress;
     private BigDecimal longitude;
     private BigDecimal latitude;
@@ -35,9 +34,7 @@ public class StayEntity {
     private int durationMax;
     private BigInteger stayStatus;
     private int commentAmount;
-    private int commentScore;
-    private int hostId;
-    private String stayTypeName;
+    private BigDecimal commentScore;
 
     @Id
     @Column(name = "stay_id")
@@ -50,6 +47,16 @@ public class StayEntity {
     }
 
     @Basic
+    @Column(name = "host_id")
+    public int getHostId() {
+        return hostId;
+    }
+
+    public void setHostId(int hostId) {
+        this.hostId = hostId;
+    }
+
+    @Basic
     @Column(name = "stay_name")
     public String getStayName() {
         return stayName;
@@ -57,6 +64,16 @@ public class StayEntity {
 
     public void setStayName(String stayName) {
         this.stayName = stayName;
+    }
+
+    @Basic
+    @Column(name = "stay_type_name")
+    public String getStayTypeName() {
+        return stayTypeName;
+    }
+
+    public void setStayTypeName(String stayTypeName) {
+        this.stayTypeName = stayTypeName;
     }
 
     @Basic
@@ -125,10 +142,6 @@ public class StayEntity {
         return publicBathroom;
     }
 
-    public void setPublicBathroom(byte publicBathroom) {
-        this.publicBathroom = publicBathroom;
-    }
-
     public void setPublicBathroom(int publicBathroom) {
         this.publicBathroom = publicBathroom;
     }
@@ -139,10 +152,6 @@ public class StayEntity {
         return publicToilet;
     }
 
-    public void setPublicToilet(byte publicToilet) {
-        this.publicToilet = publicToilet;
-    }
-
     public void setPublicToilet(int publicToilet) {
         this.publicToilet = publicToilet;
     }
@@ -151,10 +160,6 @@ public class StayEntity {
     @Column(name = "non_barrier_facility")
     public int getNonBarrierFacility() {
         return nonBarrierFacility;
-    }
-
-    public void setNonBarrierFacility(byte nonBarrierFacility) {
-        this.nonBarrierFacility = nonBarrierFacility;
     }
 
     public void setNonBarrierFacility(int nonBarrierFacility) {
@@ -233,11 +238,11 @@ public class StayEntity {
 
     @Basic
     @Column(name = "comment_score")
-    public int getCommentScore() {
+    public BigDecimal getCommentScore() {
         return commentScore;
     }
 
-    public void setCommentScore(int commentScore) {
+    public void setCommentScore(BigDecimal commentScore) {
         this.commentScore = commentScore;
     }
 
@@ -249,6 +254,7 @@ public class StayEntity {
         StayEntity that = (StayEntity) o;
 
         if (stayId != that.stayId) return false;
+        if (hostId != that.hostId) return false;
         if (stayCapacity != that.stayCapacity) return false;
         if (roomAmount != that.roomAmount) return false;
         if (bedAmount != that.bedAmount) return false;
@@ -258,8 +264,8 @@ public class StayEntity {
         if (durationMin != that.durationMin) return false;
         if (durationMax != that.durationMax) return false;
         if (commentAmount != that.commentAmount) return false;
-        if (commentScore != that.commentScore) return false;
         if (stayName != null ? !stayName.equals(that.stayName) : that.stayName != null) return false;
+        if (stayTypeName != null ? !stayTypeName.equals(that.stayTypeName) : that.stayTypeName != null) return false;
         if (detailedAddress != null ? !detailedAddress.equals(that.detailedAddress) : that.detailedAddress != null)
             return false;
         if (longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) return false;
@@ -269,6 +275,7 @@ public class StayEntity {
         if (checkInTime != null ? !checkInTime.equals(that.checkInTime) : that.checkInTime != null) return false;
         if (checkOutTime != null ? !checkOutTime.equals(that.checkOutTime) : that.checkOutTime != null) return false;
         if (stayStatus != null ? !stayStatus.equals(that.stayStatus) : that.stayStatus != null) return false;
+        if (commentScore != null ? !commentScore.equals(that.commentScore) : that.commentScore != null) return false;
 
         return true;
     }
@@ -276,16 +283,18 @@ public class StayEntity {
     @Override
     public int hashCode() {
         int result = (int) (stayId ^ (stayId >>> 32));
+        result = 31 * result + hostId;
         result = 31 * result + (stayName != null ? stayName.hashCode() : 0);
+        result = 31 * result + (stayTypeName != null ? stayTypeName.hashCode() : 0);
         result = 31 * result + (detailedAddress != null ? detailedAddress.hashCode() : 0);
         result = 31 * result + (longitude != null ? longitude.hashCode() : 0);
         result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
         result = 31 * result + stayCapacity;
         result = 31 * result + roomAmount;
         result = 31 * result + bedAmount;
-        result = 31 * result + (int) publicBathroom;
-        result = 31 * result + (int) publicToilet;
-        result = 31 * result + (int) nonBarrierFacility;
+        result = 31 * result + publicBathroom;
+        result = 31 * result + publicToilet;
+        result = 31 * result + nonBarrierFacility;
         result = 31 * result + (characteristic != null ? characteristic.hashCode() : 0);
         result = 31 * result + (checkInTime != null ? checkInTime.hashCode() : 0);
         result = 31 * result + (checkOutTime != null ? checkOutTime.hashCode() : 0);
@@ -293,27 +302,7 @@ public class StayEntity {
         result = 31 * result + durationMax;
         result = 31 * result + (stayStatus != null ? stayStatus.hashCode() : 0);
         result = 31 * result + commentAmount;
-        result = 31 * result + commentScore;
+        result = 31 * result + (commentScore != null ? commentScore.hashCode() : 0);
         return result;
-    }
-
-    @Basic
-    @Column(name = "host_id")
-    public int getHostId() {
-        return hostId;
-    }
-
-    public void setHostId(int hostId) {
-        this.hostId = hostId;
-    }
-
-    @Basic
-    @Column(name = "stay_type_name")
-    public String getStayTypeName() {
-        return stayTypeName;
-    }
-
-    public void setStayTypeName(String stayTypeName) {
-        this.stayTypeName = stayTypeName;
     }
 }
