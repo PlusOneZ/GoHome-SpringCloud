@@ -11,6 +11,12 @@ spring:
           uri: lb://login-service      # Use this pattern: lb://<service-name-of-eureka>
           predicates:                  # Pattern /api/{segment}/<locator-of-your-apis>/**, locator 请见飞书文档
             - Path=/api/{segment}/login/**
+        - id: stayInformation-service
+          uri: lb://stayInformation-service
+          predicates: # Pattern /api/{segment}/<locator-of-your-apis>/**, locator 请见飞书文档
+            - Path=/api/{segment}/stay/**
+
+
 
   application:
     name: gateway
