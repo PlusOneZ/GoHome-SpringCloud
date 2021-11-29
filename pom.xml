@@ -20,7 +20,6 @@
         <module>personalInfomartion</module>
         <module>sale</module>
         <module>statistics</module>
-        <module>stayInformation</module>
         <module>trade</module>
     </modules>
 
