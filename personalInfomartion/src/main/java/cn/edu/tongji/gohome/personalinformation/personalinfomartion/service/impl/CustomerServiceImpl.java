@@ -49,6 +49,12 @@ public class CustomerServiceImpl implements CustomerInfoService {
 
     @Resource
     private ImageService imageService;
+
+    @Resource
+    private FavoriteDirectoryStayRepository favoriteDirectoryStayRepository;
+
+    @Resource
+    private RoomPhotoRepository roomPhotoRepository;
     /**
     * 通过SA-Token获取到的用户id去获取用户的基本信息
      * @param customerId : 顾客id
@@ -162,6 +168,28 @@ public class CustomerServiceImpl implements CustomerInfoService {
         int size = resultEntity.size();
         HashMap<String,Object> result = new HashMap<>();
         result.put("favoriteId",resultEntity.get(size-1).getFavoriteDirectoryId());
+        return result;
+    }
+
+    /**
+    * 根据收藏夹id获取对应收藏夹内第一个房源的第一个房间的第一张照片的URL
+     * @param favoriteId : 收藏夹id
+     * @return : java.util.HashMap<java.lang.String,java.lang.Object>
+    * @author 梁乔
+    * @since 10:24 2021-11-29
+    */
+    @Override
+    public HashMap<String, Object> getFavoriteImage(Integer favoriteId) {
+        HashMap<String,Object> result = new HashMap<>();
+        FavoriteDirectoryStayEntity favoriteDirectoryStayEntity = favoriteDirectoryStayRepository.findFirstByFavoriteDirectoryId(favoriteId);
+        if(favoriteDirectoryStayEntity == null){
+            result.put("imageURL",null);
+        }
+        else {
+            Long stayId = favoriteDirectoryStayEntity.getStayId();
+            RoomPhotoEntity roomPhotoEntity = roomPhotoRepository.findFirstByStayId(stayId);
+            result.put("imageURL",roomPhotoEntity.getRoomPhotoLink());
+        }
         return result;
     }
 
