@@ -80,6 +80,13 @@ public class CustomerController {
         }
     }
 
+    /**
+    * 用户新建一个收藏夹
+     * @param favoriteNameDto : 收藏夹名称的DTO
+     * @return : org.springframework.http.ResponseEntity<java.util.HashMap<java.lang.String,java.lang.Object>>
+    * @author 梁乔
+    * @since 10:06 2021-11-29
+    */
     @RequestMapping(value = "favorite/addition", method = RequestMethod.POST)
     public ResponseEntity<HashMap<String,Object>> insertNewFavorite(
             @RequestBody FavoriteNameDto favoriteNameDto
@@ -88,6 +95,13 @@ public class CustomerController {
 
             return new ResponseEntity<>(customerInfoService.insertNewFavorite(favoriteNameDto.getFavoriteName(),customerId),HttpStatus.OK);
 
+    }
+
+    @RequestMapping(value = "favorite/image",method = RequestMethod.GET)
+    public ResponseEntity<HashMap<String,Object>> getFavoriteImage(
+            @RequestParam(value = "favoriteId") Integer favoriteId
+    ){
+        return new ResponseEntity<>(customerInfoService.getFavoriteImage(favoriteId),HttpStatus.OK);
     }
 
 }

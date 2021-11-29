@@ -20,4 +20,6 @@ public interface CustomerInfoService {
     void updateUserInfo(CustomerInfoDto customerInfoDto, Long customerId)throws ParseException;
 
     HashMap<String,Object> insertNewFavorite(String favoriteName, Long customerId);
+
+    HashMap<String,Object> getFavoriteImage(Integer favoriteId);
 }
