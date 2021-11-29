@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/v1/example")
 public class ExampleController {
 
-    @RequestMapping
+    @RequestMapping("haha")
     public String exampleApi() {
         return "you heard me!";
     }
