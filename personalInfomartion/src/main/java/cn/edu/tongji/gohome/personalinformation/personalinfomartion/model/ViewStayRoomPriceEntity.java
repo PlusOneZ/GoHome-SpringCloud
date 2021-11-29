@@ -1,7 +1,5 @@
 package
-        cn.edu.tongji.gohome.personalinformation.personalinfomartion.model;/**
- * @author 梁乔 2021/11/29
- **/
+        cn.edu.tongji.gohome.personalinformation.personalinfomartion.model;
 
 import javax.persistence.*;
 import java.math.BigDecimal;

@@ -60,6 +60,12 @@ public class CustomerServiceImpl implements CustomerInfoService {
 
     @Resource
     private ViewStayRoomPriceRepository viewStayRoomPriceRepository;
+
+    @Resource
+    private HostGroupRepository hostGroupRepository;
+
+    @Resource
+    private ViewHostStayCommentRepository viewHostStayCommentRepository;
     /**
     * 通过SA-Token获取到的用户id去获取用户的基本信息
      * @param customerId : 顾客id
@@ -211,6 +217,14 @@ public class CustomerServiceImpl implements CustomerInfoService {
         favoriteDirectoryRepository.delete(favoriteDirectoryEntity);
     }
 
+
+    /**
+    * 获取某一收藏夹内所有房源信息
+     * @param favoriteId : 收藏夹id
+     * @return : java.util.HashMap<java.lang.String,java.lang.Object>
+    * @author 梁乔
+    * @since 15:29 2021-11-29
+    */
     @Override
     public HashMap<String, Object> getFavoriteStayInfo(Integer favoriteId) {
         HashMap<String,Object> result = new HashMap<>();
@@ -228,6 +242,77 @@ public class CustomerServiceImpl implements CustomerInfoService {
         }
         result.put("stayList",favoriteStayInfoDtoList);
         return result;
+    }
+
+    /**
+     * 向特定的收藏夹加入一个房源
+     * @param favoriteId 收藏夹id
+     * @param stayId 房源id
+     */
+    @Override
+    public void addStayToFavorite(Integer favoriteId, Long stayId) {
+        FavoriteDirectoryStayEntity favoriteDirectoryStayEntity = new FavoriteDirectoryStayEntity();
+        favoriteDirectoryStayEntity.setFavoriteDirectoryId(favoriteId);
+        favoriteDirectoryStayEntity.setStayId(stayId);
+        favoriteDirectoryStayRepository.save(favoriteDirectoryStayEntity);
+    }
+
+
+    /**
+    * 向特定的收藏夹删除一个房源
+     * @param favoriteId : 收藏夹id
+     * @param stayId : 房源id
+     * @return : void
+    * @author 梁乔
+    * @since 15:49 2021-11-29
+    */
+    @Override
+    public void deleteStayFromFavorite(Integer favoriteId, Long stayId) {
+        FavoriteDirectoryStayEntity favoriteDirectoryStayEntity = new FavoriteDirectoryStayEntity();
+        favoriteDirectoryStayEntity.setFavoriteDirectoryId(favoriteId);
+        favoriteDirectoryStayEntity.setStayId(stayId);
+        favoriteDirectoryStayRepository.delete(favoriteDirectoryStayEntity);
+    }
+
+    @Override
+    public HashMap<String, Object> getHostInfoByCustomerId(Long customerId) {
+        HashMap<String, Object> result = new HashMap<>();
+        CustomerEntity customer = customerRepository.findFirstByCustomerId(customerId);
+        result.put("hostAvatar",customer.getCustomerAvatarLink());
+        result.put("hostNickName",customer.getCustomerName());
+        HostEntity hostEntity = hostRepository.findByCustomerId(customerId);
+        result.put("hostRealName",hostEntity.getHostRealName());
+        result.put("hostSex",customer.getCustomerGender().equals("m")?"男":"女");
+        result.put("hostLevel",hostEntity.getHostLevel());
+        HostGroupEntity hostGroupEntity = hostGroupRepository.getByHostLevel(hostEntity.getHostLevel());
+        result.put("hostLevelName",hostGroupEntity.getHostLevelName());
+        result.put("hostScore",hostEntity.getHostScore());
+        //获取获得的评价总数
+        List<ViewHostStayCommentEntity> viewHostStayCommentEntityList = viewHostStayCommentRepository.findAllByHostId(hostEntity.getHostId());
+        if(viewHostStayCommentEntityList != null){
+            result.put("reviewNum",viewHostStayCommentEntityList.size());
+        }
+        else {
+            result.put("reviewNum",0);
+        }
+        result.put("emailTag",customer.getCustomerEmail() != null);
+        result.put("phoneTag",customer.getCustomerPhone() != null);
+        result.put("authenticationTag",true);
+        result.put("hostCreateTime",dateToString(hostEntity.getHostCreateTime()));
+        //获取房东平均评分
+        if(viewHostStayCommentEntityList !=null) {
+            float averageScore = 0;
+            for (ViewHostStayCommentEntity viewHostStayCommentEntity:viewHostStayCommentEntityList) {
+                averageScore += viewHostStayCommentEntity.getStayScore();
+            }
+            averageScore = averageScore / viewHostStayCommentEntityList.size();
+            result.put("averageRate",averageScore);
+        }
+        else {
+            result.put("averageRate",0);
+        }
+        return result;
+
     }
 
 
