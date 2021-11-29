@@ -1,7 +1,9 @@
 package cn.edu.tongji.gohome.personalinformation.personalinfomartion.service;
 
+import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.CustomerInfoDto;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.util.HashMap;
 
 /**
@@ -14,4 +16,10 @@ public interface CustomerInfoService {
     HashMap<String,Object> searchCustomerInfoByCustomerId(Long customerId);
 
     void updateAvatar(Long customerId, String base64File);
+
+    void updateUserInfo(CustomerInfoDto customerInfoDto, Long customerId)throws ParseException;
+
+    HashMap<String,Object> insertNewFavorite(String favoriteName, Long customerId);
+
+    HashMap<String,Object> getFavoriteImage(Integer favoriteId);
 }

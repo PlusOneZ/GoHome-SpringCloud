@@ -1,6 +1,8 @@
 package cn.edu.tongji.gohome.personalinformation.personalinfomartion.controller;
 
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.Base64Data;
+import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.CustomerInfoDto;
+import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.FavoriteNameDto;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.CustomerInfoService;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,7 +42,7 @@ public class CustomerController {
 
     /**
     * 更改用户的头像
-     * @param base64Data :
+     * @param base64Data :用户头像的base64字符串
      * @return : org.springframework.http.ResponseEntity<java.lang.Boolean>
     * @author 梁乔
     * @since 23:33 2021-11-25
@@ -58,6 +60,48 @@ public class CustomerController {
             return new ResponseEntity<>(false,HttpStatus.EXPECTATION_FAILED);
         }
 
+    }
+
+    /**
+     * 更改用户的基本信息
+     * @param customerInfoDto 传入的json，转为用户信息对象dto
+     * @return 返回是否更改成功
+     */
+    @RequestMapping(value = "customer/info", method = RequestMethod.PUT)
+    public ResponseEntity<Boolean> updateUserInfo(
+            @RequestBody CustomerInfoDto customerInfoDto
+            ){
+        Long customerId = 1L;
+        try {
+            customerInfoService.updateUserInfo(customerInfoDto, customerId);
+            return new ResponseEntity<>(true,HttpStatus.OK);
+        }catch (Exception error){
+            return new ResponseEntity<>(false,HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    /**
+    * 用户新建一个收藏夹
+     * @param favoriteNameDto : 收藏夹名称的DTO
+     * @return : org.springframework.http.ResponseEntity<java.util.HashMap<java.lang.String,java.lang.Object>>
+    * @author 梁乔
+    * @since 10:06 2021-11-29
+    */
+    @RequestMapping(value = "favorite/addition", method = RequestMethod.POST)
+    public ResponseEntity<HashMap<String,Object>> insertNewFavorite(
+            @RequestBody FavoriteNameDto favoriteNameDto
+            ){
+        Long customerId = 1L;
+
+            return new ResponseEntity<>(customerInfoService.insertNewFavorite(favoriteNameDto.getFavoriteName(),customerId),HttpStatus.OK);
+
+    }
+
+    @RequestMapping(value = "favorite/image",method = RequestMethod.GET)
+    public ResponseEntity<HashMap<String,Object>> getFavoriteImage(
+            @RequestParam(value = "favoriteId") Integer favoriteId
+    ){
+        return new ResponseEntity<>(customerInfoService.getFavoriteImage(favoriteId),HttpStatus.OK);
     }
 
 }

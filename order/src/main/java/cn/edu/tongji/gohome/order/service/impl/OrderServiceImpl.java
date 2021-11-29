@@ -1,10 +1,7 @@
 package
         cn.edu.tongji.gohome.order.service.impl;
 
-import cn.edu.tongji.gohome.order.dto.OrderContent;
-import cn.edu.tongji.gohome.order.dto.OrderDetailedInfoDto;
-import cn.edu.tongji.gohome.order.dto.OrderInfoDto;
-import cn.edu.tongji.gohome.order.dto.OrderStayInfoDto;
+import cn.edu.tongji.gohome.order.dto.*;
 import cn.edu.tongji.gohome.order.dto.mapper.OrderDetailedInfoMapper;
 import cn.edu.tongji.gohome.order.dto.mapper.OrderInfoMapper;
 import cn.edu.tongji.gohome.order.model.*;
@@ -14,12 +11,16 @@ import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.persistence.criteria.Predicate;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * implements the service for order mainly.
@@ -48,6 +49,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Resource
     private StayRepository stayRepository;
+
+    @Resource
+    private ViewCouponInformationRepository viewCouponInformationRepository;
+
+    @Resource
+    private CouponRepository couponRepository;
 
 
     /**
@@ -224,11 +231,52 @@ public class OrderServiceImpl implements OrderService {
     * @since : 2021/11/23 22:28
     **/
     @Override
-    public void addOrderAndDetailedInformation(OrderContent orderContent){
+    public Long addOrderAndDetailedInformation(OrderContent orderContent){
 
         OrderEntity order = getInformationFromOrderContent(orderContent);
         List<OrderStayEntity> orderStayEntityList = getRoomInfoFromOrderContent(order.getOrderId(),orderContent.getOrderStayEntityList());
         orderRepository.save(order);
         orderStayRepository.saveAll(orderStayEntityList);
+
+        return order.getOrderId();
+    }
+
+    @Override
+    public void updateOrderStatus(long orderId, int orderStatus){
+
+        OrderEntity order = orderRepository.getById(orderId);
+        order.setOrderStatus(orderStatus);
+        orderRepository.save(order);
+    }
+
+    public Map<String,Object> searchUsableCouponForCustomerId(long customerId, BigDecimal couponLimit, Integer currentPage, Integer pageSize){
+        Pageable pageable = PageRequest.of(currentPage,pageSize);
+
+        Specification<ViewCouponInformationEntity> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicateList = new ArrayList<>();
+
+            //customer_id
+            predicateList.add(criteriaBuilder.equal(root.get("customerId"),customerId));
+            //status
+            predicateList.add(criteriaBuilder.equal(root.get("couponStatus"), CouponStatus.COUPON_UNUSED));
+            //couponLimit
+            predicateList.add(criteriaBuilder.lessThanOrEqualTo(root.get("couponLimit"),couponLimit));
+
+            Predicate[] pre = new Predicate[predicateList.size()];
+            pre = predicateList.toArray(pre);
+            return query.where(pre).getRestriction();
+        };
+        Page<ViewCouponInformationEntity> page = viewCouponInformationRepository.findAll(specification, pageable);
+        Map<String,Object> map = new HashMap<>();
+        map.put("totalPage",page.getTotalPages());
+        map.put("couponInfo",page.toList());
+        return map;
+    }
+
+    public void updateOCouponStatus(long couponId, int couponStatus){
+
+        CouponEntity coupon = couponRepository.getById(couponId);
+        coupon.setCouponStatus(couponStatus);
+        couponRepository.save(coupon);
     }
 }

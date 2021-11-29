@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<OrderEntity, Long>, JpaSpecificationExecutor<OrderEntity> {
@@ -14,4 +15,10 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>, JpaSp
     Page<OrderEntity> findAllByCustomerId(Long customerId, Pageable pageable);
 
     OrderEntity findFirstByOrderId(Long orderId);
+
+    @Transactional
+    void deleteAllByOrderId(Long orderId);
+
+
+
 }
