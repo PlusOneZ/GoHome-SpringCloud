@@ -10,4 +10,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 */
 public interface HostRepository extends JpaRepository<HostEntity, Integer> {
     HostEntity findByHostId(Integer hostId);
+    HostEntity findByCustomerId(Long customerId);
 }
