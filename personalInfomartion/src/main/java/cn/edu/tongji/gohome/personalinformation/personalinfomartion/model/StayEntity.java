@@ -1,4 +1,7 @@
-package cn.edu.tongji.gohome.personalinformation.personalinfomartion.model;
+package
+        cn.edu.tongji.gohome.personalinformation.personalinfomartion.model;/**
+ * @author 梁乔 2021/11/29
+ **/
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -7,9 +10,9 @@ import java.sql.Time;
 import java.util.Objects;
 
 /**
- * stayEntity类
+ * 此处写StayEntity类的描述
  * @author 梁乔
- * @date 2021/11/23 16:59 
+ * @since 2021/11/29 12:58 
  */
 @Entity
 @Table(name = "stay", schema = "GoHome", catalog = "")
@@ -34,7 +37,7 @@ public class StayEntity {
     private int durationMax;
     private BigInteger stayStatus;
     private int commentAmount;
-    private int commentScore;
+    private BigDecimal commentScore;
 
     @Id
     @Column(name = "stay_id")
@@ -238,11 +241,11 @@ public class StayEntity {
 
     @Basic
     @Column(name = "comment_score")
-    public int getCommentScore() {
+    public BigDecimal getCommentScore() {
         return commentScore;
     }
 
-    public void setCommentScore(int commentScore) {
+    public void setCommentScore(BigDecimal commentScore) {
         this.commentScore = commentScore;
     }
 
@@ -251,7 +254,7 @@ public class StayEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StayEntity that = (StayEntity) o;
-        return stayId == that.stayId && hostId == that.hostId && stayCapacity == that.stayCapacity && roomAmount == that.roomAmount && bedAmount == that.bedAmount && publicBathroom == that.publicBathroom && publicToilet == that.publicToilet && nonBarrierFacility == that.nonBarrierFacility && durationMin == that.durationMin && durationMax == that.durationMax && commentAmount == that.commentAmount && commentScore == that.commentScore && Objects.equals(stayName, that.stayName) && Objects.equals(stayTypeName, that.stayTypeName) && Objects.equals(detailedAddress, that.detailedAddress) && Objects.equals(longitude, that.longitude) && Objects.equals(latitude, that.latitude) && Objects.equals(characteristic, that.characteristic) && Objects.equals(checkInTime, that.checkInTime) && Objects.equals(checkOutTime, that.checkOutTime) && Objects.equals(stayStatus, that.stayStatus);
+        return stayId == that.stayId && hostId == that.hostId && stayCapacity == that.stayCapacity && roomAmount == that.roomAmount && bedAmount == that.bedAmount && publicBathroom == that.publicBathroom && publicToilet == that.publicToilet && nonBarrierFacility == that.nonBarrierFacility && durationMin == that.durationMin && durationMax == that.durationMax && commentAmount == that.commentAmount && Objects.equals(stayName, that.stayName) && Objects.equals(stayTypeName, that.stayTypeName) && Objects.equals(detailedAddress, that.detailedAddress) && Objects.equals(longitude, that.longitude) && Objects.equals(latitude, that.latitude) && Objects.equals(characteristic, that.characteristic) && Objects.equals(checkInTime, that.checkInTime) && Objects.equals(checkOutTime, that.checkOutTime) && Objects.equals(stayStatus, that.stayStatus) && Objects.equals(commentScore, that.commentScore);
     }
 
     @Override

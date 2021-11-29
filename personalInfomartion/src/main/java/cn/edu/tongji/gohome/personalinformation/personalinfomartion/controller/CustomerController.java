@@ -2,6 +2,8 @@ package cn.edu.tongji.gohome.personalinformation.personalinfomartion.controller;
 
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.Base64Data;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.CustomerInfoDto;
+import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.FavoriteIdDto;
+import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.FavoriteNameDto;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.CustomerInfoService;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -61,7 +63,11 @@ public class CustomerController {
 
     }
 
-
+    /**
+     * 更改用户的基本信息
+     * @param customerInfoDto 传入的json，转为用户信息对象dto
+     * @return 返回是否更改成功
+     */
     @RequestMapping(value = "customer/info", method = RequestMethod.PUT)
     public ResponseEntity<Boolean> updateUserInfo(
             @RequestBody CustomerInfoDto customerInfoDto
@@ -75,4 +81,65 @@ public class CustomerController {
         }
     }
 
+    /**
+    * 用户新建一个收藏夹
+     * @param favoriteNameDto : 收藏夹名称的DTO
+     * @return : org.springframework.http.ResponseEntity<java.util.HashMap<java.lang.String,java.lang.Object>>
+    * @author 梁乔
+    * @since 10:06 2021-11-29
+    */
+    @RequestMapping(value = "favorite/addition", method = RequestMethod.POST)
+    public ResponseEntity<HashMap<String,Object>> insertNewFavorite(
+            @RequestBody FavoriteNameDto favoriteNameDto
+            ){
+        Long customerId = 1L;
+
+            return new ResponseEntity<>(customerInfoService.insertNewFavorite(favoriteNameDto.getFavoriteName(),customerId),HttpStatus.OK);
+
+    }
+
+    /**
+    * 删除指定的收藏夹
+     * @param favoriteId : 指定的收藏夹id
+     * @return : org.springframework.http.ResponseEntity<java.util.HashMap<java.lang.String,java.lang.Object>>
+    * @author 梁乔
+    * @since 12:37 2021-11-29
+    */
+    @RequestMapping(value = "favorite/image",method = RequestMethod.GET)
+    public ResponseEntity<HashMap<String,Object>> getFavoriteImage(
+            @RequestParam(value = "favoriteId") Integer favoriteId
+    ){
+        return new ResponseEntity<>(customerInfoService.getFavoriteImage(favoriteId),HttpStatus.OK);
+    }
+
+    /**
+    * 删除指定的收藏夹
+     * @param favoriteIdDto : 要删除的收藏夹idDTO
+     * @return : org.springframework.http.ResponseEntity<java.lang.Boolean>
+    * @author 梁乔
+    * @since 12:47 2021-11-29
+    */
+    @RequestMapping(value = "favorite/deletion", method = RequestMethod.DELETE)
+    public ResponseEntity<Boolean> deleteFavorite(
+            @RequestBody FavoriteIdDto favoriteIdDto
+            ){
+        try {
+            customerInfoService.deleteFavoriteById(favoriteIdDto.getFavoriteId());
+            return new ResponseEntity<>(true,HttpStatus.OK);
+        }catch (Exception error){
+            return new ResponseEntity<>(false,HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    /**
+     * 获取某一收藏夹的所有房源信息
+     * @param favoriteId 收藏夹Id
+     * @return hashmap
+     */
+    @RequestMapping(value = "favorite/stayinfo" ,method = RequestMethod.GET)
+    public ResponseEntity<HashMap<String,Object>> getFavoriteStayInfo(
+            @RequestParam(value = "favoriteId") Integer favoriteId
+    ){
+        return new ResponseEntity<>(customerInfoService.getFavoriteStayInfo(favoriteId),HttpStatus.OK);
+    }
 }

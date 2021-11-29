@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>cn.edu.tongji.gohome</groupId>
-    <artifactId>login</artifactId>
+    <artifactId>stayInformation</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>login</name>
-    <description>login</description>
+    <name>stayInformation</name>
+    <description>stayInformation</description>
     <properties>
         <java.version>11</java.version>
     </properties>

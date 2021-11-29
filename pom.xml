@@ -15,6 +15,12 @@
         <module>post</module>
         <module>admin</module>
         <module>order</module>
+        <module>gateway</module>
+        <module>payment</module>
+        <module>personalInfomartion</module>
+        <module>sale</module>
+        <module>statistics</module>
+        <module>trade</module>
     </modules>
 
     <build>

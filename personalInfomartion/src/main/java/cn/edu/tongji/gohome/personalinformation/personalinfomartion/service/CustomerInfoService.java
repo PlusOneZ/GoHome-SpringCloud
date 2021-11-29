@@ -18,4 +18,12 @@ public interface CustomerInfoService {
     void updateAvatar(Long customerId, String base64File);
 
     void updateUserInfo(CustomerInfoDto customerInfoDto, Long customerId)throws ParseException;
+
+    HashMap<String,Object> insertNewFavorite(String favoriteName, Long customerId);
+
+    HashMap<String,Object> getFavoriteImage(Integer favoriteId);
+
+    void deleteFavoriteById(Integer favoriteId);
+
+    HashMap<String,Object> getFavoriteStayInfo(Integer favoriteId);
 }
