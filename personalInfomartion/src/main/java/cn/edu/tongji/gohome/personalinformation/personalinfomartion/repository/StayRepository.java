@@ -10,4 +10,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface StayRepository extends JpaRepository<StayEntity, Long> {
     StayEntity findByStayId(Long stayId);
+
 }
