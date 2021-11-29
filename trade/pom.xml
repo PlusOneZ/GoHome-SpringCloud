@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>cn.edu.tongji.gohome</groupId>
-    <artifactId>payment</artifactId>
+    <artifactId>trade</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>payment</name>
-    <description>payment</description>
+    <name>trade</name>
+    <description>trade</description>
     <properties>
         <java.version>11</java.version>
         <spring-cloud.version>2020.0.4</spring-cloud.version>
@@ -46,17 +46,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.yitter</groupId>
-            <artifactId>yitter-idgenerator</artifactId>
-            <version>1.0.6</version>
-        </dependency>
-        <dependency>
-            <groupId>com.alipay.sdk</groupId>
-            <artifactId>alipay-sdk-java</artifactId>
-            <version>4.19.8.ALL</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
     </dependencies>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -68,7 +61,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
     <build>
         <plugins>
             <plugin>
