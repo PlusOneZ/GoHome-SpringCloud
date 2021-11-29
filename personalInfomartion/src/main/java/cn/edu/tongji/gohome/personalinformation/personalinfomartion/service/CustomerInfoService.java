@@ -22,4 +22,8 @@ public interface CustomerInfoService {
     HashMap<String,Object> insertNewFavorite(String favoriteName, Long customerId);
 
     HashMap<String,Object> getFavoriteImage(Integer favoriteId);
+
+    void deleteFavoriteById(Integer favoriteId);
+
+    HashMap<String,Object> getFavoriteStayInfo(Integer favoriteId);
 }

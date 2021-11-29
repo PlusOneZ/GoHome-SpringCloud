@@ -1,7 +1,9 @@
 package cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.impl;
 
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.CustomerInfoDto;
+import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.FavoriteStayInfoDto;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.HostCommentDto;
+import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.mapper.FavoriteStayInfoDtoMapper;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.mapper.HostCommentDtoMapper;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.model.*;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.repository.*;
@@ -55,6 +57,9 @@ public class CustomerServiceImpl implements CustomerInfoService {
 
     @Resource
     private RoomPhotoRepository roomPhotoRepository;
+
+    @Resource
+    private ViewStayRoomPriceRepository viewStayRoomPriceRepository;
     /**
     * 通过SA-Token获取到的用户id去获取用户的基本信息
      * @param customerId : 顾客id
@@ -190,6 +195,38 @@ public class CustomerServiceImpl implements CustomerInfoService {
             RoomPhotoEntity roomPhotoEntity = roomPhotoRepository.findFirstByStayId(stayId);
             result.put("imageURL",roomPhotoEntity.getRoomPhotoLink());
         }
+        return result;
+    }
+
+    /**
+    * 删除特定的收藏夹
+     * @param favoriteId : 给出的收藏夹id
+     * @return : void
+    * @author 梁乔
+    * @since 14:09 2021-11-29
+    */
+    @Override
+    public void deleteFavoriteById(Integer favoriteId) {
+        FavoriteDirectoryEntity favoriteDirectoryEntity = favoriteDirectoryRepository.findByFavoriteDirectoryId(favoriteId);
+        favoriteDirectoryRepository.delete(favoriteDirectoryEntity);
+    }
+
+    @Override
+    public HashMap<String, Object> getFavoriteStayInfo(Integer favoriteId) {
+        HashMap<String,Object> result = new HashMap<>();
+        List<FavoriteDirectoryStayEntity> favoriteDirectoryStayEntities = favoriteDirectoryStayRepository.findAllByFavoriteDirectoryId(favoriteId);
+        List<FavoriteStayInfoDto> favoriteStayInfoDtoList = new ArrayList<>();
+        for(FavoriteDirectoryStayEntity favoriteDirectoryStayEntity:favoriteDirectoryStayEntities){
+            Long stayId = favoriteDirectoryStayEntity.getStayId();
+            StayEntity stayEntity = stayRepository.findByStayId(stayId);
+            List<RoomPhotoEntity> roomPhotoEntityList= roomPhotoRepository.findAllByStayId(stayId);
+            Integer hostId = stayEntity.getHostId();
+            HostEntity hostEntity = hostRepository.findByHostId(hostId);
+            CustomerEntity customer = customerRepository.findFirstByCustomerId(hostEntity.getCustomerId());
+            ViewStayRoomPriceEntity viewStayRoomPriceEntity = viewStayRoomPriceRepository.findByStayId(stayId);
+            favoriteStayInfoDtoList.add(FavoriteStayInfoDtoMapper.getInstance().toDto(stayEntity,roomPhotoEntityList,viewStayRoomPriceEntity,customer));
+        }
+        result.put("stayList",favoriteStayInfoDtoList);
         return result;
     }
 
