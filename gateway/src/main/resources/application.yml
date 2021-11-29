@@ -1,17 +1,16 @@
 spring:
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true # 表示使用小写的 service id 作为第一重映射
+#      discovery:
+#        locator:
+#          enabled: true
+#          lower-case-service-id: true # 表示使用小写的 service id 作为第一重映射
 #          route-id-prefix: /api/v1/
-      routes:
-        - id: fsh-house
-          uri: lb://login-service
-          predicates:
-            - Path=/example/**
-            - Path=/example/**
+      routes:                          # Add your services here
+        - id: login-service            # Only for identifying your rules
+          uri: lb://login-service      # Use this pattern: lb://<service-name-of-eureka>
+          predicates:                  # Pattern /api/{segment}/<locator-of-your-apis>/**, locator 请见飞书文档
+            - Path=/api/{segment}/login/**
 
   application:
     name: gateway

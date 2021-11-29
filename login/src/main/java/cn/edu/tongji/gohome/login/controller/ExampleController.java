@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 
 @RestController
-@RequestMapping("api/v1/example")
+@RequestMapping("api/v1/login/example")
 public class ExampleController {
 
     @RequestMapping("haha")
