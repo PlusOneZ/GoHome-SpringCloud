@@ -14,6 +14,12 @@ public class OrderInfoDto {
 
     private long orderId;
     private Timestamp orderTime;
+    private Timestamp orderStarTime;
+    private Timestamp orderEndTime;
+    private String stayName;
+    private String detailedAddress;
+    private String hostAvatarLink;
+    private String hostName;
     private BigDecimal totalCost;
     private int orderStatus;
     private int stayScore;
@@ -65,5 +71,53 @@ public class OrderInfoDto {
 
     public void setRoomPhotoLink(String roomPhotoLink) {
         this.roomPhotoLink = roomPhotoLink;
+    }
+
+    public Timestamp getOrderStarTime() {
+        return orderStarTime;
+    }
+
+    public void setOrderStarTime(Timestamp orderStarTime) {
+        this.orderStarTime = orderStarTime;
+    }
+
+    public Timestamp getOrderEndTime() {
+        return orderEndTime;
+    }
+
+    public void setOrderEndTime(Timestamp orderEndTime) {
+        this.orderEndTime = orderEndTime;
+    }
+
+    public String getStayName() {
+        return stayName;
+    }
+
+    public void setStayName(String stayName) {
+        this.stayName = stayName;
+    }
+
+    public String getDetailedAddress() {
+        return detailedAddress;
+    }
+
+    public void setDetailedAddress(String detailedAddress) {
+        this.detailedAddress = detailedAddress;
+    }
+
+    public String getHostAvatarLink() {
+        return hostAvatarLink;
+    }
+
+    public void setHostAvatarLink(String hostAvatarLink) {
+        this.hostAvatarLink = hostAvatarLink;
+    }
+
+    public String getHostName() {
+        return hostName;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
     }
 }

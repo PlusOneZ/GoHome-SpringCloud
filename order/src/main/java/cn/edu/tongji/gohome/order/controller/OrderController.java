@@ -61,13 +61,20 @@ public class OrderController {
      * @author : leoy
      * @since : 2021/11/19 20:07
      **/
+
+
     @RequestMapping("orders/customer")
     public ResponseEntity<HashMap<String, Object>> getCustomerOrderList(
             @RequestParam(value = "currentPage") int currentPage,
-            @RequestParam(value = "pageSize", defaultValue = "5") int pageSize) {
+            @RequestParam(value = "pageSize", defaultValue = "5") int pageSize,
+            @RequestParam(value = "orderStatus", required = false) Integer orderStatus) {
 
-        return new ResponseEntity<>(orderService.searchOrderInfoForCustomerId(1L, currentPage, pageSize), HttpStatus.OK);
+        if(orderStatus == null){
+            return new ResponseEntity<>(orderService.searchOrderInfoForCustomerId(1L, currentPage, pageSize), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(orderService.searchOrderInfoForCustomerIdAndOrderStatus(1L, orderStatus, currentPage, pageSize), HttpStatus.OK);
     }
+
 
     @RequestMapping("orders/host")
     public ResponseEntity<HashMap<String, Object>> getHostOrderList(
