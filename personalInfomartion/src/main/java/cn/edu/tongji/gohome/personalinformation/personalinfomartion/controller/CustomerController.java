@@ -1,9 +1,6 @@
 package cn.edu.tongji.gohome.personalinformation.personalinfomartion.controller;
 
-import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.Base64Data;
-import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.CustomerInfoDto;
-import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.FavoriteIdDto;
-import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.FavoriteNameDto;
+import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.*;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.CustomerInfoService;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -142,4 +139,50 @@ public class CustomerController {
     ){
         return new ResponseEntity<>(customerInfoService.getFavoriteStayInfo(favoriteId),HttpStatus.OK);
     }
+
+
+    /**
+    * 在某一收藏夹内新增一个房源
+     * @param favoriteStayAdditionDto : 传入的数据格式转换对象
+     * @return : org.springframework.http.ResponseEntity<java.lang.Boolean>
+    * @author 梁乔
+    * @since 15:42 2021-11-29
+    */
+    @RequestMapping(value = "favorite/stay/addition", method = RequestMethod.POST)
+    public ResponseEntity<Boolean> addStayInFavorite(
+            @RequestBody FavoriteStayAdditionDto favoriteStayAdditionDto
+            ){
+        try{
+            customerInfoService.addStayToFavorite(favoriteStayAdditionDto.getFavoriteId(),favoriteStayAdditionDto.getStayId());
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        }catch(Exception error){
+            return new ResponseEntity<>(false,HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    /**
+    * 删除收藏夹内的特定房源
+     * @param favoriteStayAdditionDto : 数据传输对象
+     * @return : org.springframework.http.ResponseEntity<java.lang.Boolean>
+    * @author 梁乔
+    * @since 15:51 2021-11-29
+    */
+    @RequestMapping(value = "favorite/stay/deletion", method = RequestMethod.DELETE)
+    public ResponseEntity<Boolean> deleteStayInFavorite(
+            @RequestBody FavoriteStayAdditionDto favoriteStayAdditionDto
+    ){
+        try {
+            customerInfoService.addStayToFavorite(favoriteStayAdditionDto.getFavoriteId(),favoriteStayAdditionDto.getStayId());
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        }catch (Exception error){
+            return new ResponseEntity<>(false,HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @RequestMapping(value = "host/info", method = RequestMethod.GET)
+    public ResponseEntity<HashMap<String,Object>> getHostBasicInfo(){
+        Long customerId = 1L;
+        return new ResponseEntity<>(customerInfoService.getHostInfoByCustomerId(customerId),HttpStatus.OK);
+    }
+
 }

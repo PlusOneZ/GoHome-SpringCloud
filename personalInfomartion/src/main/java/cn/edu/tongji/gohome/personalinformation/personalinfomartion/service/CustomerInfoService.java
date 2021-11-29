@@ -26,4 +26,10 @@ public interface CustomerInfoService {
     void deleteFavoriteById(Integer favoriteId);
 
     HashMap<String,Object> getFavoriteStayInfo(Integer favoriteId);
+
+    void addStayToFavorite(Integer favoriteId, Long stayId);
+
+    void deleteStayFromFavorite(Integer favoriteId, Long stayId);
+
+    HashMap<String,Object> getHostInfoByCustomerId(Long customerId);
 }
