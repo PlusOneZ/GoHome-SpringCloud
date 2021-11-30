@@ -54,7 +54,7 @@ public class StayServiceImpl implements StayService {
 
     @Override
     public List<Long> getMostOrdersStay(){
-        Pageable pageable = PageRequest.of(0, 5);
+        Pageable pageable = PageRequest.of(0, 8);
         Page<ViewStayOrderNumberEntity> viewStayOrderNumberEntities
                 = viewStayOrderNumberRepository.findAll(pageable);
         List<Long> stayIdList = new ArrayList<>();
@@ -64,7 +64,7 @@ public class StayServiceImpl implements StayService {
 
     @Override
     public List<Long> getMinPriceStay(){
-        Pageable pageable = PageRequest.of(0,5);
+        Pageable pageable = PageRequest.of(0,8);
         Page<ViewStayRoomPriceEntity> viewStayRoomPriceEntities
                 = viewStayRoomPriceRespository.findAll(pageable);
         List<Long> stayIdList = new ArrayList<>();

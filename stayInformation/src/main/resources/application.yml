@@ -1,8 +1,6 @@
-server:
-  port: 8087 #运行端口号
 spring:
   application:
-    name: trade-service #服务名称
+    name: stayInformation-service #服务名称
 eureka:
   client:
     register-with-eureka: true #注册到Eureka的注册中心
