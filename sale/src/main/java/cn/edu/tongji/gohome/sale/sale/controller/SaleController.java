@@ -49,7 +49,7 @@ public class SaleController {
         return new ResponseEntity<>(saleService.getRoomPriceInfo(stayId, roomId, startDate, endDate, couponId), HttpStatus.OK);
     }
 
-    
+
     @RequestMapping(value = "customer/coupon",method = RequestMethod.GET)
     public ResponseEntity<HashMap<String,Object>> getCustomerCouponInfo(){
         Long customerId = 1L;

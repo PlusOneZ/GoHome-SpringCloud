@@ -1,9 +1,6 @@
 package cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.impl;
 
-import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.CustomerInfoDto;
-import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.FavoriteStayInfoDto;
-import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.HostCommentDto;
-import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.RoomInfoDto;
+import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.*;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.mapper.FavoriteStayInfoDtoMapper;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.mapper.HostCommentDtoMapper;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.model.*;
@@ -79,6 +76,16 @@ public class CustomerServiceImpl implements CustomerInfoService {
 
     @Resource
     private StayLabelRepository stayLabelRepository;
+
+    @Resource
+    private CustomerGroupRepository customerGroupRepository;
+
+    @Resource
+    private CustomerCouponRepository customerCouponRepository;
+
+    @Resource
+    private CouponTypeRepository couponTypeRepository;
+
     /**
     * 通过SA-Token获取到的用户id去获取用户的基本信息
      * @param customerId : 顾客id
@@ -418,6 +425,64 @@ public class CustomerServiceImpl implements CustomerInfoService {
         CustomerEntity customer = customerRepository.findFirstByCustomerId(customerId);
         customer.setCustomerName(hostNickName);
         customerRepository.save(customer);
+    }
+
+    /**
+    * 获取所有的用户组信息
+     * @return : java.util.HashMap<java.lang.String,java.lang.Object>
+    * @author 梁乔
+    * @since 18:35 2021-11-30
+    */
+    @Override
+    public HashMap<String, Object> getCustomerGroupInfo() {
+        HashMap<String,Object> result = new HashMap<>();
+        List<CustomerGroupEntity> customerGroupEntityList = customerGroupRepository.findAllBy();
+        List<CustomerGroupDto> customerGroupDtoList = new ArrayList<>();
+        for(CustomerGroupEntity customerGroupEntity:customerGroupEntityList){
+            CustomerGroupDto customerGroupDto = new CustomerGroupDto();
+            customerGroupDto.setCustomerGroupLevel(customerGroupEntity.getCustomerLevel());
+            customerGroupDto.setCustomerLevelName(customerGroupEntity.getCustomerLevelName());
+            customerGroupDto.setCustomerNextLevelDegree(customerGroupEntity.getCustomerLevelDegree());
+
+            //获取详细的礼券信息
+            List<CustomerCouponInfoDto> customerCouponInfoDtoList = new ArrayList<>();
+            List<CustomerGroupCouponEntity> customerGroupCouponEntityList =  customerCouponRepository.findAllByCustomerLevel(customerGroupEntity.getCustomerLevel());
+            for(CustomerGroupCouponEntity customerGroupCouponEntity:customerGroupCouponEntityList){
+                int couponTypeId = customerGroupCouponEntity.getCouponTypeId();
+                CustomerCouponInfoDto couponInfoDto = new CustomerCouponInfoDto();
+                couponInfoDto.setCustomerLevelCouponNum(customerGroupCouponEntity.getCouponAmount());
+                CouponTypeEntity couponTypeEntity = couponTypeRepository.findByCouponTypeId(couponTypeId);
+                couponInfoDto.setCustomerLevelCouponAmount(couponTypeEntity.getCouponAmount().floatValue());
+
+                customerCouponInfoDtoList.add(couponInfoDto);
+            }
+            customerGroupDto.setCouponInfoDtoList(customerCouponInfoDtoList);
+            customerGroupDtoList.add(customerGroupDto);
+        }
+        result.put("customerGroup",customerGroupDtoList);
+        return result;
+    }
+
+    /**
+    * 获取房东用户组信息
+     * @return : java.util.HashMap<java.lang.String,java.lang.Object>
+    * @author 梁乔
+    * @since 21:29 2021-11-30
+    */
+    @Override
+    public HashMap<String, Object> getHostGroupInfo() {
+        HashMap<String, Object> result = new HashMap<>();
+        List<HostGroupEntity> hostGroupEntityList = hostGroupRepository.findAllBy();
+        List<HostGroupDto> hostGroupDtoList = new ArrayList<>();
+        for(HostGroupEntity hostGroupEntity:hostGroupEntityList){
+            HostGroupDto hostGroupDto = new HostGroupDto();
+            hostGroupDto.setHostLevel(hostGroupEntity.getHostLevel());
+            hostGroupDto.setHostLevelName(hostGroupEntity.getHostLevelName());
+            hostGroupDto.setHostLevelDegree(hostGroupEntity.getHostLevelDegree());
+            hostGroupDtoList.add(hostGroupDto);
+        }
+        result.put("customerGroup",hostGroupDtoList);
+        return result;
     }
 
     private String timeToString(Time time){
