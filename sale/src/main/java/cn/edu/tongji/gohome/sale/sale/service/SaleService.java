@@ -13,4 +13,6 @@ import java.util.HashMap;
 @Service
 public interface SaleService {
     HashMap<String, Object> getRoomPriceInfo(String stayId, int roomId, String startDate, String endDate, String couponId) throws ParseException;
+
+    HashMap<String,Object> getCouponInfoByCustomerId(long customerId);
 }

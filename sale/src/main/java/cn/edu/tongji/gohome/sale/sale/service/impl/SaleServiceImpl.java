@@ -3,6 +3,7 @@ package
  * @author 梁乔 2021/11/24
  **/
 
+import cn.edu.tongji.gohome.sale.sale.dto.CouponInfoDto;
 import cn.edu.tongji.gohome.sale.sale.dto.CouponUsageDto;
 import cn.edu.tongji.gohome.sale.sale.dto.mapper.CouponUsageDtoMapper;
 import cn.edu.tongji.gohome.sale.sale.model.CouponEntity;
@@ -17,10 +18,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * 礼券微服务Service类的实现
@@ -87,6 +85,31 @@ public class SaleServiceImpl implements SaleService {
         result.put("CouponUsage", couponUsageDto);
         result.put("totalPrice", price*dateCount - salePrice);
         return  result;
+    }
+
+    /**
+    * 获取用户的礼券信息
+     * @param customerId : 传入的用户id
+     * @return : java.util.HashMap<java.lang.String,java.lang.Object>
+    * @author 梁乔
+    * @since 15:40 2021-11-30
+    */
+    @Override
+    public HashMap<String, Object> getCouponInfoByCustomerId(long customerId) {
+        HashMap<String, Object> result = new HashMap<>();
+        List<CouponInfoDto> couponInfoDtoList = new ArrayList<>();
+        List<CouponEntity> couponEntityList = couponRepository.findAllByCustomerId(customerId);
+        for(CouponEntity couponEntity:couponEntityList){
+            CouponTypeEntity couponTypeEntity = couponTypeRepository.findByCouponTypeId(couponEntity.getCouponTypeId());
+            CouponInfoDto couponInfoDto = new CouponInfoDto();
+            couponInfoDto.setCouponName(couponTypeEntity.getCouponName());
+            couponInfoDto.setCouponAmount(couponTypeEntity.getCouponLimit().floatValue());
+            couponInfoDto.setCouponStartDate(couponEntity.getCouponStartDate());
+            couponInfoDto.setCouponEndDate(couponEntity.getCouponEndDate());
+            couponInfoDtoList.add(couponInfoDto);
+        }
+        result.put("couponList",couponInfoDtoList);
+        return result;
     }
 
     /**

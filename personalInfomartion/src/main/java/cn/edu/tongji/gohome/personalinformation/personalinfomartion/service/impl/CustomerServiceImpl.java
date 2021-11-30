@@ -328,6 +328,13 @@ public class CustomerServiceImpl implements CustomerInfoService {
 
     }
 
+    /**
+    * 根据房源id获取详细的房源信息
+     * @param stayId :
+     * @return : java.util.HashMap<java.lang.String,java.lang.Object>
+    * @author 梁乔
+    * @since 11:30 2021-11-30
+    */
     @Override
     public HashMap<String, Object> getStayInfoByStayId(long stayId) {
         HashMap<String,Object> result = new HashMap<>();
@@ -397,6 +404,20 @@ public class CustomerServiceImpl implements CustomerInfoService {
         }
         result.put("stayTags",stayTags);
         return result;
+    }
+
+    /**
+    * 更新房东的昵称
+     * @param customerId : 房东的顾客id
+     * @return : void
+    * @author 梁乔
+    * @since 11:35 2021-11-30
+    */
+    @Override
+    public void updateHostNickName(long customerId,String hostNickName) {
+        CustomerEntity customer = customerRepository.findFirstByCustomerId(customerId);
+        customer.setCustomerName(hostNickName);
+        customerRepository.save(customer);
     }
 
     private String timeToString(Time time){
