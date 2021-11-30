@@ -24,6 +24,7 @@ public class CorsConfig {
         config.addAllowedOrigin("http://*.guisu.website");
         config.addAllowedOrigin("https://*.guisu.website");
         config.addAllowedHeader("*");
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource(new PathPatternParser());
         source.registerCorsConfiguration("/**", config);

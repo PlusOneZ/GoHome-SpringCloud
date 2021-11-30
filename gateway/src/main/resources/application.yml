@@ -37,8 +37,7 @@ spring:
         - id: order-service
           uri: lb://order-service
           predicates: # Pattern /api/{segment}/<locator-of-your-apis>/**, locator 请见飞书文档
-            - Path=/api/{segment}/order/**
-            - Path=/api/{segment}/orders/**
+            - Path=/api/{segment}/order/**,/api/{segment}/orders/**
         - id: payment-service
           uri: lb://payment-service
           predicates: # Pattern /api/{segment}/<locator-of-your-apis>/**, locator 请见飞书文档
