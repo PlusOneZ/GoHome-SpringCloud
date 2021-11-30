@@ -193,6 +193,13 @@ public class CustomerController {
     }
 
 
+    /**
+    * 获取详细的房源信息，用于编辑房源
+     * @param stayId : 要查询的房源id
+     * @return : org.springframework.http.ResponseEntity<java.util.HashMap<java.lang.String,java.lang.Object>>
+    * @author 梁乔
+    * @since 11:30 2021-11-30
+    */
     @RequestMapping(value = "stay/info", method = RequestMethod.GET)
     public ResponseEntity<HashMap<String,Object>> getStayInfoById(
             @RequestParam(value = "stayId") long stayId
@@ -200,4 +207,42 @@ public class CustomerController {
         return new ResponseEntity<>(customerInfoService.getStayInfoByStayId(stayId),HttpStatus.OK);
     }
 
+    /**
+     * 修改房东昵称
+     * @param hostNickNameDto
+     * @return
+     */
+    @RequestMapping(value = "host/nickName", method = RequestMethod.PUT)
+    public ResponseEntity<Boolean> updateHostNickName(
+            @RequestBody HostNickNameDto hostNickNameDto
+    ){
+        Long customerId = 1L;
+        try{
+            customerInfoService.updateHostNickName(customerId, hostNickNameDto.getHostNickName());
+            return new ResponseEntity<>(true,HttpStatus.OK);
+        }catch (Exception error)
+        {
+            return new ResponseEntity<>(false,HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    /**
+     * 修改用户的头像
+     * @param base64Data
+     * @return
+     */
+    @RequestMapping(value = "host/avatar", method = RequestMethod.PUT)
+    public ResponseEntity<Boolean> updateHostAvatar(
+            @RequestBody Base64Data base64Data
+    )
+    {
+        Long customerId = 1L;
+        try {
+            customerInfoService.updateAvatar(customerId,base64Data.getBase64Data());
+            return new ResponseEntity<>(true,HttpStatus.OK);
+        }
+        catch (Exception error){
+            return new ResponseEntity<>(false, HttpStatus.EXPECTATION_FAILED);
+        }
+    }
 }
