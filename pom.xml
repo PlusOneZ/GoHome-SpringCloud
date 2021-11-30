@@ -21,6 +21,7 @@
         <module>sale</module>
         <module>statistics</module>
         <module>trade</module>
+        <module>stayInformation</module>
     </modules>
 
     <build>
