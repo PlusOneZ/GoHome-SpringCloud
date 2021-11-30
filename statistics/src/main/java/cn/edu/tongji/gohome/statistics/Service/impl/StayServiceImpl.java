@@ -4,9 +4,11 @@ import cn.edu.tongji.gohome.statistics.Service.StayService;
 import cn.edu.tongji.gohome.statistics.model.StayEntity;
 import cn.edu.tongji.gohome.statistics.model.ViewStayOrderNumberEntity;
 import cn.edu.tongji.gohome.statistics.model.ViewStayRoomPriceEntity;
+import cn.edu.tongji.gohome.statistics.model.ViewStayRoomPriceStatusEntity;
 import cn.edu.tongji.gohome.statistics.repository.StayRepository;
 import cn.edu.tongji.gohome.statistics.repository.ViewStayOrderNumberRepository;
-import cn.edu.tongji.gohome.statistics.repository.ViewStayRoomPriceRespository;
+import cn.edu.tongji.gohome.statistics.repository.ViewStayRoomPriceRepository;
+import cn.edu.tongji.gohome.statistics.repository.ViewStayRoomPriceStatusRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +35,10 @@ public class StayServiceImpl implements StayService {
     ViewStayOrderNumberRepository viewStayOrderNumberRepository;
 
     @Resource
-    ViewStayRoomPriceRespository viewStayRoomPriceRespository;
+    ViewStayRoomPriceRepository viewStayRoomPriceRepository;
+
+    @Resource
+    ViewStayRoomPriceStatusRepository viewStayRoomPriceStatusRepository;
 
     @Override
     public List<Long> getHighestScoreStay() {
@@ -65,8 +70,8 @@ public class StayServiceImpl implements StayService {
     @Override
     public List<Long> getMinPriceStay(){
         Pageable pageable = PageRequest.of(0,8);
-        Page<ViewStayRoomPriceEntity> viewStayRoomPriceEntities
-                = viewStayRoomPriceRespository.findAll(pageable);
+        Page<ViewStayRoomPriceStatusEntity> viewStayRoomPriceEntities
+                = viewStayRoomPriceStatusRepository.findAll(pageable);
         List<Long> stayIdList = new ArrayList<>();
         viewStayRoomPriceEntities.forEach((i)-> stayIdList.add(i.getStayId()));
         return stayIdList;
