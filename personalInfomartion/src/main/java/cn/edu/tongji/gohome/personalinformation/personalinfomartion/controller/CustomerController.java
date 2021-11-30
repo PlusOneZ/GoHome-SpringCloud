@@ -179,10 +179,25 @@ public class CustomerController {
         }
     }
 
+    /**
+    * 获取房东的详细个人信息
+     * @return : org.springframework.http.ResponseEntity<java.util.HashMap<java.lang.String,java.lang.Object>>
+    * @author 梁乔
+    * @since 9:30 2021-11-30
+    */
+
     @RequestMapping(value = "host/info", method = RequestMethod.GET)
     public ResponseEntity<HashMap<String,Object>> getHostBasicInfo(){
         Long customerId = 1L;
         return new ResponseEntity<>(customerInfoService.getHostInfoByCustomerId(customerId),HttpStatus.OK);
+    }
+
+
+    @RequestMapping(value = "stay/info", method = RequestMethod.GET)
+    public ResponseEntity<HashMap<String,Object>> getStayInfoById(
+            @RequestParam(value = "stayId") long stayId
+    ){
+        return new ResponseEntity<>(customerInfoService.getStayInfoByStayId(stayId),HttpStatus.OK);
     }
 
 }
