@@ -8,19 +8,18 @@ import cn.edu.tongji.gohome.order.dto.Report;
 import cn.edu.tongji.gohome.order.model.CustomerCommentEntity;
 import cn.edu.tongji.gohome.order.model.HostCommentEntity;
 import cn.edu.tongji.gohome.order.model.OrderReportEntity;
-import cn.edu.tongji.gohome.order.model.ViewCouponInformationEntity;
 import cn.edu.tongji.gohome.order.repository.CustomerCommentRepository;
 import cn.edu.tongji.gohome.order.repository.HostCommentRepository;
 import cn.edu.tongji.gohome.order.repository.OrderReportRepository;
 import cn.edu.tongji.gohome.order.repository.OrderRepository;
 import cn.edu.tongji.gohome.order.service.OrderService;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,10 +99,8 @@ public class OrderController {
 
         customerCommentEntity.setOrderId(comment.getOrderId());
         customerCommentEntity.setCustomerCommentContent(comment.getCommentContent());
-        customerCommentEntity.setCustomerCommentTime(comment.getCommentTime());
+        customerCommentEntity.setCustomerCommentTime(new Timestamp(System.currentTimeMillis()));
         customerCommentEntity.setStayScore(comment.getCommentScore());
-
-        orderService.updateOrderStatus(comment.getOrderId(), OrderStatus.ORDER_TRANSACTION_COMPLETED);
 
         customerCommentRepository.save(customerCommentEntity);
         return HttpStatus.OK;
@@ -115,7 +112,7 @@ public class OrderController {
 
         hostCommentEntity.setOrderId(comment.getOrderId());
         hostCommentEntity.setHostCommentContent(comment.getCommentContent());
-        hostCommentEntity.setHostCommentTime(comment.getCommentTime());
+        hostCommentEntity.setHostCommentTime(new Timestamp(System.currentTimeMillis()));
         hostCommentEntity.setCustomerScore(comment.getCommentScore());
 
         hostCommentRepository.save(hostCommentEntity);
@@ -128,7 +125,7 @@ public class OrderController {
 
         orderReportEntity.setOrderId(report.getOrderId());
         orderReportEntity.setReportReason(report.getReportReason());
-        orderReportEntity.setReportTime(report.getReportTime());
+        orderReportEntity.setReportTime(new Timestamp(System.currentTimeMillis()));
 
         orderService.updateOrderStatus(report.getOrderId(), OrderStatus.ORDER_BUSINESS_REPORTED);
 
