@@ -32,4 +32,6 @@ public interface CustomerInfoService {
     void deleteStayFromFavorite(Integer favoriteId, Long stayId);
 
     HashMap<String,Object> getHostInfoByCustomerId(Long customerId);
+
+    HashMap<String,Object> getStayInfoByStayId(long stayId);
 }
