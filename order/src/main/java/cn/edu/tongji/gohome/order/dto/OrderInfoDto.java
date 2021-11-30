@@ -14,7 +14,7 @@ public class OrderInfoDto {
 
     private long orderId;
     private Timestamp orderTime;
-    private Timestamp orderStarTime;
+    private Timestamp orderStartTime;
     private Timestamp orderEndTime;
     private String stayName;
     private String detailedAddress;
@@ -23,7 +23,13 @@ public class OrderInfoDto {
     private BigDecimal totalCost;
     private int orderStatus;
     private int stayScore;
+    private long stayId;
+    private String customerCommentContent;
     private String roomPhotoLink;
+
+    private int reportStatus;
+    private String reportReason;
+    private String reportReply;
 
     public long getOrderId() {
         return orderId;
@@ -73,12 +79,12 @@ public class OrderInfoDto {
         this.roomPhotoLink = roomPhotoLink;
     }
 
-    public Timestamp getOrderStarTime() {
-        return orderStarTime;
+    public Timestamp getOrderStartTime() {
+        return orderStartTime;
     }
 
-    public void setOrderStarTime(Timestamp orderStarTime) {
-        this.orderStarTime = orderStarTime;
+    public void setOrderStartTime(Timestamp orderStartTime) {
+        this.orderStartTime = orderStartTime;
     }
 
     public Timestamp getOrderEndTime() {
@@ -119,5 +125,45 @@ public class OrderInfoDto {
 
     public void setHostName(String hostName) {
         this.hostName = hostName;
+    }
+
+    public String getCustomerCommentContent() {
+        return customerCommentContent;
+    }
+
+    public void setCustomerCommentContent(String customerCommentContent) {
+        this.customerCommentContent = customerCommentContent;
+    }
+
+    public long getStayId() {
+        return stayId;
+    }
+
+    public void setStayId(long stayId) {
+        this.stayId = stayId;
+    }
+
+    public int getReportStatus() {
+        return reportStatus;
+    }
+
+    public void setReportStatus(int reportStatus) {
+        this.reportStatus = reportStatus;
+    }
+
+    public String getReportReason() {
+        return reportReason;
+    }
+
+    public void setReportReason(String reportReason) {
+        this.reportReason = reportReason;
+    }
+
+    public String getReportReply() {
+        return reportReply;
+    }
+
+    public void setReportReply(String reportReply) {
+        this.reportReply = reportReply;
     }
 }

@@ -12,7 +12,6 @@ import java.sql.Timestamp;
  **/
 public class Report {
     private long orderId;
-    private Timestamp reportTime;
     private String reportReason;
 
     public long getOrderId() {
@@ -23,13 +22,6 @@ public class Report {
         this.orderId = orderId;
     }
 
-    public Timestamp getReportTime() {
-        return reportTime;
-    }
-
-    public void setReportTime(Timestamp reportTime) {
-        this.reportTime = reportTime;
-    }
 
     public String getReportReason() {
         return reportReason;

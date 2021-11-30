@@ -62,6 +62,8 @@ public class OrderServiceImpl implements OrderService {
     @Resource
     private ViewStayCustomerRepository stayCustomerRepository;
 
+    @Resource
+    private OrderReportRepository orderReportRepository;
 
     /**
      * @param order: orderEntity to get orderId and other information...
@@ -85,17 +87,19 @@ public class OrderServiceImpl implements OrderService {
         CustomerCommentEntity customerComment = customerCommentRepository.findFirstByOrderId(orderId);
         if (customerComment != null) {
             orderInfo.setStayScore(customerComment.getStayScore());
+            orderInfo.setCustomerCommentContent(customerComment.getCustomerCommentContent());
         } else {
             orderInfo.setStayScore(-1);
+            orderInfo.setCustomerCommentContent("");
         }
 
         //get order startTime, endTime.
         ViewOrderTimeEntity viewOrderTime = viewOrderTimeRepository.findFirstByOrderId(orderId);
         if(viewOrderTime != null){
-            orderInfo.setOrderStarTime(viewOrderTime.getMinStartTime());
+            orderInfo.setOrderStartTime(viewOrderTime.getMinStartTime());
             orderInfo.setOrderEndTime(viewOrderTime.getMaxEndTime());
         }
-        
+
         OrderStayEntity orderStay = orderStayRepository.findFirstByOrderId(orderId);
 
         RoomPhotoEntity roomPhoto = null;
@@ -112,12 +116,38 @@ public class OrderServiceImpl implements OrderService {
 
             //get stayName,stayAddress,hostAvatarLink,hostName
             StayEntity stay = stayRepository.findFirstByStayId(orderStay.getStayId());
+            orderInfo.setStayId(stay.getStayId());
             orderInfo.setStayName(stay.getStayName());
             orderInfo.setDetailedAddress(stay.getDetailedAddress());
             ViewStayCustomerEntity viewStayCustomer = stayCustomerRepository.getById(orderStay.getStayId());
             orderInfo.setHostAvatarLink(viewStayCustomer.getCustomerAvatarLink());
             orderInfo.setHostName(viewStayCustomer.getCustomerName());
         }
+
+        //set reportInfo : reportStatus,reportReason,reportReply
+        int reportStatus = -1;
+        String reportReason = "";
+        String reportReply = "";
+        OrderReportEntity orderReport = orderReportRepository.findByOrderId(orderId);
+        if(orderInfo.getOrderStatus() == OrderStatus.ORDER_BUSINESS_COMPLETED){
+            reportStatus = 0;
+        }
+        if(orderReport != null){
+            boolean status = orderReport.isDealt();
+            if(status){
+               reportStatus = 2;
+               reportReason = orderReport.getReportReason();
+               reportReply = orderReport.getReply();
+            }
+            else{
+                reportStatus = 1;
+                reportReason = orderReport.getReportReason();
+            }
+        }
+        orderInfo.setReportStatus(reportStatus);
+        orderInfo.setReportReason(reportReason);
+        orderInfo.setReportReply(reportReply);
+
         return orderInfo;
     }
 
@@ -320,6 +350,7 @@ public class OrderServiceImpl implements OrderService {
 
         OrderEntity order = orderRepository.getById(orderId);
         order.setOrderStatus(orderStatus);
+        System.out.println("orderStatus: "+orderStatus);
         orderRepository.save(order);
     }
 
