@@ -6,6 +6,21 @@ spring:
 #          enabled: true
 #          lower-case-service-id: true # 表示使用小写的 service id 作为第一重映射
 #          route-id-prefix: /api/v1/
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedHeaders: "*"
+            allowedOrigins:
+              - "localhost://8081"
+              - "localhost://8080"
+              - "http://*.guisu.website"
+              - "https://*.guisu.website"
+            allowedMethods:
+              - GET
+                POST
+                DELETE
+                PUT
+                OPTION
       routes:                          # Add your services here
         - id: login-service            # Only for identifying your rules
           uri: lb://login-service      # Use this pattern: lb://<service-name-of-eureka>
