@@ -15,6 +15,10 @@ spring:
           uri: lb://stayInformation-service
           predicates: # Pattern /api/{segment}/<locator-of-your-apis>/**, locator 请见飞书文档
             - Path=/api/{segment}/stay/**
+        - id: statistics-service
+          uri: lb://statistics-service
+          predicates: # Pattern /api/{segment}/<locator-of-your-apis>/**, locator 请见飞书文档
+            - Path=/api/{segment}/statistics/**
 
 
 
