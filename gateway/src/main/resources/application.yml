@@ -46,6 +46,14 @@ spring:
           uri: lb://trade-service
           predicates: 
             - Path=/api/{segment}/trade/**
+        - id: personalInformartion-service
+          uri: lb://PERSONALINFORMARTION-SERVICE
+          predicates:
+            - Path=/api/{segment}/personinfo/**
+        - id: sale-service
+          uri: lb://SALE-SERVICE
+          predicates:
+            - Path=/api/{segment}/sale/**
 
   application:
     name: gateway
