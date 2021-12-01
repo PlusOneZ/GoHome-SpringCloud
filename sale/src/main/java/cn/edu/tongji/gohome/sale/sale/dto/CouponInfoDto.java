@@ -16,9 +16,18 @@ public class CouponInfoDto {
     float couponLimit;
     Date couponStartDate;
     Date couponEndDate;
+    Long couponId;
 
     public String getCouponName() {
         return couponName;
+    }
+
+    public Long getCouponId() {
+        return couponId;
+    }
+
+    public void setCouponId(Long couponId) {
+        this.couponId = couponId;
     }
 
     public void setCouponName(String couponName) {
