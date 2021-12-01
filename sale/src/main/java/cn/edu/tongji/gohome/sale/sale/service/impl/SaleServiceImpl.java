@@ -16,6 +16,7 @@ import cn.edu.tongji.gohome.sale.sale.service.SaleService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -62,7 +63,7 @@ public class SaleServiceImpl implements SaleService {
 
         //判断礼券是否可用
         CouponEntity couponEntity = couponRepository.findByCouponId(Long.parseLong(couponId));
-        CouponTypeEntity couponTypeEntity = null;
+        CouponTypeEntity couponTypeEntity = new CouponTypeEntity();
         if(couponEntity != null){
             couponTypeEntity = couponTypeRepository.findByCouponTypeId(couponEntity.getCouponTypeId());
             //判断当前时间礼券是否过期
@@ -71,10 +72,7 @@ public class SaleServiceImpl implements SaleService {
             long couponEndDate = couponEntity.getCouponEndDate().getTime();
             if(dateNow >=couponStartDate && dateNow <= couponEndDate){
                 //在有效期内且满足最低消费要求
-                if(couponTypeEntity.getCouponLimit().floatValue() <= price*dateCount){
-                    couponAvailable = true;
-                }
-                couponAvailable = false;
+                couponAvailable = couponTypeEntity.getCouponLimit().floatValue() <= price * dateCount;
         }
         }
         CouponUsageDto couponUsageDto = CouponUsageDtoMapper.getInstance().toDto(couponEntity, couponTypeEntity, couponAvailable);
@@ -106,10 +104,49 @@ public class SaleServiceImpl implements SaleService {
             couponInfoDto.setCouponAmount(couponTypeEntity.getCouponLimit().floatValue());
             couponInfoDto.setCouponStartDate(couponEntity.getCouponStartDate());
             couponInfoDto.setCouponEndDate(couponEntity.getCouponEndDate());
+            couponInfoDto.setCouponId(couponEntity.getCouponId());
             couponInfoDtoList.add(couponInfoDto);
         }
         result.put("couponList",couponInfoDtoList);
         return result;
+    }
+
+    /**
+     * 通过礼券id使用一张礼券，即删除一张礼券
+     * @param couponId
+     */
+    @Override
+    public void useCouponByCouponId(long couponId) {
+        CouponEntity couponEntity = couponRepository.findByCouponId(couponId);
+        couponRepository.delete(couponEntity);
+    }
+
+    /**
+     * 添加一个礼券类型
+     * @param couponAmount 礼券金额
+     * @param couponLimit 礼券最低使用限额
+     * @param couponName 礼券名称
+     */
+    @Override
+    public void addCouponType(BigDecimal couponAmount, BigDecimal couponLimit, String couponName) {
+        CouponTypeEntity couponTypeEntity = new CouponTypeEntity();
+        couponTypeEntity.setCouponAmount(couponAmount);
+        couponTypeEntity.setCouponLimit(couponLimit);
+        couponTypeEntity.setCouponName(couponName);
+        couponTypeRepository.save(couponTypeEntity);
+    }
+
+    /**
+    * 删除某一个礼券类型
+     * @param couponId : 传入的礼券id
+     * @return : void
+    * @author 梁乔
+    * @since 11:18 2021-12-01
+    */
+    @Override
+    public void deleteCouponType(int couponId) {
+        CouponTypeEntity couponTypeEntity = couponTypeRepository.findByCouponTypeId(couponId);
+        couponTypeRepository.delete(couponTypeEntity);
     }
 
     /**
