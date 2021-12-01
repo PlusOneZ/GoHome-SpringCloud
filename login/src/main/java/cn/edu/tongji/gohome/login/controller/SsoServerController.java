@@ -49,23 +49,23 @@ public class SsoServerController {
         // 配置：登录处理函数
         cfg.sso.setDoLoginHandle((name, pwd) -> {
             // name: 电话号码，pwd 密码
-//            if (loginService.checkUserLogin(name, pwd)) {
-//                System.out.println("成功");
-//                System.out.println(loginService.getCustomerIdByPhone(name));
-//
-//                StpUtil.login(loginService.getCustomerIdByPhone(name));
-//
-//                return SaResult.ok("登录成功！").setData(StpUtil.getTokenValue());
-//            }
-//
-//            System.out.println("失败");
-//            return SaResult.error("登录失败！");
-            // 此处仅做模拟登录，真实环境应该查询数据进行登录
-            if("sa".equals(name) && "123456".equals(pwd)) {
-                StpUtil.login(10001);
+            if (loginService.checkUserLogin(name, pwd)) {
+                System.out.println("成功");
+                System.out.println(loginService.getCustomerIdByPhone(name));
+
+                StpUtil.login(loginService.getCustomerIdByPhone(name));
+
                 return SaResult.ok("登录成功！").setData(StpUtil.getTokenValue());
             }
+
+            System.out.println("失败");
             return SaResult.error("登录失败！");
+            // 此处仅做模拟登录，真实环境应该查询数据进行登录
+//            if("sa".equals(name) && "123456".equals(pwd)) {
+//                StpUtil.login(10001);
+//                return SaResult.ok("登录成功！").setData(StpUtil.getTokenValue());
+//            }
+//            return SaResult.error("登录失败！");
         });
     }
 
