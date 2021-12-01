@@ -25,7 +25,7 @@ spring:
         - id: login-service            # Only for identifying your rules
           uri: lb://login-service      # Use this pattern: lb://<service-name-of-eureka>
           predicates:                  # Pattern /api/{segment}/<locator-of-your-apis>/**, locator 请见飞书文档
-            - Path=/api/{segment}/login/**
+            - Path=/api/{segment}/login/**, /sso/**
         - id: stayInformation-service
           uri: lb://stayInformation-service
           predicates: # Pattern /api/{segment}/<locator-of-your-apis>/**, locator 请见飞书文档

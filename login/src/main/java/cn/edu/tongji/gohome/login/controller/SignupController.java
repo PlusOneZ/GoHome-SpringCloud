@@ -40,7 +40,7 @@ public class SignupController {
             @ApiParam(value = "International Phone Code", defaultValue = "+86") @RequestParam String phoneCode,
             @ApiParam(value = "Phone", defaultValue = "19946254155") @RequestParam String phone) {
         HashMap<String, Boolean> retMap = new HashMap<String, Boolean>();
-        retMap.put("phoneUnique", signupService.checkPhoneAvailable(phoneCode, phone));
+        retMap.put("phoneUnique", signupService.checkPhoneAvailable(phone));
         return ResponseEntity.ok(retMap);
     }
 
@@ -55,10 +55,10 @@ public class SignupController {
     public ResponseEntity<HashMap<String, Boolean>> changeCustomerPassword(
             @ApiParam(value = "New Password", defaultValue = "13456") @RequestParam(required = true) String newPassword,
             @ApiParam(value = "International Phone Code", defaultValue = "+86") @RequestParam(required = false) String phoneCode,
-            @ApiParam(value = "Phone", defaultValue = "19946254155") @RequestParam(required = false) String phone
+            @ApiParam(value = "Phone", defaultValue = "19946254155") @RequestParam String phone
     ) {
         if (StpUtil.getLoginId() == null) {
-            signupService.changeCustomerPassword(phoneCode, phone, newPassword);
+            signupService.changeCustomerPassword(phone, newPassword);
         }
         Long id = Long.valueOf((String) StpUtil.getLoginId());
         signupService.changeCustomerPassword(id, newPassword);
@@ -77,7 +77,7 @@ public class SignupController {
     )
     @PostMapping("customer")
     public ResponseEntity<HashMap<String, Object>> customerSignup(
-            @ApiParam(value = "International Phone Code", defaultValue = "+86") @RequestParam String phoneCode,
+            @ApiParam(value = "International Phone Code", defaultValue = "+86") @RequestParam(required = false) String phoneCode,
             @ApiParam(value = "Phone", defaultValue = "19946254155") @RequestParam String phone,
             @ApiParam(value = "Password", defaultValue = "13456") @RequestParam String password,
             @ApiParam(value = "User Nick Name", defaultValue = "haha") @RequestParam String username
@@ -140,11 +140,11 @@ public class SignupController {
         if (phone.length() != 11) {
             throw new DataFormatException();
         }
-        if (!loginService.checkUserLogin(phoneCode, phone, password)) {
+        if (!loginService.checkUserLogin(phone, password)) {
             throw new LoginRequiredException();
         }
         // TODO： 并发不安全
-        Long customerId = loginService.getCustomerIdByPhone(phoneCode, phone);
+        Long customerId = loginService.getCustomerIdByPhone(phone);
         signupService.hostSignup(ID, realname, customerId);
         signupService.setCustomerGender(customerId, gender);
 

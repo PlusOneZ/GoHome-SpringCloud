@@ -38,8 +38,8 @@ public class LoginController {
             @ApiParam(value = "International Phone Code", defaultValue = "+86", example = "+86") @RequestParam String phoneCode,
             @ApiParam(value = "Phone Number", example = "19946254155") @RequestParam String phone,
             @ApiParam(value = "Password", example = "123456") @RequestParam String password) {
-        if (loginService.checkUserLogin(phoneCode, phone, password)) {
-            Long id = loginService.getCustomerIdByPhone(phoneCode, phone);
+        if (loginService.checkUserLogin(phone, password)) {
+            Long id = loginService.getCustomerIdByPhone(phone);
             StpUtil.login(id);
             return ResponseEntity.ok("success! role: " + StpUtil.getPermissionList());
         } else {
@@ -60,8 +60,8 @@ public class LoginController {
             @ApiParam(value = "Phone Number", example = "19946254155") @RequestParam String phone,
             @ApiParam(value = "Password", example = "123456") @RequestParam String password) {
         // Duplicate code for stputil to recognize session
-        if (loginService.checkUserLogin(phoneCode, phone, password)) {
-            StpUtil.login(loginService.getCustomerIdByPhone(phoneCode, phone));
+        if (loginService.checkUserLogin(phone, password)) {
+            StpUtil.login(loginService.getCustomerIdByPhone(phone));
 
             return ResponseEntity.ok("success! role: " + StpUtil.getPermissionList());
         } else {
