@@ -198,11 +198,18 @@ public class StayServiceImpl implements StayService {
         );
 
 
-
+        // 最多只返回10个民宿
+        int sumNumber = 0;
         for(StayEntity stayEntity: stayEntityList){
             // 只展示状态为2的房源
             if(stayEntity.getStayStatus() != BigInteger.valueOf(2)){
                 continue;
+            }
+            if(sumNumber<=10){
+                sumNumber+=1;
+            }
+            else{
+                break;
             }
             HashMap<String, Object> objectHashMap = new HashMap<>();
             objectHashMap.put("stayID", stayEntity.getStayId());
