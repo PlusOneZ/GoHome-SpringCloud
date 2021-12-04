@@ -58,4 +58,15 @@ public class RoomInfoDto {
     public void setMoneyAmount(BigDecimal moneyAmount) {
         this.moneyAmount = moneyAmount;
     }
+
+    @Override
+    public String toString() {
+        return "RoomInfoDto{" +
+                "stayId=" + stayId +
+                ", roomId=" + roomId +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", moneyAmount=" + moneyAmount +
+                '}';
+    }
 }

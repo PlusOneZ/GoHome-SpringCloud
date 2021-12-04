@@ -21,6 +21,7 @@ import java.util.Map;
  * @since : 2021-11-27 21:04
  **/
 @Controller
+@RequestMapping("api/v1")
 public class CallBackController {
 
     @Resource
@@ -28,6 +29,8 @@ public class CallBackController {
 
     @RequestMapping(value = "notify",method = RequestMethod.POST)
     public ResponseEntity<String> notifyOrder(HttpServletRequest httpServletRequest) throws AlipayApiException {
+
+        System.out.println("收到了回调内容!");
 
         Map<String,String[]> requestParams = httpServletRequest.getParameterMap();
         String result = paymentService.orderNotify(requestParams);
