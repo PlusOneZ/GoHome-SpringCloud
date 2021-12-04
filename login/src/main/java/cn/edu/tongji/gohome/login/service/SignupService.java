@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 @Service
 public interface SignupService {
 
-    Boolean checkPhoneAvailable(String phoneCode, String phone);
+    Boolean checkPhoneAvailable(String phone);
 
-    void changeCustomerPassword(String phoneCode, String phone, String newPassword);
+    void changeCustomerPassword(String phone, String newPassword);
 
     void changeCustomerPassword(Long userId, String newPassword);
 

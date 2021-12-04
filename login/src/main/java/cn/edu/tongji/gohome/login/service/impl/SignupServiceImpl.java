@@ -33,13 +33,13 @@ public class SignupServiceImpl implements SignupService {
     AdminRepository adminRepository;
 
     @Override
-    public Boolean checkPhoneAvailable(String phoneCode, String phone) {
-        return customerRepository.findByCustomerPhoneCodeAndCustomerPhone(phoneCode, phone).isEmpty();
+    public Boolean checkPhoneAvailable(String phone) {
+        return customerRepository.findByCustomerPhone(phone).isEmpty();
     }
 
     @Override
-    public void changeCustomerPassword(String phoneCode, String phone, String newPassword) {
-        Optional<CustomerEntity> customer = customerRepository.findByCustomerPhoneCodeAndCustomerPhone(phoneCode, phone);
+    public void changeCustomerPassword(String phone, String newPassword) {
+        Optional<CustomerEntity> customer = customerRepository.findByCustomerPhone(phone);
         if (customer.isPresent()) {
             CustomerEntity customerEntity = customer.get();
             customerEntity.setCustomerPassword(newPassword);
@@ -68,7 +68,7 @@ public class SignupServiceImpl implements SignupService {
 
     @Override
     public Long customerSignup(String phoneCode, String phone, String password, String username, String gender) {
-        if (!checkPhoneAvailable(phoneCode, phone)) {
+        if (!checkPhoneAvailable(phone)) {
             // 已经有这个用户了
             throw new UserAlreadyExists();
         }

@@ -10,8 +10,11 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public interface LoginService {
-    Boolean checkUserLogin(String userPhoneCode, String userPhone, String password);
+    Boolean checkUserLogin(String userPhone, String password);
+
     Boolean checkAdminLogin(String adminName, String password);
-    Long getCustomerIdByPhone(String phoneCode, String phone);
+
+    Long getCustomerIdByPhone(String phone);
+
     Integer getAdminIdByName(String adminName);
 }
