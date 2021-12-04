@@ -12,5 +12,5 @@ import java.util.Optional;
  * @since 2021/11/22 8:57 PM
  */
 public interface CustomerRepository extends JpaRepository<CustomerEntity, Long> {
-    Optional<CustomerEntity> findByCustomerPhoneCodeAndCustomerPhone(String phoneCode, String phone);
+    Optional<CustomerEntity> findByCustomerPhone(String phone);
 }

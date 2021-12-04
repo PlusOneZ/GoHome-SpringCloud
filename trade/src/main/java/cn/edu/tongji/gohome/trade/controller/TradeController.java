@@ -1,6 +1,7 @@
 package
         cn.edu.tongji.gohome.trade.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.edu.tongji.gohome.trade.dto.OrderInfoDto;
 import cn.edu.tongji.gohome.trade.dto.OrderPaymentInfo;
 import cn.edu.tongji.gohome.trade.service.TradeService;
@@ -59,6 +60,11 @@ public class TradeController {
     public HttpStatus cancelOrder(@RequestParam long orderId){
         tradeService.cancelOrder(orderId);
         return HttpStatus.OK;
+    }
+
+    @RequestMapping("trade/customer/id")
+    public String demoGetCustomerLoginId() {
+        return (String) StpUtil.getLoginId();
     }
 
 }
