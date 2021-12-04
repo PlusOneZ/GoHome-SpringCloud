@@ -68,4 +68,16 @@ public class OrderInfoDto {
     public void setOrderStayEntityList(List<RoomInfoDto> orderStayEntityList) {
         this.orderStayEntityList = orderStayEntityList;
     }
+
+    @Override
+    public String toString() {
+        return "OrderInfoDto{" +
+                "customerId=" + customerId +
+                ", orderTime=" + orderTime +
+                ", memberAmount=" + memberAmount +
+                ", totalCost=" + totalCost +
+                ", orderStayEntityList=" + orderStayEntityList +
+                ", orderStatus=" + orderStatus +
+                '}';
+    }
 }

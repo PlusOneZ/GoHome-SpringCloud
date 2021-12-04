@@ -166,4 +166,5 @@ public class OrderInfoDto {
     public void setReportReply(String reportReply) {
         this.reportReply = reportReply;
     }
+
 }
