@@ -31,8 +31,8 @@ public class LoginServiceImpl implements LoginService {
      * @since 2021-11-22 10:16 PM
      */
     @Override
-    public Boolean checkUserLogin(String userPhoneCode, String userPhone, String password) {
-        Optional<CustomerEntity> customer = customerRepository.findByCustomerPhoneCodeAndCustomerPhone(userPhoneCode, userPhone);
+    public Boolean checkUserLogin(String userPhone, String password) {
+        Optional<CustomerEntity> customer = customerRepository.findByCustomerPhone(userPhone);
         return customer.map(customerEntity -> customerEntity.getCustomerPassword().equals(password)).orElse(false);
     }
 
@@ -54,8 +54,8 @@ public class LoginServiceImpl implements LoginService {
      * @since 2021-11-22 10:15 PM
      */
     @Override
-    public Long getCustomerIdByPhone(String phoneCode, String phone) {
-        Optional<CustomerEntity> customer = customerRepository.findByCustomerPhoneCodeAndCustomerPhone(phoneCode, phone);
+    public Long getCustomerIdByPhone(String phone) {
+        Optional<CustomerEntity> customer = customerRepository.findByCustomerPhone(phone);
         return customer.map(CustomerEntity::getCustomerId).orElse(-1L);
     }
 

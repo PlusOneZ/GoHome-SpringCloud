@@ -245,4 +245,21 @@ public class CustomerController {
             return new ResponseEntity<>(false, HttpStatus.EXPECTATION_FAILED);
         }
     }
+
+    /**
+    * 获取用户组信息
+     * @return : org.springframework.http.ResponseEntity<java.util.HashMap<java.lang.String,java.lang.Object>>
+    * @author 梁乔
+    * @since 21:11 2021-11-30
+    */
+    @RequestMapping(value = "customer/group",method = RequestMethod.GET)
+    public ResponseEntity<HashMap<String,Object>> getCustomerGroupInfo(){
+            return new ResponseEntity<>(customerInfoService.getCustomerGroupInfo(),HttpStatus.OK);
+    }
+
+
+    @RequestMapping(value = "host/group", method = RequestMethod.GET)
+    public ResponseEntity<HashMap<String,Object>> getHostGroupInfo(){
+        return new ResponseEntity<>(customerInfoService.getHostGroupInfo(),HttpStatus.OK);
+    }
 }

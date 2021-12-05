@@ -47,7 +47,7 @@ public class PaymentService {
 
         JSONObject bizContent = new JSONObject();
         bizContent.put("out_trade_no", String.valueOf(orderPaymentInfo.getOrderId()));
-        bizContent.put("refund_amount", String.valueOf(orderPaymentInfo.getTotalCost()));
+        bizContent.put("total_amount", String.valueOf(orderPaymentInfo.getTotalCost()));
         bizContent.put("subject", orderPaymentInfo.getOrderName());
         //bizContent.put("body", orderPaymentInfo.getOrderInfo());
         bizContent.put("product_code", "FAST_INSTANT_TRADE_PAY");

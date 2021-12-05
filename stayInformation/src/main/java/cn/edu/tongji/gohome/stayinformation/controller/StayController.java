@@ -177,18 +177,22 @@ public class StayController {
 
     @RequestMapping("/host")
     public ResponseEntity<HashMap<String, Object>> getStayBriefInfoByHostId
-            (@RequestParam int hostId){
+            (){
         HashMap<String, Object> hashMap = new HashMap<>();
-
+        int hostId = 1;
         // 0 代表保存但未提交， 1 表示待审核， 2 表示审核通过
-
+        List<HashMap<String, Object>> unpublishedList = stayService.getAllStayByHostIdAndStatus(hostId, BigInteger.valueOf(0));
+        List<HashMap<String, Object>> pendingList = stayService.getAllStayByHostIdAndStatus(hostId, BigInteger.valueOf(1));
+        List<HashMap<String, Object>> publishedList = stayService.getAllStayByHostIdAndStatus(hostId, BigInteger.valueOf(2));
         hashMap.put("unpublishedStayInfo",
-                stayService.getAllStayByHostIdAndStatus(hostId, BigInteger.valueOf(0)));
+                unpublishedList);
         hashMap.put("pendingStayInfo",
-                stayService.getAllStayByHostIdAndStatus(hostId, BigInteger.valueOf(1)));
+                pendingList);
         hashMap.put("publishedHouseInfo",
-                stayService.getAllStayByHostIdAndStatus(hostId, BigInteger.valueOf(2)));
-
+                publishedList);
+        hashMap.put("publishedNum",publishedList.size());
+        hashMap.put("pendingReviewNum",pendingList.size());
+        hashMap.put("unpublishedNum",unpublishedList.size());
         return new ResponseEntity<>(hashMap,
                 HttpStatus.OK);
     }

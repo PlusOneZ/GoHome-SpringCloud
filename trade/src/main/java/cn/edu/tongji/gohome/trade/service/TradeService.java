@@ -32,7 +32,7 @@ public class TradeService {
         }
         else{
             System.out.println("insert order into the redis");
-            redisUtils.set(String.valueOf(orderId),orderInfoDto,10L, TimeUnit.SECONDS);
+            redisUtils.set(String.valueOf(orderId),orderInfoDto,15L, TimeUnit.MINUTES);
             System.out.println("order has insert successfully !!");
         }
     }

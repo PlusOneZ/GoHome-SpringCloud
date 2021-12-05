@@ -3,15 +3,16 @@ package
  * @author 梁乔 2021/11/24
  **/
 
+import cn.edu.tongji.gohome.sale.sale.dto.CouponIdDto;
+import cn.edu.tongji.gohome.sale.sale.dto.CouponTypeIdDto;
+import cn.edu.tongji.gohome.sale.sale.dto.CouponTypeInfoDto;
 import cn.edu.tongji.gohome.sale.sale.service.SaleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.HashMap;
 
@@ -49,10 +50,77 @@ public class SaleController {
         return new ResponseEntity<>(saleService.getRoomPriceInfo(stayId, roomId, startDate, endDate, couponId), HttpStatus.OK);
     }
 
-    
+
+    /**
+    * 获取用户拥有的礼券信息
+     * @return : org.springframework.http.ResponseEntity<java.util.HashMap<java.lang.String,java.lang.Object>>
+    * @author
+    * @since 21:34 2021-11-30
+    */
     @RequestMapping(value = "customer/coupon",method = RequestMethod.GET)
     public ResponseEntity<HashMap<String,Object>> getCustomerCouponInfo(){
         Long customerId = 1L;
         return new ResponseEntity<>(saleService.getCouponInfoByCustomerId(customerId),HttpStatus.OK);
     }
+
+
+    /**
+    * 使用一张礼券
+     * @param couponIdDto : 输入的礼券id，使用dto传递参数
+     * @return : org.springframework.http.ResponseEntity<java.lang.Boolean>
+    * @author 梁乔
+    * @since 11:01 2021-12-01
+    */
+    @RequestMapping(value = "coupon/usage",method = RequestMethod.DELETE)
+    public ResponseEntity<Boolean> useACoupon(
+            @RequestBody CouponIdDto couponIdDto
+            ){
+        try{
+            saleService.useCouponByCouponId(couponIdDto.getCouponId());
+            return new ResponseEntity<>(true,HttpStatus.OK);
+        }catch (Exception error){
+            return new ResponseEntity<>(false,HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    /**
+    * 添加一个礼券类型
+     * @param couponTypeInfoDto : 传入的参数，使用Dto转换
+     * @return : org.springframework.http.ResponseEntity<java.lang.Boolean>
+    * @author 梁乔
+    * @since 11:06 2021-12-01
+    */
+    @RequestMapping(value = "coupontype/addition", method = RequestMethod.POST)
+    public ResponseEntity<Boolean> addCouponType(
+            @RequestBody CouponTypeInfoDto couponTypeInfoDto
+    ){
+        try {
+            BigDecimal couponAmount = BigDecimal.valueOf(couponTypeInfoDto.getCouponAmount());
+            BigDecimal couponLimit = BigDecimal.valueOf(couponTypeInfoDto.getCouponLimit());
+            saleService.addCouponType(couponAmount,couponLimit,couponTypeInfoDto.getCouponName());
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        }catch (Exception error){
+            return new ResponseEntity<>(false, HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    /**
+    * 删除某一礼券类型
+     * @param couponTypeIdDto : 传入的礼券类型id
+     * @return : org.springframework.http.ResponseEntity<java.lang.Boolean>
+    * @author 梁乔
+    * @since 11:21 2021-12-01
+    */
+    @RequestMapping(value = "couponType/deletion", method = RequestMethod.DELETE)
+    public ResponseEntity<Boolean> deleteCouponType(
+            @RequestBody CouponTypeIdDto couponTypeIdDto
+    ){
+        try {
+            saleService.deleteCouponType(couponTypeIdDto.getCouponTypeId());
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        }catch (Exception error){
+            return new ResponseEntity<>(false, HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
 }

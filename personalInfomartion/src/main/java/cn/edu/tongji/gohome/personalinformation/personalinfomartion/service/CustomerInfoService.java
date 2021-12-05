@@ -36,4 +36,8 @@ public interface CustomerInfoService {
     HashMap<String,Object> getStayInfoByStayId(long stayId);
 
     void updateHostNickName(long customerId,String hostNickName);
+
+    HashMap<String,Object> getCustomerGroupInfo();
+
+    HashMap<String,Object> getHostGroupInfo();
 }
