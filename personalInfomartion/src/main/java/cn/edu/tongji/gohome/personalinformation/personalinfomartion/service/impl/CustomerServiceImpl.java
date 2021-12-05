@@ -1,21 +1,25 @@
 package cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.impl;
 
-import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.CustomerInfoDto;
-import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.HostCommentDto;
+import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.*;
+import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.mapper.FavoriteStayInfoDtoMapper;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.mapper.HostCommentDtoMapper;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.model.*;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.repository.*;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.CustomerInfoService;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.ImageService;
+import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.sql.Date;
+import java.util.concurrent.ExecutionException;
 
 /**
  * 实现顾客信息服务接口，处理有关顾客信息的后端业务逻辑，由 controller最终调用
@@ -44,7 +48,44 @@ public class CustomerServiceImpl implements CustomerInfoService {
     private OrderStayRepository orderStayRepository;
 
     @Resource
+    private FavoriteDirectoryRepository favoriteDirectoryRepository;
+
+    @Resource
     private ImageService imageService;
+
+    @Resource
+    private FavoriteDirectoryStayRepository favoriteDirectoryStayRepository;
+
+    @Resource
+    private RoomPhotoRepository roomPhotoRepository;
+
+    @Resource
+    private ViewStayRoomPriceRepository viewStayRoomPriceRepository;
+
+    @Resource
+    private HostGroupRepository hostGroupRepository;
+
+    @Resource
+    private ViewHostStayCommentRepository viewHostStayCommentRepository;
+
+    @Resource
+    private RoomRepository roomRepository;
+
+    @Resource
+    private RoomBedRepository roomBedRepository;
+
+    @Resource
+    private StayLabelRepository stayLabelRepository;
+
+    @Resource
+    private CustomerGroupRepository customerGroupRepository;
+
+    @Resource
+    private CustomerCouponRepository customerCouponRepository;
+
+    @Resource
+    private CouponTypeRepository couponTypeRepository;
+
     /**
     * 通过SA-Token获取到的用户id去获取用户的基本信息
      * @param customerId : 顾客id
@@ -148,7 +189,312 @@ public class CustomerServiceImpl implements CustomerInfoService {
 
     }
 
+    @Override
+    public HashMap<String,Object> insertNewFavorite(String favoriteName, Long customerId) {
+        FavoriteDirectoryEntity favoriteDirectoryEntity = new FavoriteDirectoryEntity();
+        favoriteDirectoryEntity.setName(favoriteName);
+        favoriteDirectoryEntity.setCustomerId(customerId);
+        favoriteDirectoryRepository.save(favoriteDirectoryEntity);
+        List<FavoriteDirectoryEntity> resultEntity = favoriteDirectoryRepository.findAllByName(favoriteName);
+        int size = resultEntity.size();
+        HashMap<String,Object> result = new HashMap<>();
+        result.put("favoriteId",resultEntity.get(size-1).getFavoriteDirectoryId());
+        return result;
+    }
 
+    /**
+    * 根据收藏夹id获取对应收藏夹内第一个房源的第一个房间的第一张照片的URL
+     * @param favoriteId : 收藏夹id
+     * @return : java.util.HashMap<java.lang.String,java.lang.Object>
+    * @author 梁乔
+    * @since 10:24 2021-11-29
+    */
+    @Override
+    public HashMap<String, Object> getFavoriteImage(Integer favoriteId) {
+        HashMap<String,Object> result = new HashMap<>();
+        FavoriteDirectoryStayEntity favoriteDirectoryStayEntity = favoriteDirectoryStayRepository.findFirstByFavoriteDirectoryId(favoriteId);
+        if(favoriteDirectoryStayEntity == null){
+            result.put("imageURL",null);
+        }
+        else {
+            Long stayId = favoriteDirectoryStayEntity.getStayId();
+            RoomPhotoEntity roomPhotoEntity = roomPhotoRepository.findFirstByStayId(stayId);
+            result.put("imageURL",roomPhotoEntity.getRoomPhotoLink());
+        }
+        return result;
+    }
+
+    /**
+    * 删除特定的收藏夹
+     * @param favoriteId : 给出的收藏夹id
+     * @return : void
+    * @author 梁乔
+    * @since 14:09 2021-11-29
+    */
+    @Override
+    public void deleteFavoriteById(Integer favoriteId) {
+        FavoriteDirectoryEntity favoriteDirectoryEntity = favoriteDirectoryRepository.findByFavoriteDirectoryId(favoriteId);
+        favoriteDirectoryRepository.delete(favoriteDirectoryEntity);
+    }
+
+
+    /**
+    * 获取某一收藏夹内所有房源信息
+     * @param favoriteId : 收藏夹id
+     * @return : java.util.HashMap<java.lang.String,java.lang.Object>
+    * @author 梁乔
+    * @since 15:29 2021-11-29
+    */
+    @Override
+    public HashMap<String, Object> getFavoriteStayInfo(Integer favoriteId) {
+        HashMap<String,Object> result = new HashMap<>();
+        List<FavoriteDirectoryStayEntity> favoriteDirectoryStayEntities = favoriteDirectoryStayRepository.findAllByFavoriteDirectoryId(favoriteId);
+        List<FavoriteStayInfoDto> favoriteStayInfoDtoList = new ArrayList<>();
+        for(FavoriteDirectoryStayEntity favoriteDirectoryStayEntity:favoriteDirectoryStayEntities){
+            Long stayId = favoriteDirectoryStayEntity.getStayId();
+            StayEntity stayEntity = stayRepository.findByStayId(stayId);
+            List<RoomPhotoEntity> roomPhotoEntityList= roomPhotoRepository.findAllByStayId(stayId);
+            Integer hostId = stayEntity.getHostId();
+            HostEntity hostEntity = hostRepository.findByHostId(hostId);
+            CustomerEntity customer = customerRepository.findFirstByCustomerId(hostEntity.getCustomerId());
+            ViewStayRoomPriceEntity viewStayRoomPriceEntity = viewStayRoomPriceRepository.findByStayId(stayId);
+            favoriteStayInfoDtoList.add(FavoriteStayInfoDtoMapper.getInstance().toDto(stayEntity,roomPhotoEntityList,viewStayRoomPriceEntity,customer));
+        }
+        result.put("stayList",favoriteStayInfoDtoList);
+        return result;
+    }
+
+    /**
+     * 向特定的收藏夹加入一个房源
+     * @param favoriteId 收藏夹id
+     * @param stayId 房源id
+     */
+    @Override
+    public void addStayToFavorite(Integer favoriteId, Long stayId) {
+        FavoriteDirectoryStayEntity favoriteDirectoryStayEntity = new FavoriteDirectoryStayEntity();
+        favoriteDirectoryStayEntity.setFavoriteDirectoryId(favoriteId);
+        favoriteDirectoryStayEntity.setStayId(stayId);
+        favoriteDirectoryStayRepository.save(favoriteDirectoryStayEntity);
+    }
+
+
+    /**
+    * 向特定的收藏夹删除一个房源
+     * @param favoriteId : 收藏夹id
+     * @param stayId : 房源id
+     * @return : void
+    * @author 梁乔
+    * @since 15:49 2021-11-29
+    */
+    @Override
+    public void deleteStayFromFavorite(Integer favoriteId, Long stayId) {
+        FavoriteDirectoryStayEntity favoriteDirectoryStayEntity = new FavoriteDirectoryStayEntity();
+        favoriteDirectoryStayEntity.setFavoriteDirectoryId(favoriteId);
+        favoriteDirectoryStayEntity.setStayId(stayId);
+        favoriteDirectoryStayRepository.delete(favoriteDirectoryStayEntity);
+    }
+
+    @Override
+    public HashMap<String, Object> getHostInfoByCustomerId(Long customerId) {
+        HashMap<String, Object> result = new HashMap<>();
+        CustomerEntity customer = customerRepository.findFirstByCustomerId(customerId);
+        result.put("hostAvatar",customer.getCustomerAvatarLink());
+        result.put("hostNickName",customer.getCustomerName());
+        HostEntity hostEntity = hostRepository.findByCustomerId(customerId);
+        result.put("hostRealName",hostEntity.getHostRealName());
+        result.put("hostSex",customer.getCustomerGender().equals("m")?"男":"女");
+        result.put("hostLevel",hostEntity.getHostLevel());
+        HostGroupEntity hostGroupEntity = hostGroupRepository.getByHostLevel(hostEntity.getHostLevel());
+        result.put("hostLevelName",hostGroupEntity.getHostLevelName());
+        result.put("hostScore",hostEntity.getHostScore());
+        //获取获得的评价总数
+        List<ViewHostStayCommentEntity> viewHostStayCommentEntityList = viewHostStayCommentRepository.findAllByHostId(hostEntity.getHostId());
+        if(viewHostStayCommentEntityList != null){
+            result.put("reviewNum",viewHostStayCommentEntityList.size());
+        }
+        else {
+            result.put("reviewNum",0);
+        }
+        result.put("emailTag",customer.getCustomerEmail() != null);
+        result.put("phoneTag",customer.getCustomerPhone() != null);
+        result.put("authenticationTag",true);
+        result.put("hostCreateTime",dateToString(hostEntity.getHostCreateTime()));
+        //获取房东平均评分
+        if(viewHostStayCommentEntityList !=null) {
+            float averageScore = 0;
+            for (ViewHostStayCommentEntity viewHostStayCommentEntity:viewHostStayCommentEntityList) {
+                averageScore += viewHostStayCommentEntity.getStayScore();
+            }
+            averageScore = averageScore / viewHostStayCommentEntityList.size();
+            result.put("averageRate",averageScore);
+        }
+        else {
+            result.put("averageRate",0);
+        }
+        return result;
+
+    }
+
+    /**
+    * 根据房源id获取详细的房源信息
+     * @param stayId :
+     * @return : java.util.HashMap<java.lang.String,java.lang.Object>
+    * @author 梁乔
+    * @since 11:30 2021-11-30
+    */
+    @Override
+    public HashMap<String, Object> getStayInfoByStayId(long stayId) {
+        HashMap<String,Object> result = new HashMap<>();
+        StayEntity stayEntity = stayRepository.findByStayId(stayId);
+        //房源类型
+        result.put("stayType",stayEntity.getStayTypeName());
+        //最大容纳房客数
+        result.put("maxTenantNum",stayEntity.getStayCapacity());
+        //卧室数量
+        result.put("roomNum",stayEntity.getRoomAmount());
+        //床总数
+        result.put("bedNum",stayEntity.getBedAmount());
+        //公共卫生间数量
+        result.put("pubRestNum",stayEntity.getPublicToilet());
+        //公共浴室数量
+        result.put("pubBathNum",stayEntity.getPublicBathroom());
+        //是否有无障碍设施
+        result.put("barrierFree",stayEntity.getNonBarrierFacility() != 0);
+        //经纬度列表
+        List<BigDecimal> positionList = new ArrayList<>();
+        positionList.add(stayEntity.getLongitude());
+        positionList.add(stayEntity.getLatitude());
+        result.put("position",positionList);
+        //房源昵称
+        result.put("stayName",stayEntity.getStayName());
+        //房源描述
+        result.put("stayChars",stayEntity.getCharacteristic());
+        //开始入住时间点
+        result.put("startTime",timeToString(stayEntity.getCheckInTime()));
+        //结束入住时间点
+        result.put("endTime",timeToString(stayEntity.getCheckOutTime()));
+        //最大居住天数
+        result.put("maxDay",stayEntity.getDurationMax());
+        //最小居住天数
+        result.put("minDay",stayEntity.getDurationMin());
+        //各卧室信息
+
+        List<String> imgList = new ArrayList<>();
+
+        List<RoomInfoDto> roomInfoDtoList = new ArrayList<>();
+        List<RoomEntity> roomEntityList = roomRepository.findAllByStayId(stayId);
+        for(RoomEntity room:roomEntityList) {
+            RoomInfoDto roomInfoDto = new RoomInfoDto();
+            HashMap<String, Integer> bedTypes = new HashMap<>();
+            List<RoomBedEntity> roomBedEntityList = roomBedRepository.findAllByStayIdAndRoomId(stayId,room.getRoomId());
+            for(RoomBedEntity roomBedEntity:roomBedEntityList){
+                bedTypes.put(roomBedEntity.getBedType(),roomBedEntity.getBedAmount());
+            }
+            roomInfoDto.setBedTypes(bedTypes);
+            roomInfoDto.setRoomArea(room.getRoomArea().floatValue());
+            roomInfoDto.setPrice(room.getPrice().floatValue());
+            roomInfoDto.setBathNum(room.getBathroomAmount());
+            roomInfoDtoList.add(roomInfoDto);
+            RoomPhotoEntity roomPhotoEntity = roomPhotoRepository.findByStayIdAndRoomId(stayId,room.getRoomId());
+            if(roomPhotoEntity != null) {
+                imgList.add(roomPhotoEntity.getRoomPhotoLink());
+            }
+        }
+        result.put("roomInfo",roomInfoDtoList);
+        //各卧室照片
+        result.put("imgList",imgList);
+        result.put("stayStatus",stayEntity.getStayStatus());
+        List<StayLabelEntity> stayLabelEntityList = stayLabelRepository.findAllByStayId(stayId);
+        List<String> stayTags = new ArrayList<>();
+        for(StayLabelEntity stayLabelEntity:stayLabelEntityList){
+            stayTags.add(stayLabelEntity.getLabelName());
+        }
+        result.put("stayTags",stayTags);
+        return result;
+    }
+
+    /**
+    * 更新房东的昵称
+     * @param customerId : 房东的顾客id
+     * @return : void
+    * @author 梁乔
+    * @since 11:35 2021-11-30
+    */
+    @Override
+    public void updateHostNickName(long customerId,String hostNickName) {
+        CustomerEntity customer = customerRepository.findFirstByCustomerId(customerId);
+        customer.setCustomerName(hostNickName);
+        customerRepository.save(customer);
+    }
+
+    /**
+    * 获取所有的用户组信息
+     * @return : java.util.HashMap<java.lang.String,java.lang.Object>
+    * @author 梁乔
+    * @since 18:35 2021-11-30
+    */
+    @Override
+    public HashMap<String, Object> getCustomerGroupInfo() {
+        HashMap<String,Object> result = new HashMap<>();
+        List<CustomerGroupEntity> customerGroupEntityList = customerGroupRepository.findAllBy();
+        List<CustomerGroupDto> customerGroupDtoList = new ArrayList<>();
+        for(CustomerGroupEntity customerGroupEntity:customerGroupEntityList){
+            CustomerGroupDto customerGroupDto = new CustomerGroupDto();
+            customerGroupDto.setCustomerGroupLevel(customerGroupEntity.getCustomerLevel());
+            customerGroupDto.setCustomerLevelName(customerGroupEntity.getCustomerLevelName());
+            customerGroupDto.setCustomerNextLevelDegree(customerGroupEntity.getCustomerLevelDegree());
+
+            //获取详细的礼券信息
+            List<CustomerCouponInfoDto> customerCouponInfoDtoList = new ArrayList<>();
+            List<CustomerGroupCouponEntity> customerGroupCouponEntityList =  customerCouponRepository.findAllByCustomerLevel(customerGroupEntity.getCustomerLevel());
+            for(CustomerGroupCouponEntity customerGroupCouponEntity:customerGroupCouponEntityList){
+                int couponTypeId = customerGroupCouponEntity.getCouponTypeId();
+                CustomerCouponInfoDto couponInfoDto = new CustomerCouponInfoDto();
+                couponInfoDto.setCustomerLevelCouponNum(customerGroupCouponEntity.getCouponAmount());
+                CouponTypeEntity couponTypeEntity = couponTypeRepository.findByCouponTypeId(couponTypeId);
+                couponInfoDto.setCustomerLevelCouponAmount(couponTypeEntity.getCouponAmount().floatValue());
+
+                customerCouponInfoDtoList.add(couponInfoDto);
+            }
+            customerGroupDto.setCouponInfoDtoList(customerCouponInfoDtoList);
+            customerGroupDtoList.add(customerGroupDto);
+        }
+        result.put("customerGroup",customerGroupDtoList);
+        return result;
+    }
+
+    /**
+    * 获取房东用户组信息
+     * @return : java.util.HashMap<java.lang.String,java.lang.Object>
+    * @author 梁乔
+    * @since 21:29 2021-11-30
+    */
+    @Override
+    public HashMap<String, Object> getHostGroupInfo() {
+        HashMap<String, Object> result = new HashMap<>();
+        List<HostGroupEntity> hostGroupEntityList = hostGroupRepository.findAllBy();
+        List<HostGroupDto> hostGroupDtoList = new ArrayList<>();
+        for(HostGroupEntity hostGroupEntity:hostGroupEntityList){
+            HostGroupDto hostGroupDto = new HostGroupDto();
+            hostGroupDto.setHostLevel(hostGroupEntity.getHostLevel());
+            hostGroupDto.setHostLevelName(hostGroupEntity.getHostLevelName());
+            hostGroupDto.setHostLevelDegree(hostGroupEntity.getHostLevelDegree());
+            hostGroupDtoList.add(hostGroupDto);
+        }
+        result.put("customerGroup",hostGroupDtoList);
+        return result;
+    }
+
+    private String timeToString(Time time){
+        String timeStr = "";
+        DateFormat sdf = new SimpleDateFormat("hh:mm");
+        try{
+            timeStr = sdf.format(time);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return timeStr;
+    }
 
     private String dateToString(Timestamp timestamp){
         String dateStr = "";

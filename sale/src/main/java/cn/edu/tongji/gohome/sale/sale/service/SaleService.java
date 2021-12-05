@@ -2,6 +2,7 @@ package cn.edu.tongji.gohome.sale.sale.service;
 
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.HashMap;
 
@@ -13,4 +14,12 @@ import java.util.HashMap;
 @Service
 public interface SaleService {
     HashMap<String, Object> getRoomPriceInfo(String stayId, int roomId, String startDate, String endDate, String couponId) throws ParseException;
+
+    HashMap<String,Object> getCouponInfoByCustomerId(long customerId);
+
+    void useCouponByCouponId(long couponId);
+
+    void addCouponType(BigDecimal couponAmount, BigDecimal couponLimit, String couponName);
+
+    void deleteCouponType(int couponId);
 }

@@ -14,10 +14,22 @@ public class OrderInfoDto {
 
     private long orderId;
     private Timestamp orderTime;
+    private Timestamp orderStartTime;
+    private Timestamp orderEndTime;
+    private String stayName;
+    private String detailedAddress;
+    private String hostAvatarLink;
+    private String hostName;
     private BigDecimal totalCost;
     private int orderStatus;
     private int stayScore;
+    private long stayId;
+    private String customerCommentContent;
     private String roomPhotoLink;
+
+    private int reportStatus;
+    private String reportReason;
+    private String reportReply;
 
     public long getOrderId() {
         return orderId;
@@ -66,4 +78,93 @@ public class OrderInfoDto {
     public void setRoomPhotoLink(String roomPhotoLink) {
         this.roomPhotoLink = roomPhotoLink;
     }
+
+    public Timestamp getOrderStartTime() {
+        return orderStartTime;
+    }
+
+    public void setOrderStartTime(Timestamp orderStartTime) {
+        this.orderStartTime = orderStartTime;
+    }
+
+    public Timestamp getOrderEndTime() {
+        return orderEndTime;
+    }
+
+    public void setOrderEndTime(Timestamp orderEndTime) {
+        this.orderEndTime = orderEndTime;
+    }
+
+    public String getStayName() {
+        return stayName;
+    }
+
+    public void setStayName(String stayName) {
+        this.stayName = stayName;
+    }
+
+    public String getDetailedAddress() {
+        return detailedAddress;
+    }
+
+    public void setDetailedAddress(String detailedAddress) {
+        this.detailedAddress = detailedAddress;
+    }
+
+    public String getHostAvatarLink() {
+        return hostAvatarLink;
+    }
+
+    public void setHostAvatarLink(String hostAvatarLink) {
+        this.hostAvatarLink = hostAvatarLink;
+    }
+
+    public String getHostName() {
+        return hostName;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
+
+    public String getCustomerCommentContent() {
+        return customerCommentContent;
+    }
+
+    public void setCustomerCommentContent(String customerCommentContent) {
+        this.customerCommentContent = customerCommentContent;
+    }
+
+    public long getStayId() {
+        return stayId;
+    }
+
+    public void setStayId(long stayId) {
+        this.stayId = stayId;
+    }
+
+    public int getReportStatus() {
+        return reportStatus;
+    }
+
+    public void setReportStatus(int reportStatus) {
+        this.reportStatus = reportStatus;
+    }
+
+    public String getReportReason() {
+        return reportReason;
+    }
+
+    public void setReportReason(String reportReason) {
+        this.reportReason = reportReason;
+    }
+
+    public String getReportReply() {
+        return reportReply;
+    }
+
+    public void setReportReply(String reportReply) {
+        this.reportReply = reportReply;
+    }
+
 }

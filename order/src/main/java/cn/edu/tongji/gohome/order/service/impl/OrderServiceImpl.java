@@ -56,23 +56,99 @@ public class OrderServiceImpl implements OrderService {
     @Resource
     private CouponRepository couponRepository;
 
+    @Resource
+    private ViewOrderTimeRepository viewOrderTimeRepository;
+
+    @Resource
+    private ViewStayCustomerRepository stayCustomerRepository;
+
+    @Resource
+    private OrderReportRepository orderReportRepository;
 
     /**
-    * @description: A private function for searching order information list... to reduce the same code...
-    * @param order: orderEntity to get orderId and other information...
-    * @return: cn.edu.tongji.gohome.order.dto.OrderInfoDto
-    * @author: leoy
-    * @date: 2021/11/22 19:31
-    **/
-    private OrderInfoDto getInfoFromOrderEntity(OrderEntity order){
+     * @param order: orderEntity to get orderId and other information...
+     * @description: A private function for searching order information list... to reduce the same code...
+     * @return: cn.edu.tongji.gohome.order.dto.OrderInfoDto
+     * @author: leoy
+     * @date: 2021/11/22 19:31
+     **/
+    private OrderInfoDto getInfoFromOrderEntity(OrderEntity order) {
+
+        OrderInfoDto orderInfo = new OrderInfoDto();
         long orderId = order.getOrderId();
+
+        //set order info into orderInfoDto.
+        orderInfo.setOrderId(orderId);
+        orderInfo.setOrderStatus(order.getOrderStatus());
+        orderInfo.setOrderTime(order.getOrderTime());
+        orderInfo.setTotalCost(order.getTotalCost());
+
+        //get order stayScore.
         CustomerCommentEntity customerComment = customerCommentRepository.findFirstByOrderId(orderId);
+        if (customerComment != null) {
+            orderInfo.setStayScore(customerComment.getStayScore());
+            orderInfo.setCustomerCommentContent(customerComment.getCustomerCommentContent());
+        } else {
+            orderInfo.setStayScore(-1);
+            orderInfo.setCustomerCommentContent("");
+        }
+
+        //get order startTime, endTime.
+        ViewOrderTimeEntity viewOrderTime = viewOrderTimeRepository.findFirstByOrderId(orderId);
+        if(viewOrderTime != null){
+            orderInfo.setOrderStartTime(viewOrderTime.getMinStartTime());
+            orderInfo.setOrderEndTime(viewOrderTime.getMaxEndTime());
+        }
+
         OrderStayEntity orderStay = orderStayRepository.findFirstByOrderId(orderId);
+
         RoomPhotoEntity roomPhoto = null;
         if (orderStay != null) {
+
+            //get first room photo link.
             roomPhoto = roomPhotoRepository.findFirstByStayIdAndRoomId(orderStay.getStayId(), orderStay.getRoomId());
+            if(roomPhoto != null){
+                orderInfo.setRoomPhotoLink(roomPhoto.getRoomPhotoLink());
+            }
+            else{
+                orderInfo.setRoomPhotoLink("");
+            }
+
+            //get stayName,stayAddress,hostAvatarLink,hostName
+            StayEntity stay = stayRepository.findFirstByStayId(orderStay.getStayId());
+            orderInfo.setStayId(stay.getStayId());
+            orderInfo.setStayName(stay.getStayName());
+            orderInfo.setDetailedAddress(stay.getDetailedAddress());
+            ViewStayCustomerEntity viewStayCustomer = stayCustomerRepository.getById(orderStay.getStayId());
+            orderInfo.setHostAvatarLink(viewStayCustomer.getCustomerAvatarLink());
+            orderInfo.setHostName(viewStayCustomer.getCustomerName());
         }
-        return OrderInfoMapper.getInstance().toDto(order, customerComment, roomPhoto);
+
+        //set reportInfo : reportStatus,reportReason,reportReply
+        int reportStatus = -1;
+        String reportReason = "";
+        String reportReply = "";
+        OrderReportEntity orderReport = orderReportRepository.findByOrderId(orderId);
+        if(orderInfo.getOrderStatus() == OrderStatus.ORDER_BUSINESS_COMPLETED){
+            reportStatus = 0;
+        }
+        if(orderReport != null){
+            boolean status = orderReport.isDealt();
+            if(status){
+               reportStatus = 2;
+               reportReason = orderReport.getReportReason();
+               reportReply = orderReport.getReply();
+            }
+            else{
+                reportStatus = 1;
+                reportReason = orderReport.getReportReason();
+            }
+        }
+        orderInfo.setReportStatus(reportStatus);
+        orderInfo.setReportReason(reportReason);
+        orderInfo.setReportReply(reportReply);
+
+        return orderInfo;
     }
 
     /**
@@ -111,9 +187,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * @param stayId: stay id for searching the order.
+     * @param stayId:      stay id for searching the order.
      * @param currentPage: current page for info.
-     * @param pageSize: the count of data every page.
+     * @param pageSize:    the count of data every page.
      * @description: search the order info for the host when he clicks one stay...
      * @return: java.util.HashMap<java.lang.String, java.lang.Object>
      * @author: leoy
@@ -138,11 +214,11 @@ public class OrderServiceImpl implements OrderService {
         }
         results.put("totalPage", vOrderStayEntityPageable.getTotalPages());
         List<OrderEntity> orderEntityList = new ArrayList<>();
-        for(VOrderStayEntity vOrderStayEntity:vOrderStayEntityPageable){
+        for (VOrderStayEntity vOrderStayEntity : vOrderStayEntityPageable) {
             orderEntityList.add(orderRepository.findFirstByOrderId(vOrderStayEntity.getOrderId()));
         }
 
-        for(OrderEntity order : orderEntityList){
+        for (OrderEntity order : orderEntityList) {
             orderInfoDtoList.add(getInfoFromOrderEntity(order));
         }
         results.put("orderInfo", orderInfoDtoList);
@@ -151,48 +227,75 @@ public class OrderServiceImpl implements OrderService {
 
 
     /**
-    * @description: When the customer or host clicks the order, the back-end should return the detailed information for order and stay-room...
-    * @param orderId: the id for order...
-    * @param currentPage the current page of all...
-    * @param pageSize: number for the record every page...
-    * @return: java.util.HashMap<java.lang.String,java.lang.Object>
-    * @author: leoy
-    * @date: 2021/11/22 19:33
-    **/
+     * @param orderId:    the id for order...
+     * @param currentPage the current page of all...
+     * @param pageSize:   number for the record every page...
+     * @description: When the customer or host clicks the order, the back-end should return the detailed information for order and stay-room...
+     * @return: java.util.HashMap<java.lang.String, java.lang.Object>
+     * @author: leoy
+     * @date: 2021/11/22 19:33
+     **/
     @Override
-    public HashMap<String, Object> searchOrderDetailedInfoForOrderId(long orderId, Integer currentPage, Integer pageSize){
+    public HashMap<String, Object> searchOrderDetailedInfoForOrderId(long orderId, Integer currentPage, Integer pageSize) {
 
         // get all room info by order id...
         HashMap<String, Object> results = new HashMap<>();
         List<OrderDetailedInfoDto> orderDetailedInfoDtoList = new ArrayList<>();
 
-        Pageable pageable = PageRequest.of(currentPage,pageSize);
+        Pageable pageable = PageRequest.of(currentPage, pageSize);
         Page<OrderStayEntity> orderStayEntityPage = orderStayRepository.findAllByOrderId(orderId, pageable);
 
-        if (orderStayEntityPage == null){
-            results.put("totalPage",0);
+        if (orderStayEntityPage == null) {
+            results.put("totalPage", 0);
             return results;
         }
 
-        results.put("totalPage",orderStayEntityPage.getTotalPages());
+        results.put("totalPage", orderStayEntityPage.getTotalPages());
 
         long stayId = vOrderStayRepository.findFirstByOrderId(orderId).getStayId();
         String stayName = stayRepository.findFirstByStayId(stayId).getStayName();
-        results.put("stayName",stayName);
+        results.put("stayName", stayName);
 
-        for (OrderStayEntity stayInfo : orderStayEntityPage){
+        for (OrderStayEntity stayInfo : orderStayEntityPage) {
 
             int roomId = stayInfo.getRoomId();
-            RoomPhotoEntity roomPhoto = roomPhotoRepository.findFirstByStayIdAndRoomId(stayId,roomId);
-            orderDetailedInfoDtoList.add(OrderDetailedInfoMapper.getInstance().toDto(stayInfo,roomPhoto));
+            RoomPhotoEntity roomPhoto = roomPhotoRepository.findFirstByStayIdAndRoomId(stayId, roomId);
+            orderDetailedInfoDtoList.add(OrderDetailedInfoMapper.getInstance().toDto(stayInfo, roomPhoto));
         }
-        results.put("orderDetailedInfo",orderDetailedInfoDtoList);
+        results.put("orderDetailedInfo", orderDetailedInfoDtoList);
 
         return results;
     }
 
+    @Override
+    public HashMap<String, Object> searchOrderInfoForCustomerIdAndOrderStatus(long customerId, int orderStatus,
+                                                                              Integer currentPage, Integer pageSize) {
+        Pageable pageable = PageRequest.of(currentPage, pageSize);
 
-    private OrderEntity getInformationFromOrderContent(OrderContent orderContent){
+        HashMap<String, Object> results = new HashMap<>();
+
+        List<OrderInfoDto> orderInfoDtoList = new ArrayList<>();
+        Page<OrderEntity> orderEntityList = orderRepository.findAllByCustomerIdAndOrderStatus(customerId, orderStatus, pageable);
+
+        // there is no order for customer whose id = ...
+        if (orderEntityList == null) {
+            results.put("totalPage", 0);
+            results.put("orderInfo", orderInfoDtoList);
+            return results;
+        }
+
+        results.put("totalPage", orderEntityList.getTotalPages());
+
+        for (OrderEntity order : orderEntityList) {
+            orderInfoDtoList.add(getInfoFromOrderEntity(order));
+        }
+
+        results.put("orderInfo", orderInfoDtoList);
+        return results;
+    }
+
+
+    private OrderEntity getInformationFromOrderContent(OrderContent orderContent) {
 
         OrderEntity order = new OrderEntity();
 
@@ -206,10 +309,10 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
-    private List<OrderStayEntity> getRoomInfoFromOrderContent(long orderId, List<OrderStayInfoDto> orderStayInfoDtoList){
+    private List<OrderStayEntity> getRoomInfoFromOrderContent(long orderId, List<OrderStayInfoDto> orderStayInfoDtoList) {
         List<OrderStayEntity> orderStayEntityList = new ArrayList<>();
 
-        for(OrderStayInfoDto orderStayInfoDto : orderStayInfoDtoList){
+        for (OrderStayInfoDto orderStayInfoDto : orderStayInfoDtoList) {
             OrderStayEntity orderStayEntity = new OrderStayEntity();
             orderStayEntity.setOrderId(orderId);
             orderStayEntity.setStayId(orderStayInfoDto.getStayId());
@@ -224,17 +327,18 @@ public class OrderServiceImpl implements OrderService {
 
 
     /**
-    * add one order in db...
-    * @param orderContent: the detailed information for order.
-    * @return : void
-    * @author : leoy
-    * @since : 2021/11/23 22:28
-    **/
+     * add one order in db...
+     *
+     * @param orderContent: the detailed information for order.
+     * @return : void
+     * @author : leoy
+     * @since : 2021/11/23 22:28
+     **/
     @Override
-    public Long addOrderAndDetailedInformation(OrderContent orderContent){
+    public Long addOrderAndDetailedInformation(OrderContent orderContent) {
 
         OrderEntity order = getInformationFromOrderContent(orderContent);
-        List<OrderStayEntity> orderStayEntityList = getRoomInfoFromOrderContent(order.getOrderId(),orderContent.getOrderStayEntityList());
+        List<OrderStayEntity> orderStayEntityList = getRoomInfoFromOrderContent(order.getOrderId(), orderContent.getOrderStayEntityList());
         orderRepository.save(order);
         orderStayRepository.saveAll(orderStayEntityList);
 
@@ -242,38 +346,39 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void updateOrderStatus(long orderId, int orderStatus){
+    public void updateOrderStatus(long orderId, int orderStatus) {
 
         OrderEntity order = orderRepository.getById(orderId);
         order.setOrderStatus(orderStatus);
+        System.out.println("orderStatus: "+orderStatus);
         orderRepository.save(order);
     }
 
-    public Map<String,Object> searchUsableCouponForCustomerId(long customerId, BigDecimal couponLimit, Integer currentPage, Integer pageSize){
-        Pageable pageable = PageRequest.of(currentPage,pageSize);
+    public Map<String, Object> searchUsableCouponForCustomerId(long customerId, BigDecimal couponLimit, Integer currentPage, Integer pageSize) {
+        Pageable pageable = PageRequest.of(currentPage, pageSize);
 
         Specification<ViewCouponInformationEntity> specification = (root, query, criteriaBuilder) -> {
             List<Predicate> predicateList = new ArrayList<>();
 
             //customer_id
-            predicateList.add(criteriaBuilder.equal(root.get("customerId"),customerId));
+            predicateList.add(criteriaBuilder.equal(root.get("customerId"), customerId));
             //status
             predicateList.add(criteriaBuilder.equal(root.get("couponStatus"), CouponStatus.COUPON_UNUSED));
             //couponLimit
-            predicateList.add(criteriaBuilder.lessThanOrEqualTo(root.get("couponLimit"),couponLimit));
+            predicateList.add(criteriaBuilder.lessThanOrEqualTo(root.get("couponLimit"), couponLimit));
 
             Predicate[] pre = new Predicate[predicateList.size()];
             pre = predicateList.toArray(pre);
             return query.where(pre).getRestriction();
         };
         Page<ViewCouponInformationEntity> page = viewCouponInformationRepository.findAll(specification, pageable);
-        Map<String,Object> map = new HashMap<>();
-        map.put("totalPage",page.getTotalPages());
-        map.put("couponInfo",page.toList());
+        Map<String, Object> map = new HashMap<>();
+        map.put("totalPage", page.getTotalPages());
+        map.put("couponInfo", page.toList());
         return map;
     }
 
-    public void updateOCouponStatus(long couponId, int couponStatus){
+    public void updateOCouponStatus(long couponId, int couponStatus) {
 
         CouponEntity coupon = couponRepository.getById(couponId);
         coupon.setCouponStatus(couponStatus);
