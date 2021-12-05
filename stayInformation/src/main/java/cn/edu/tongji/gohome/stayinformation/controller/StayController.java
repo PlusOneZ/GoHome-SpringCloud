@@ -71,7 +71,7 @@ public class StayController {
      * @return
      */
     @RequestMapping("/brief")
-    public ResponseEntity<HashMap<String, Object>> getStaBriefInfoById
+    public ResponseEntity<HashMap<String, Object>> getStayBriefInfoById
     (@RequestParam Long stayId){
         HashMap<String, Object> hashMap = new HashMap<>();
 
@@ -84,6 +84,20 @@ public class StayController {
         );
         return new ResponseEntity<>(hashMap,
                 HttpStatus.OK);
+    }
+
+    /**
+     * <b>http://localhost:8090/api/v1/stay/host/brief?stayId=10144</b>
+     * @param stayId
+     * @return
+     */
+    @RequestMapping("/host/brief")
+    public ResponseEntity<HashMap<String,Object>> getHostStayBriefInfoByStayId(
+            @RequestParam Long stayId){
+
+        HashMap<String ,Object> hashMap=stayService.getHostStayBriefInfoByStayId(stayId);
+
+        return new ResponseEntity<>(hashMap,HttpStatus.OK);
     }
 
     /**
@@ -181,9 +195,12 @@ public class StayController {
         HashMap<String, Object> hashMap = new HashMap<>();
         int hostId = 1;
         // 0 代表保存但未提交， 1 表示待审核， 2 表示审核通过
-        List<HashMap<String, Object>> unpublishedList = stayService.getAllStayByHostIdAndStatus(hostId, BigInteger.valueOf(0));
-        List<HashMap<String, Object>> pendingList = stayService.getAllStayByHostIdAndStatus(hostId, BigInteger.valueOf(1));
-        List<HashMap<String, Object>> publishedList = stayService.getAllStayByHostIdAndStatus(hostId, BigInteger.valueOf(2));
+        List<Long> unpublishedList =
+                stayService.getAllStayIdByHostIdAndStatus(hostId, BigInteger.valueOf(0));
+        List<Long> pendingList =
+                stayService.getAllStayIdByHostIdAndStatus(hostId, BigInteger.valueOf(1));
+        List<Long> publishedList =
+                stayService.getAllStayIdByHostIdAndStatus(hostId, BigInteger.valueOf(2));
         hashMap.put("unpublishedStayInfo",
                 unpublishedList);
         hashMap.put("pendingStayInfo",
