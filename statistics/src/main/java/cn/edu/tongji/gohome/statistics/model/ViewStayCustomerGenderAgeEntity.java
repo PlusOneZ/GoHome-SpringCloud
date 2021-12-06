@@ -10,6 +10,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "view_stay_customer_gender_age", schema = "GoHome", catalog = "")
+@IdClass(ViewStayCustomerGenderAgeEntityPK.class)
 public class ViewStayCustomerGenderAgeEntity {
     private long stayId;
     private long customerId;
