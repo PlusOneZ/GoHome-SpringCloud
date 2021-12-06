@@ -59,4 +59,31 @@ public class StayController {
         return new ResponseEntity<>(hashMap,
                 HttpStatus.OK);
     }
+
+    @RequestMapping("/age")
+    public ResponseEntity<HashMap<String,Integer>> getStayCustomerAgeByStayId
+            (long stayId){
+        return new ResponseEntity<>(
+                stayService.getStayCustomerAgeByStayId(stayId),
+                HttpStatus.OK
+        );
+    }
+
+    @RequestMapping("/gender")
+    public ResponseEntity<HashMap<String,Integer>> getStayCustomerGenderByStayId
+            (long stayId){
+        return new ResponseEntity<>(
+                stayService.getStayCustomerGenderByStayId(stayId),
+                HttpStatus.OK
+        );
+    }
+
+    @RequestMapping("/order/year")
+    public ResponseEntity<List<HashMap<String,Object>>> getStayMonthOrderAndComment
+            (@RequestParam long stayId){
+        return new ResponseEntity<>(
+                stayService.getStayMonthOrderAndCommentScore(stayId),
+                HttpStatus.OK
+        );
+    }
 }

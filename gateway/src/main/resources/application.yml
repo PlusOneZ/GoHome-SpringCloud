@@ -11,7 +11,7 @@ spring:
           '[/**]':
             allowedHeaders: "*"
             allowedOrigins:
-              - "localhost://8081"
+              - "localhost://*"
               - "localhost://8080"
               - "http://*.guisu.website"
               - "https://*.guisu.website"
@@ -44,7 +44,7 @@ spring:
             - Path=/api/{segment}/payment/**
         - id: trade-service
           uri: lb://trade-service
-          predicates: 
+          predicates:
             - Path=/api/{segment}/trade/**
         - id: personalInformartion-service
           uri: lb://PERSONALINFORMARTION-SERVICE

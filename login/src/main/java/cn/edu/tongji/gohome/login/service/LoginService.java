@@ -1,5 +1,7 @@
 package cn.edu.tongji.gohome.login.service;
 
+import cn.edu.tongji.gohome.login.dto.CustomerBriefInfoDTO;
+import cn.edu.tongji.gohome.login.dto.VerifyCodeToken;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,4 +19,8 @@ public interface LoginService {
     Long getCustomerIdByPhone(String phone);
 
     Integer getAdminIdByName(String adminName);
+
+    CustomerBriefInfoDTO getCustomerBriefInfoByCustomerId(Long id);
+
+    VerifyCodeToken getVerificationCodeAndToken();
 }

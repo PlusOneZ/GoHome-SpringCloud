@@ -1,5 +1,6 @@
 package cn.edu.tongji.gohome.stayinformation.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.edu.tongji.gohome.stayinformation.dto.HostStay;
 import cn.edu.tongji.gohome.stayinformation.dto.HostStayUpdate;
 import cn.edu.tongji.gohome.stayinformation.dto.StayCommentInfoDto;
@@ -7,10 +8,7 @@ import cn.edu.tongji.gohome.stayinformation.dto.StayInfoDto;
 import cn.edu.tongji.gohome.stayinformation.model.LabelEntity;
 import cn.edu.tongji.gohome.stayinformation.model.StayLabelEntity;
 import cn.edu.tongji.gohome.stayinformation.model.StayTypeEntity;
-import cn.edu.tongji.gohome.stayinformation.repository.LabelRepository;
-import cn.edu.tongji.gohome.stayinformation.repository.StayLabelRepository;
-import cn.edu.tongji.gohome.stayinformation.repository.StayRepository;
-import cn.edu.tongji.gohome.stayinformation.repository.StayTypeRepository;
+import cn.edu.tongji.gohome.stayinformation.repository.*;
 import cn.edu.tongji.gohome.stayinformation.service.StayCommentService;
 import cn.edu.tongji.gohome.stayinformation.service.StayService;
 import org.springframework.http.HttpStatus;
@@ -52,6 +50,9 @@ public class StayController {
     @Resource
     private StayTypeRepository stayTypeRepository;
 
+    @Resource
+    private HostRepository hostRepository;
+
     /**
      * <b>Example: http://localhost:8090/api/v1/stay?stayId=10059</b><br>
      * @param stayId
@@ -66,12 +67,32 @@ public class StayController {
     }
 
     /**
+     * <b>Example: http://localhost:8090/api/v1/stay/host/equal?stayId=10059</b><br>
+     * @param stayId
+     * @return
+     */
+    @RequestMapping("/host/equal")
+    public ResponseEntity<HashMap<String,Boolean>> isHostSameWithCustomer(
+            @RequestParam Long stayId
+    ){
+        long customerId = 1;
+        // 获取customerId
+        int hostId = stayRepository.findFirstByStayId(stayId).getHostId();
+        Boolean isEqual = hostRepository.getById(hostId).getCustomerId()
+                == customerId;
+        HashMap<String, Boolean> hashMap = new HashMap<>();
+        hashMap.put("isEqual", isEqual);
+        return new ResponseEntity<>(hashMap,
+                HttpStatus.OK);
+    }
+
+    /**
      * <b>http://localhost:8090/api/v1/stay/brief?stayId=10144</b>
      * @param stayId
      * @return
      */
     @RequestMapping("/brief")
-    public ResponseEntity<HashMap<String, Object>> getStaBriefInfoById
+    public ResponseEntity<HashMap<String, Object>> getStayBriefInfoById
     (@RequestParam Long stayId){
         HashMap<String, Object> hashMap = new HashMap<>();
 
@@ -84,6 +105,20 @@ public class StayController {
         );
         return new ResponseEntity<>(hashMap,
                 HttpStatus.OK);
+    }
+
+    /**
+     * <b>http://localhost:8090/api/v1/stay/host/brief?stayId=10144</b>
+     * @param stayId
+     * @return
+     */
+    @RequestMapping("/host/brief")
+    public ResponseEntity<HashMap<String,Object>> getHostStayBriefInfoByStayId(
+            @RequestParam Long stayId){
+
+        HashMap<String ,Object> hashMap=stayService.getHostStayBriefInfoByStayId(stayId);
+
+        return new ResponseEntity<>(hashMap,HttpStatus.OK);
     }
 
     /**
@@ -181,9 +216,12 @@ public class StayController {
         HashMap<String, Object> hashMap = new HashMap<>();
         int hostId = 1;
         // 0 代表保存但未提交， 1 表示待审核， 2 表示审核通过
-        List<HashMap<String, Object>> unpublishedList = stayService.getAllStayByHostIdAndStatus(hostId, BigInteger.valueOf(0));
-        List<HashMap<String, Object>> pendingList = stayService.getAllStayByHostIdAndStatus(hostId, BigInteger.valueOf(1));
-        List<HashMap<String, Object>> publishedList = stayService.getAllStayByHostIdAndStatus(hostId, BigInteger.valueOf(2));
+        List<Long> unpublishedList =
+                stayService.getAllStayIdByHostIdAndStatus(hostId, BigInteger.valueOf(0));
+        List<Long> pendingList =
+                stayService.getAllStayIdByHostIdAndStatus(hostId, BigInteger.valueOf(1));
+        List<Long> publishedList =
+                stayService.getAllStayIdByHostIdAndStatus(hostId, BigInteger.valueOf(2));
         hashMap.put("unpublishedStayInfo",
                 unpublishedList);
         hashMap.put("pendingStayInfo",
@@ -244,5 +282,25 @@ public class StayController {
         }
     }
 
+    @RequestMapping("/host/id")
+    public ResponseEntity<HashMap<String, String>> getHostId(){
+        HashMap<String, String> hashMap = new HashMap<>();
+
+        try{
+            String customerId = (String)StpUtil.getLoginId();
+
+            hashMap.put("customerId", customerId);
+            return new ResponseEntity<>(hashMap,
+                    HttpStatus.OK);
+        }
+        catch (Exception error){
+            return new ResponseEntity<>(hashMap,
+                    HttpStatus.EXPECTATION_FAILED);
+        }
+
+
+
+
+    }
 
 }

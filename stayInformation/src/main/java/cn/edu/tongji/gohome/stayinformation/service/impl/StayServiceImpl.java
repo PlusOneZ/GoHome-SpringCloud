@@ -74,6 +74,12 @@ public class StayServiceImpl implements StayService {
     @Resource
     ImageService imageService;
 
+    @Resource
+    ViewStayOrderNumberRepository viewStayOrderNumberRepository;
+
+    @Resource
+    ViewStayRoomPriceRepository viewStayRoomPriceRepository;
+
 
     @Override
     public StayInfoDto searchStayDetailedInfoForStayId(long stayId,
@@ -198,11 +204,18 @@ public class StayServiceImpl implements StayService {
         );
 
 
-
+        // 最多只返回10个民宿
+        int sumNumber = 0;
         for(StayEntity stayEntity: stayEntityList){
             // 只展示状态为2的房源
             if(stayEntity.getStayStatus() != BigInteger.valueOf(2)){
                 continue;
+            }
+            if(sumNumber<=10){
+                sumNumber+=1;
+            }
+            else{
+                break;
             }
             HashMap<String, Object> objectHashMap = new HashMap<>();
             objectHashMap.put("stayID", stayEntity.getStayId());
@@ -243,6 +256,20 @@ public class StayServiceImpl implements StayService {
             }
         }
         return lowestMoney;
+    }
+
+
+
+    @Override
+    public List<Long> getAllStayIdByHostIdAndStatus(int hostId,
+                                                    BigInteger stayStatus){
+        List<StayEntity> stayEntityList = stayRepository.
+                findAllByHostIdAndStayStatus(hostId, stayStatus);
+        List<Long> result=new ArrayList<>();
+        for (StayEntity stayEntity: stayEntityList){
+            result.add(stayEntity.getStayId());
+        }
+        return result;
     }
 
     /**
@@ -419,6 +446,54 @@ public class StayServiceImpl implements StayService {
         res.put("isLike", isHostFavoriteByCustomerId(stayId, customerId));
 
         return res;
+    }
+
+    /**
+     * 获取房东个人界面的房源简略信息
+     * @param stayId
+     * @return
+     */
+    @Override
+    public HashMap<String,Object> getHostStayBriefInfoByStayId(long stayId){
+        HashMap<String, Object> hashMap = new HashMap<>();
+        StayEntity stay = stayRepository.findFirstByStayId(stayId);
+        ViewStayRoomPriceEntity viewStayRoomPrice
+                =viewStayRoomPriceRepository.findFirstByStayId(stayId);
+        ViewStayOrderNumberEntity viewStayOrderNumber
+                = viewStayOrderNumberRepository.findFirstByStayId(stayId);
+
+        hashMap.put("stayId",stayId);
+        List<String> stayPhotos=getAllPhotoByStayId(stayId);
+        hashMap.put("imgListNum",stayPhotos.size());
+        hashMap.put("stayType",stay.getStayTypeName());
+        hashMap.put("stayNickName",stay.getStayName());
+        hashMap.put("stayPlace",stay.getDetailedAddress());
+        if (viewStayRoomPrice == null){
+            hashMap.put("stayPrice",0);
+        }
+        else{
+            hashMap.put("stayPrice",viewStayRoomPrice.getMinPrice());
+        }
+        hashMap.put("stayImgList",stayPhotos);
+
+        // 根据状态来确定是否返回
+        if (stay.getStayStatus() == BigInteger.TWO){
+            if (viewStayOrderNumber == null){
+                hashMap.put("orderNum",0);
+            }
+            else{
+                hashMap.put("orderNum",viewStayOrderNumber.getOrderNumber());
+            }
+
+            hashMap.put("reviewNum", stay.getCommentAmount());
+            hashMap.put("reviewScore", stay.getCommentScore());
+        }
+
+
+
+        hashMap.put("stayImgList",stayPhotos);
+
+        return hashMap;
     }
 
     /**

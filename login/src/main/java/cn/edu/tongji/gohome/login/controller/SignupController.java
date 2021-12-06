@@ -2,6 +2,7 @@ package cn.edu.tongji.gohome.login.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.edu.tongji.gohome.login.service.LoginService;
+import cn.edu.tongji.gohome.login.service.PhoneService;
 import cn.edu.tongji.gohome.login.service.SignupService;
 import cn.edu.tongji.gohome.login.service.exception.DataFormatException;
 import cn.edu.tongji.gohome.login.service.exception.LoginRequiredException;
@@ -28,6 +29,9 @@ public class SignupController {
 
     @Resource
     private LoginService loginService;
+
+    @Resource
+    private PhoneService phoneService;
 
     @ApiOperation("Check Whether the Phone is Available")
     @ApiResponses(
@@ -82,7 +86,7 @@ public class SignupController {
             @ApiParam(value = "Password", defaultValue = "13456") @RequestParam String password,
             @ApiParam(value = "User Nick Name", defaultValue = "haha") @RequestParam String username
     ) {
-        if (phone.length() != 11) {
+        if (!phoneService.isPhoneValidate(phone)) {
             throw new DataFormatException();
         }
         Long id = signupService.customerSignup(phoneCode, phone, password, username);
@@ -110,7 +114,7 @@ public class SignupController {
             @ApiParam(value = "User Resident ID Card Number", defaultValue = "200001199901011010") @RequestParam String ID,
             @ApiParam(value = "User gender", defaultValue = "m") @RequestParam String gender
     ) {
-        if (phone.length() != 11) {
+        if (!phoneService.isPhoneValidate(phone)) {
             throw new DataFormatException();
         }
         signupService.hostSignup(phoneCode, phone, password, username, ID, realname, gender);
@@ -137,7 +141,7 @@ public class SignupController {
             @ApiParam(value = "User Resident ID Card Number", defaultValue = "200001199901011010") @RequestParam String ID,
             @ApiParam(value = "User gender", defaultValue = "m") @RequestParam String gender
     ) {
-        if (phone.length() != 11) {
+        if (!phoneService.isPhoneValidate(phone)) {
             throw new DataFormatException();
         }
         if (!loginService.checkUserLogin(phone, password)) {
