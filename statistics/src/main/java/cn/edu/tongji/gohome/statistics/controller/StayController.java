@@ -59,4 +59,22 @@ public class StayController {
         return new ResponseEntity<>(hashMap,
                 HttpStatus.OK);
     }
+
+    @RequestMapping("/age")
+    public ResponseEntity<HashMap<String,Integer>> getStayCustomerAgeByStayId
+            (long stayId){
+        return new ResponseEntity<>(
+                stayService.getStayCustomerAgeByStayId(stayId),
+                HttpStatus.OK
+        );
+    }
+
+    @RequestMapping("/gender")
+    public ResponseEntity<HashMap<String,Integer>> getStayCustomerGenderByStayId
+            (long stayId){
+        return new ResponseEntity<>(
+                stayService.getStayCustomerGenderByStayId(stayId),
+                HttpStatus.OK
+        );
+    }
 }
