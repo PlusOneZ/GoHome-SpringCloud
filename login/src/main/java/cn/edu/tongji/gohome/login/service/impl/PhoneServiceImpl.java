@@ -11,8 +11,11 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PhoneServiceImpl implements PhoneService {
+
+    private static final int PHONE_LENGTH_CN = 11;
+
     @Override
     public Boolean isPhoneValidate(String phoneNumber){
-        return phoneNumber.length() == 11;
+        return phoneNumber.length() == PHONE_LENGTH_CN;
     }
 }

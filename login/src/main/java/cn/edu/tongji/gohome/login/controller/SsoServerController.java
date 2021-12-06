@@ -5,6 +5,8 @@ import cn.dev33.satoken.sso.SaSsoHandle;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
 import cn.edu.tongji.gohome.login.service.LoginService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +19,7 @@ import javax.annotation.Resource;
  * @author 卓正一
  * @since 2021/12/1 7:49 PM
  */
+@Api(tags = "SSO")
 @RestController
 //@RequestMapping("api/v1/login/")
 public class SsoServerController {
@@ -25,9 +28,10 @@ public class SsoServerController {
     LoginService loginService;
 
     /*
-     * SSO-Server端：处理所有SSO相关请求 (下面的章节我们会详细列出开放的接口)
+     * SSO-Server端：处理所有SSO相关请求
      */
     @RequestMapping("/sso/*")
+    @ApiOperation(value = "SSO login", notes = "use /doLogin?name=<phone>&pwd=<password> to login.")
     public Object ssoRequest() {
         SaSsoHandle.ssoDoLogin();
 
@@ -60,12 +64,6 @@ public class SsoServerController {
 
             System.out.println("失败");
             return SaResult.error("登录失败！");
-            // 此处仅做模拟登录，真实环境应该查询数据进行登录
-//            if("sa".equals(name) && "123456".equals(pwd)) {
-//                StpUtil.login(10001);
-//                return SaResult.ok("登录成功！").setData(StpUtil.getTokenValue());
-//            }
-//            return SaResult.error("登录失败！");
         });
     }
 
