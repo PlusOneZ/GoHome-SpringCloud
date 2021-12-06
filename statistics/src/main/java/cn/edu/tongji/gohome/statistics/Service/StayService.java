@@ -21,4 +21,10 @@ public interface StayService {
     List<Long> getMostOrdersStay();
 
     List<Long> getMinPriceStay();
+
+    HashMap<String, Integer> getStayCustomerAgeByStayId(long stayId);
+
+    HashMap<String, Integer> getStayCustomerGenderByStayId(long stayId);
+
+    List<HashMap<String,Object>> getStayMonthOrderAndCommentScore(long stayId);
 }

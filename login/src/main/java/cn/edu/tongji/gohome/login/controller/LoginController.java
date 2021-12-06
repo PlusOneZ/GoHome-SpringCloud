@@ -1,7 +1,11 @@
 package cn.edu.tongji.gohome.login.controller;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.edu.tongji.gohome.login.dto.CustomerBriefInfoDTO;
+import cn.edu.tongji.gohome.login.dto.VerifyCodeToken;
 import cn.edu.tongji.gohome.login.service.LoginService;
+import cn.edu.tongji.gohome.login.service.exception.LoginRequiredException;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -116,4 +120,25 @@ public class LoginController {
         return ResponseEntity.ok(StpUtil.getRoleList());
     }
 
+    @ApiOperation("Get user brief info while logging in.")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "OK", response = CustomerBriefInfoDTO.class),
+                    @ApiResponse(code = 401, message = "Not Logged in.")
+            }
+    )
+    @GetMapping("userBriefInfo")
+    public ResponseEntity<CustomerBriefInfoDTO> getUserInfo() {
+        try {
+            Long id = Long.parseLong((String) StpUtil.getLoginId());
+            return ResponseEntity.ok(loginService.getCustomerBriefInfoByCustomerId(id));
+        } catch (NotLoginException e) {
+            throw new LoginRequiredException();
+        }
+    }
+
+    @GetMapping(value = "verificationCode")
+    public ResponseEntity<VerifyCodeToken> getVerificationCode() {
+        return ResponseEntity.ok(loginService.getVerificationCodeAndToken());
+    }
 }

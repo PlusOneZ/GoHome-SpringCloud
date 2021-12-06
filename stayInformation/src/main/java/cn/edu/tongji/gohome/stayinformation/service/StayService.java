@@ -32,6 +32,9 @@ public interface StayService {
 
     HashMap<String, Object> getHostInfoByStayId(Long stayId);
 
+    List<Long> getAllStayIdByHostIdAndStatus(int hostId,
+                                             BigInteger stayStatus);
+
     boolean isHostFavoriteByCustomerId(Long stayId, long customerId);
 
     HashMap<String, Object> getStayMapInfoByStayId(Long stayId, long customerId);
@@ -45,4 +48,6 @@ public interface StayService {
     void updateAStay(HostStay hostStay, long stayId, int hostId);
 
     void deleteFromStayId(long stayId);
+
+    HashMap<String,Object> getHostStayBriefInfoByStayId(long stayId);
 }

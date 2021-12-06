@@ -1,13 +1,22 @@
 package cn.edu.tongji.gohome.login.service.impl;
 
+import cn.edu.tongji.gohome.login.dto.CustomerBriefInfoDTO;
+import cn.edu.tongji.gohome.login.dto.VerifyCodeToken;
 import cn.edu.tongji.gohome.login.model.AdministratorEntity;
 import cn.edu.tongji.gohome.login.model.CustomerEntity;
 import cn.edu.tongji.gohome.login.repository.AdminRepository;
 import cn.edu.tongji.gohome.login.repository.CustomerRepository;
 import cn.edu.tongji.gohome.login.service.LoginService;
+import cn.edu.tongji.gohome.login.service.exception.DataFormatException;
+import cn.edu.tongji.gohome.login.service.exception.UserNotExistException;
+
+import cn.edu.tongji.gohome.login.utils.VerifyCodeUtil;
+
 import org.springframework.stereotype.Service;
 
+
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.Optional;
 
 /**
@@ -67,6 +76,35 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public Integer getAdminIdByName(String adminName) {
         return adminRepository.findByAdminName(adminName).map(AdministratorEntity::getAdminId).orElse(-1);
+    }
+
+    @Override
+    public CustomerBriefInfoDTO getCustomerBriefInfoByCustomerId(Long id) {
+        Optional<CustomerEntity> customer = customerRepository.findById(id);
+        if (customer.isPresent()) {
+            CustomerBriefInfoDTO briefInfoDTO = new CustomerBriefInfoDTO();
+            briefInfoDTO.fillByCustomerEntity(customer.get());
+            return briefInfoDTO;
+        } else {
+            throw new UserNotExistException();
+        }
+    }
+
+    @Override
+    public VerifyCodeToken getVerificationCodeAndToken() {
+        String verifyCode = VerifyCodeUtil.generateVerifyCode(4);
+        try {
+            String image = VerifyCodeUtil.base64StringOfCode(verifyCode);
+            VerifyCodeToken vct = new VerifyCodeToken();
+            vct.setCodeImg("data:image/jpg;base64," + image);
+
+            // TODO: Add token for validation here
+            vct.setToken(verifyCode);
+            return vct;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new DataFormatException();
+        }
     }
 
 
