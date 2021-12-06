@@ -38,6 +38,9 @@ public class StayServiceImpl implements StayService {
     @Resource
     ViewStayCustomerGenderAgeRepository viewStayCustomerGenderAgeRepository;
 
+    @Resource
+    ViewStayMonthOrderCommentScoreRepository viewStayMonthOrderCommentScoreRepository;
+
     @Override
     public List<Long> getHighestScoreStay() {
         Pageable pageable = PageRequest.of(0, 8);
@@ -150,5 +153,26 @@ public class StayServiceImpl implements StayService {
 
         return result;
 
+    }
+
+    @Override
+    public List<HashMap<String,Object>> getStayMonthOrderAndCommentScore(long stayId){
+        List<HashMap<String, Object>> result = new ArrayList<>();
+
+        List<ViewStayMonthOrderCommentScoreEntity> viewStayMonthOrderCommentScoreEntities=
+            viewStayMonthOrderCommentScoreRepository.findAllByStayId(stayId);
+        for(ViewStayMonthOrderCommentScoreEntity item: viewStayMonthOrderCommentScoreEntities){
+
+            HashMap<String, Object> hashMap = new HashMap<>();
+            String mapKey = item.getOrderYear().toString()+"-"+item.getOrderMonth().toString();
+
+            hashMap.put("date",mapKey);
+            hashMap.put("orderNum",item.getOrderNumber());
+            hashMap.put("commentNum",item.getCommentNumber());
+            hashMap.put("commentScore",item.getAvgScore());
+
+            result.add(hashMap);
+        }
+        return result;
     }
 }

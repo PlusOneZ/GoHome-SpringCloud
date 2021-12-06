@@ -77,4 +77,13 @@ public class StayController {
                 HttpStatus.OK
         );
     }
+
+    @RequestMapping("/order/year")
+    public ResponseEntity<List<HashMap<String,Object>>> getStayMonthOrderAndComment
+            (@RequestParam long stayId){
+        return new ResponseEntity<>(
+                stayService.getStayMonthOrderAndCommentScore(stayId),
+                HttpStatus.OK
+        );
+    }
 }
