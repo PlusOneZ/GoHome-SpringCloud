@@ -85,13 +85,13 @@
         </dependency>
 
 
-
         <dependency>
             <groupId>cn.edu.tongji.gohome</groupId>
             <artifactId>login</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+
 
         <!-- Sa-Token 权限认证, 在线文档：http://sa-token.dev33.cn/ -->
         <dependency>

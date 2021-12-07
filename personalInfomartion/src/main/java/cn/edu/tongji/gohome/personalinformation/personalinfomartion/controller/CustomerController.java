@@ -36,7 +36,7 @@ public class CustomerController {
     public ResponseEntity<HashMap<String,Object>> getCustomerInfo()throws Exception{
 
         try {
-            Long customerId = (Long) StpUtil.getLoginId();
+            Long customerId = Long.parseLong((String) StpUtil.getLoginId());
             return new ResponseEntity<>(customerInfoService.searchCustomerInfoByCustomerId(customerId), HttpStatus.OK);
         }catch (Exception error){
             error.printStackTrace();

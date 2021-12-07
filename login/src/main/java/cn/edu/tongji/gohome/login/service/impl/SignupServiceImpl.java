@@ -5,11 +5,20 @@ import cn.edu.tongji.gohome.login.model.HostEntity;
 import cn.edu.tongji.gohome.login.repository.AdminRepository;
 import cn.edu.tongji.gohome.login.repository.CustomerRepository;
 import cn.edu.tongji.gohome.login.repository.HostRepository;
+import cn.edu.tongji.gohome.login.service.EncryptService;
 import cn.edu.tongji.gohome.login.service.SignupService;
 import cn.edu.tongji.gohome.login.service.exception.UserAlreadyExists;
 import cn.edu.tongji.gohome.login.service.exception.UserNotExistException;
+import cn.edu.tongji.gohome.login.utils.RandomSmsCodeUtil;
+import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.IAcsClient;
+import com.aliyuncs.exceptions.ClientException;
+import com.aliyuncs.profile.DefaultProfile;
 import com.github.yitter.idgen.YitIdHelper;
 import org.springframework.stereotype.Service;
+
+import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
+import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 
 import javax.annotation.Resource;
 import java.util.Optional;
@@ -31,6 +40,9 @@ public class SignupServiceImpl implements SignupService {
 
     @Resource
     AdminRepository adminRepository;
+
+    @Resource
+    EncryptService encryptService;
 
     @Override
     public Boolean checkPhoneAvailable(String phone) {
@@ -62,6 +74,29 @@ public class SignupServiceImpl implements SignupService {
     }
 
     @Override
+    public void sendSmsVerificationCode(String phone) {
+        String code = RandomSmsCodeUtil.getCode();
+
+        // TODO: modify to usable edition.
+        // copied example code
+        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", "<accessKeyId>", "<accessSecret>");
+        IAcsClient client = new DefaultAcsClient(profile);
+
+        SendSmsRequest request = new SendSmsRequest();
+        request.setSysRegionId("cn-hangzhou");
+        request.setPhoneNumbers(phone);
+        request.setSignName("云通讯****");
+        request.setTemplateCode("SMS_1004****");
+        request.setTemplateParam("{\"code\": \"123456\"}");
+        try {
+            SendSmsResponse response = client.getAcsResponse(request);
+        }catch (ClientException e) {
+            // TODO fill this
+        }
+
+    }
+
+    @Override
     public Long customerSignup(String phoneCode, String phone, String password, String username) {
         return customerSignup(phoneCode, phone, password, username, null);
     }
@@ -76,7 +111,8 @@ public class SignupServiceImpl implements SignupService {
         CustomerEntity customer = new CustomerEntity();
 
         customer.setCustomerId(YitIdHelper.nextId()); // 自动生成
-        customer.setCustomerPassword(password);
+        String pwdEncrypted = encryptService.encryptPassword(password);
+        customer.setCustomerPassword(pwdEncrypted);
         customer.setCustomerName(username);
         customer.setCustomerPhone(phone);
         customer.setCustomerPhoneCode(phoneCode);
