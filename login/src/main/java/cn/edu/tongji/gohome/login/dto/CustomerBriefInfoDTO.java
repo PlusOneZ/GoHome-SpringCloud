@@ -12,11 +12,14 @@ import lombok.Data;
 @Data
 public class CustomerBriefInfoDTO {
 
+    private Long userId;
+
     private String userName;
 
     private String userAvatar;
 
     public void fillByCustomerEntity(CustomerEntity customer) {
+        this.setUserId(customer.getCustomerId());
         this.setUserAvatar(customer.getCustomerAvatarLink());
         this.setUserName(customer.getCustomerName());
     }
