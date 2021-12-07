@@ -1,5 +1,6 @@
 package cn.edu.tongji.gohome.post.service.impl;
 
+import cn.edu.tongji.gohome.post.dto.HotTag;
 import cn.edu.tongji.gohome.post.model.PostEntity;
 import cn.edu.tongji.gohome.post.model.PostTagEntity;
 import cn.edu.tongji.gohome.post.repository.PostRepository;
@@ -34,7 +35,15 @@ public class TagServiceImpl implements TagService {
 
         HashMap<String, Object> results = new HashMap<>();
 
-        Page<String> tagList = postTagRepository.findAllDistinctTag(pageable);
+        Page<String> tags = postTagRepository.findAllDistinctTag(pageable);
+
+        Page<HotTag> tagList=tags.map((String tag)->{
+            HotTag hotTag=new HotTag();
+            hotTag.setTag(tag);
+            hotTag.setHotness(postTagRepository.findCountPostIdByTag(tag));
+
+            return hotTag;
+        });
 
         results.put("tagList", tagList);
         return results;

@@ -17,8 +17,13 @@ public interface PostTagRepository extends JpaRepository<PostTagEntity, Long>, J
     @Query("select distinct p.postTag from PostTagEntity p")
     Page<String> findAllDistinctTag(Pageable pageable);
 
+    @Query("select count(p.postId) from PostTagEntity p where p.postTag = ?1")
+    int findCountPostIdByTag(String tag);
+
     @Query("select distinct p.postTag from PostTagEntity p where p.postId = ?1")
     List<String> findAllDistinctTagByPostId(long postId);
+
+
 
     List<PostTagEntity> findAllByPostId(long postId);
 
