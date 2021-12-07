@@ -41,6 +41,7 @@ public class LoginServiceImpl implements LoginService {
      */
     @Override
     public Boolean checkUserLogin(String userPhone, String password) {
+        // TODO: Encrypt this password, maybe a password encryptor?
         Optional<CustomerEntity> customer = customerRepository.findByCustomerPhone(userPhone);
         return customer.map(customerEntity -> customerEntity.getCustomerPassword().equals(password)).orElse(false);
     }

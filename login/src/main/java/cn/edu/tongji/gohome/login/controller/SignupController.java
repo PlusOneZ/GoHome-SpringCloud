@@ -1,6 +1,7 @@
 package cn.edu.tongji.gohome.login.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.edu.tongji.gohome.login.dto.CustomerSignupDTO;
 import cn.edu.tongji.gohome.login.service.LoginService;
 import cn.edu.tongji.gohome.login.service.PhoneService;
 import cn.edu.tongji.gohome.login.service.SignupService;
@@ -81,15 +82,12 @@ public class SignupController {
     )
     @PostMapping("customer")
     public ResponseEntity<HashMap<String, Object>> customerSignup(
-            @ApiParam(value = "International Phone Code", defaultValue = "+86") @RequestParam(required = false) String phoneCode,
-            @ApiParam(value = "Phone", defaultValue = "19946254155") @RequestParam String phone,
-            @ApiParam(value = "Password", defaultValue = "13456") @RequestParam String password,
-            @ApiParam(value = "User Nick Name", defaultValue = "haha") @RequestParam String username
-    ) {
-        if (!phoneService.isPhoneValidate(phone)) {
+            @ApiParam(value = "International Phone Code", defaultValue = "+86") @RequestBody CustomerSignupDTO customerSignupDTO
+            ) {
+        if (!phoneService.isPhoneValidate(customerSignupDTO.getPhone())) {
             throw new DataFormatException();
         }
-        Long id = signupService.customerSignup(phoneCode, phone, password, username);
+        Long id = signupService.customerSignup(customerSignupDTO.getPhoneCode(), customerSignupDTO.getPhone(), customerSignupDTO.getPassword(), customerSignupDTO.getUsername());
 
         HashMap<String, Object> retMap = new HashMap<String, Object>();
         retMap.put("registerState", true);
@@ -147,7 +145,6 @@ public class SignupController {
         if (!loginService.checkUserLogin(phone, password)) {
             throw new LoginRequiredException();
         }
-        // TODO： 并发不安全
         Long customerId = loginService.getCustomerIdByPhone(phone);
         signupService.hostSignup(ID, realname, customerId);
         signupService.setCustomerGender(customerId, gender);

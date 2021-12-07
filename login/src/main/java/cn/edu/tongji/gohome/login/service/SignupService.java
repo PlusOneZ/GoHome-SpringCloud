@@ -18,6 +18,9 @@ public interface SignupService {
     void changeCustomerPassword(Long userId, String newPassword);
 
     // TODO 分割一个发送短信的服务接口
+
+    void sendSmsVerificationCode(String phone);
+
     // TODO 一个身份证照片检验服务
 
     Long customerSignup(String phoneCode, String phone, String password, String username);

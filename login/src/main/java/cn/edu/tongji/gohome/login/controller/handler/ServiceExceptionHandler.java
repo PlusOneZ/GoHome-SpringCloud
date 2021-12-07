@@ -34,4 +34,9 @@ public class ServiceExceptionHandler {
         return ResponseEntity.status(400).body(e.getMessage());
     }
 
+    @ExceptionHandler(AliyunSmsCodeException.class)
+    public ResponseEntity<String> handleAliyunSMSError(AliyunSmsCodeException e) {
+        return ResponseEntity.status(500).body(e.getMessage());
+    }
+
 }
