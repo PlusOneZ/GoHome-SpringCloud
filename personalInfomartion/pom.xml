@@ -84,19 +84,8 @@
             <version>3.0.4</version>
         </dependency>
 
-        <!-- Sa-Token 权限认证 -->
-        <dependency>
-            <groupId>cn.dev33</groupId>
-            <artifactId>sa-token-spring-boot-starter</artifactId>
-            <version>1.28.0</version>
-        </dependency>
 
-        <dependency>
-            <groupId>cn.edu.tongji.gohome</groupId>
-            <artifactId>login</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
+
         <dependency>
             <groupId>cn.edu.tongji.gohome</groupId>
             <artifactId>login</artifactId>
