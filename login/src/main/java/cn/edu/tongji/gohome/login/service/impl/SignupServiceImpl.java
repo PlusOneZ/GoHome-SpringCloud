@@ -5,6 +5,7 @@ import cn.edu.tongji.gohome.login.model.HostEntity;
 import cn.edu.tongji.gohome.login.repository.AdminRepository;
 import cn.edu.tongji.gohome.login.repository.CustomerRepository;
 import cn.edu.tongji.gohome.login.repository.HostRepository;
+import cn.edu.tongji.gohome.login.service.EncryptService;
 import cn.edu.tongji.gohome.login.service.SignupService;
 import cn.edu.tongji.gohome.login.service.exception.UserAlreadyExists;
 import cn.edu.tongji.gohome.login.service.exception.UserNotExistException;
@@ -39,6 +40,9 @@ public class SignupServiceImpl implements SignupService {
 
     @Resource
     AdminRepository adminRepository;
+
+    @Resource
+    EncryptService encryptService;
 
     @Override
     public Boolean checkPhoneAvailable(String phone) {
@@ -87,7 +91,7 @@ public class SignupServiceImpl implements SignupService {
         try {
             SendSmsResponse response = client.getAcsResponse(request);
         }catch (ClientException e) {
-
+            // TODO fill this
         }
 
     }
@@ -107,8 +111,8 @@ public class SignupServiceImpl implements SignupService {
         CustomerEntity customer = new CustomerEntity();
 
         customer.setCustomerId(YitIdHelper.nextId()); // 自动生成
-        // TODO: Encrypt password
-        customer.setCustomerPassword(password);
+        String pwdEncrypted = encryptService.encryptPassword(password);
+        customer.setCustomerPassword(pwdEncrypted);
         customer.setCustomerName(username);
         customer.setCustomerPhone(phone);
         customer.setCustomerPhoneCode(phoneCode);
