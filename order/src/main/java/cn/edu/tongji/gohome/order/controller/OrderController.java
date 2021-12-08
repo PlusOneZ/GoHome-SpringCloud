@@ -1,6 +1,7 @@
 package
         cn.edu.tongji.gohome.order.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.edu.tongji.gohome.order.dto.Comment;
 import cn.edu.tongji.gohome.order.dto.OrderContent;
 import cn.edu.tongji.gohome.order.dto.OrderStatus;
@@ -68,10 +69,14 @@ public class OrderController {
             @RequestParam(value = "pageSize", defaultValue = "5") int pageSize,
             @RequestParam(value = "orderStatus", required = false) Integer orderStatus) {
 
+        Long customerId = Long.valueOf((String) StpUtil.getLoginId());
+        System.out.println("print customerId");
+        System.out.println(customerId);
+
         if(orderStatus == null){
-            return new ResponseEntity<>(orderService.searchOrderInfoForCustomerId(1L, currentPage, pageSize), HttpStatus.OK);
+            return new ResponseEntity<>(orderService.searchOrderInfoForCustomerId(customerId, currentPage, pageSize), HttpStatus.OK);
         }
-        return new ResponseEntity<>(orderService.searchOrderInfoForCustomerIdAndOrderStatus(1L, orderStatus, currentPage, pageSize), HttpStatus.OK);
+        return new ResponseEntity<>(orderService.searchOrderInfoForCustomerIdAndOrderStatus(customerId, orderStatus, currentPage, pageSize), HttpStatus.OK);
     }
 
 
@@ -137,6 +142,7 @@ public class OrderController {
     @RequestMapping(value = "order", method = RequestMethod.POST)
     public Long addOrder(@RequestBody OrderContent orderContent) {
 
+        orderContent.setCustomerId(Long.parseLong((String) StpUtil.getLoginId()));
         return orderService.addOrderAndDetailedInformation(orderContent);
     }
 
@@ -162,7 +168,7 @@ public class OrderController {
             @RequestParam(value = "currentPage") int currentPage,
             @RequestParam(value = "pageSize", defaultValue = "3") int pageSize) {
         return new ResponseEntity<>(
-                orderService.searchUsableCouponForCustomerId(1, couponLimit, currentPage, pageSize), HttpStatus.OK
+                orderService.searchUsableCouponForCustomerId(Long.parseLong((String) StpUtil.getLoginId()), couponLimit, currentPage, pageSize), HttpStatus.OK
         );
     }
 

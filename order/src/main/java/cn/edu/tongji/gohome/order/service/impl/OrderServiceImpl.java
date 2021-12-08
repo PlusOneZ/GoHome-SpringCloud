@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * implements the service for order mainly.
@@ -119,6 +121,22 @@ public class OrderServiceImpl implements OrderService {
             orderInfo.setStayId(stay.getStayId());
             orderInfo.setStayName(stay.getStayName());
             orderInfo.setDetailedAddress(stay.getDetailedAddress());
+
+            //get stayProvince and stayCity from detailedAddress.
+            System.out.println(stay.getDetailedAddress());
+            orderInfo.setStayProvince("");
+            orderInfo.setStayCity("");
+            if(stay.getDetailedAddress() != null){
+                String regEx = "(.*?)省(.*?)市.*|(.*?)市(.*?区).*";
+                Pattern pattern = Pattern.compile(regEx);
+                Matcher matcher = pattern.matcher(stay.getDetailedAddress());
+                if(matcher.find()){
+                    System.out.println(matcher.group(1));
+                    orderInfo.setStayProvince(matcher.group(1));
+                    orderInfo.setStayCity(matcher.group(2));
+                }
+            }
+
             ViewStayCustomerEntity viewStayCustomer = stayCustomerRepository.getById(orderStay.getStayId());
             orderInfo.setHostAvatarLink(viewStayCustomer.getCustomerAvatarLink());
             orderInfo.setHostName(viewStayCustomer.getCustomerName());

@@ -20,6 +20,8 @@ public class OrderInfoDto {
     private String detailedAddress;
     private String hostAvatarLink;
     private String hostName;
+    private String stayProvince;
+    private String stayCity;
     private BigDecimal totalCost;
     private int orderStatus;
     private int stayScore;
@@ -167,4 +169,19 @@ public class OrderInfoDto {
         this.reportReply = reportReply;
     }
 
+    public String getStayProvince() {
+        return stayProvince;
+    }
+
+    public void setStayProvince(String stayProvince) {
+        this.stayProvince = stayProvince;
+    }
+
+    public String getStayCity() {
+        return stayCity;
+    }
+
+    public void setStayCity(String stayCity) {
+        this.stayCity = stayCity;
+    }
 }
