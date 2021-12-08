@@ -639,6 +639,8 @@ public class StayServiceImpl implements StayService {
 
     @Override
     public void deleteFromStayId(long stayId){
-        stayRepository.getById(stayId).setStayStatus(BigInteger.valueOf(4));
+        StayEntity stayEntity=stayRepository.getById(stayId);
+        stayEntity.setStayStatus(BigInteger.valueOf(4));
+        stayRepository.save(stayEntity);
     }
 }
