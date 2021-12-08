@@ -1,6 +1,9 @@
 package cn.edu.tongji.gohome.login.controller;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.edu.tongji.gohome.login.dto.CustomerSignupDTO;
+import cn.edu.tongji.gohome.login.payload.IdVerificationResult;
 import cn.edu.tongji.gohome.login.service.LoginService;
 import cn.edu.tongji.gohome.login.service.PhoneService;
 import cn.edu.tongji.gohome.login.service.SignupService;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * SignupController
@@ -81,15 +85,12 @@ public class SignupController {
     )
     @PostMapping("customer")
     public ResponseEntity<HashMap<String, Object>> customerSignup(
-            @ApiParam(value = "International Phone Code", defaultValue = "+86") @RequestParam(required = false) String phoneCode,
-            @ApiParam(value = "Phone", defaultValue = "19946254155") @RequestParam String phone,
-            @ApiParam(value = "Password", defaultValue = "13456") @RequestParam String password,
-            @ApiParam(value = "User Nick Name", defaultValue = "haha") @RequestParam String username
-    ) {
-        if (!phoneService.isPhoneValidate(phone)) {
+            @ApiParam(value = "International Phone Code", defaultValue = "+86") @RequestBody CustomerSignupDTO customerSignupDTO
+            ) {
+        if (!phoneService.isPhoneValidate(customerSignupDTO.getPhone())) {
             throw new DataFormatException();
         }
-        Long id = signupService.customerSignup(phoneCode, phone, password, username);
+        Long id = signupService.customerSignup(customerSignupDTO.getPhoneCode(), customerSignupDTO.getPhone(), customerSignupDTO.getPassword(), customerSignupDTO.getUsername());
 
         HashMap<String, Object> retMap = new HashMap<String, Object>();
         retMap.put("registerState", true);
@@ -135,26 +136,49 @@ public class SignupController {
     public ResponseEntity<HashMap<String, Boolean>> upgradeToHost(
             @ApiParam(value = "International Phone Code", defaultValue = "+86") @RequestParam String phoneCode,
             @ApiParam(value = "Phone", defaultValue = "19946254155") @RequestParam String phone,
-            @ApiParam(value = "Password", defaultValue = "13456") @RequestParam String password,
-            @ApiParam(value = "User Nick Name", defaultValue = "haha") @RequestParam(required = false) String username,
-            @ApiParam(value = "User Real Name", defaultValue = "吴克") @RequestParam String realname,
+            @ApiParam(value = "User Real Name", defaultValue = "吴克") @RequestParam String realName,
             @ApiParam(value = "User Resident ID Card Number", defaultValue = "200001199901011010") @RequestParam String ID,
             @ApiParam(value = "User gender", defaultValue = "m") @RequestParam String gender
     ) {
         if (!phoneService.isPhoneValidate(phone)) {
             throw new DataFormatException();
         }
-        if (!loginService.checkUserLogin(phone, password)) {
+//        if (!loginService.checkUserLogin(phone, password)) {
+//            throw new LoginRequiredException();
+//        }
+        if (phone.isEmpty() || realName.isEmpty() || ID.isEmpty()) {
+            HashMap<String, Boolean> retMap = new HashMap<String, Boolean>();
+            retMap.put("registerState", false);
+            return ResponseEntity.ok(retMap);
+        }
+        try {
+            // check current login user is the user who wants to upgrade
+            Long loginId = Long.parseLong((String) StpUtil.getLoginId());
+            Long customerId = loginService.getCustomerIdByPhone(phone);
+            if (loginId.equals(customerId)) {
+                signupService.hostSignup(ID, realName, customerId);
+                signupService.setCustomerGender(customerId, gender);
+
+                HashMap<String, Boolean> retMap = new HashMap<String, Boolean>();
+                retMap.put("registerState", true);
+                return ResponseEntity.ok(retMap);
+            } else {
+                throw new LoginRequiredException();
+            }
+        } catch (NotLoginException e) {
             throw new LoginRequiredException();
         }
-        // TODO： 并发不安全
-        Long customerId = loginService.getCustomerIdByPhone(phone);
-        signupService.hostSignup(ID, realname, customerId);
-        signupService.setCustomerGender(customerId, gender);
+    }
 
-        HashMap<String, Boolean> retMap = new HashMap<String, Boolean>();
-        retMap.put("registerState", true);
-        return ResponseEntity.ok(retMap);
+    @PostMapping("verifyResidentId")
+    public ResponseEntity<IdVerificationResult> verifyId(@RequestBody Map<String, String> body) {
+        if (!body.containsKey("positivePhoto")) {
+            throw new DataFormatException();
+        }
+        String img = body.get("positivePhoto");
+
+        // todo verify img using aliyun service
+        return ResponseEntity.ok(signupService.idVerification(img));
     }
 
 }

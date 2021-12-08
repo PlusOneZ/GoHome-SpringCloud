@@ -1,5 +1,6 @@
 package cn.edu.tongji.gohome.personalinformation.personalinfomartion.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.*;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.CustomerInfoService;
 import org.junit.runner.RunWith;
@@ -32,9 +33,15 @@ public class CustomerController {
     * @since 23:14 2021-11-25
     */
     @RequestMapping(value = "customer/details",method = RequestMethod.GET)
-    public ResponseEntity<HashMap<String,Object>> getCustomerInfo(){
+    public ResponseEntity<HashMap<String,Object>> getCustomerInfo()throws Exception{
 
-        return new ResponseEntity<>(customerInfoService.searchCustomerInfoByCustomerId(1L), HttpStatus.OK);
+        try {
+            Long customerId = Long.parseLong((String) StpUtil.getLoginId());
+            return new ResponseEntity<>(customerInfoService.searchCustomerInfoByCustomerId(customerId), HttpStatus.OK);
+        }catch (Exception error){
+            error.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.EXPECTATION_FAILED);
+        }
 
     }
 
@@ -48,10 +55,9 @@ public class CustomerController {
     @RequestMapping(value = "customer/avatar",method = RequestMethod.PUT)
     public ResponseEntity<Boolean> updateCustomerAvatar(
             @RequestBody Base64Data base64Data){
-        //TODO:SA-TOKEN
-        Long customerId = 1L;
 
         try {
+            Long customerId = (Long)StpUtil.getLoginId();
             customerInfoService.updateAvatar(customerId, base64Data.getBase64Data());
             return new ResponseEntity<>(true,HttpStatus.OK);
         }catch (Exception error){
@@ -69,8 +75,8 @@ public class CustomerController {
     public ResponseEntity<Boolean> updateUserInfo(
             @RequestBody CustomerInfoDto customerInfoDto
             ){
-        Long customerId = 1L;
         try {
+            Long customerId = (Long)StpUtil.getLoginId();
             customerInfoService.updateUserInfo(customerInfoDto, customerId);
             return new ResponseEntity<>(true,HttpStatus.OK);
         }catch (Exception error){
@@ -89,9 +95,14 @@ public class CustomerController {
     public ResponseEntity<HashMap<String,Object>> insertNewFavorite(
             @RequestBody FavoriteNameDto favoriteNameDto
             ){
-        Long customerId = 1L;
 
-            return new ResponseEntity<>(customerInfoService.insertNewFavorite(favoriteNameDto.getFavoriteName(),customerId),HttpStatus.OK);
+            try {
+                Long customerId = (Long)StpUtil.getLoginId();
+                return new ResponseEntity<>(customerInfoService.insertNewFavorite(favoriteNameDto.getFavoriteName(), customerId), HttpStatus.OK);
+            }catch (Exception error){
+                error.printStackTrace();
+                return new ResponseEntity<>(null,HttpStatus.EXPECTATION_FAILED);
+            }
 
     }
 
@@ -188,8 +199,12 @@ public class CustomerController {
 
     @RequestMapping(value = "host/info", method = RequestMethod.GET)
     public ResponseEntity<HashMap<String,Object>> getHostBasicInfo(){
-        Long customerId = 1L;
-        return new ResponseEntity<>(customerInfoService.getHostInfoByCustomerId(customerId),HttpStatus.OK);
+        try {
+            Long customerId =(Long)StpUtil.getLoginId();
+            return new ResponseEntity<>(customerInfoService.getHostInfoByCustomerId(customerId), HttpStatus.OK);
+        }catch (Exception error){
+            return new ResponseEntity<>(null,HttpStatus.EXPECTATION_FAILED);
+        }
     }
 
 
@@ -216,8 +231,8 @@ public class CustomerController {
     public ResponseEntity<Boolean> updateHostNickName(
             @RequestBody HostNickNameDto hostNickNameDto
     ){
-        Long customerId = 1L;
         try{
+            Long customerId = (Long)StpUtil.getLoginId();
             customerInfoService.updateHostNickName(customerId, hostNickNameDto.getHostNickName());
             return new ResponseEntity<>(true,HttpStatus.OK);
         }catch (Exception error)
@@ -236,8 +251,8 @@ public class CustomerController {
             @RequestBody Base64Data base64Data
     )
     {
-        Long customerId = 1L;
         try {
+            Long customerId = (Long)StpUtil.getLoginId();
             customerInfoService.updateAvatar(customerId,base64Data.getBase64Data());
             return new ResponseEntity<>(true,HttpStatus.OK);
         }

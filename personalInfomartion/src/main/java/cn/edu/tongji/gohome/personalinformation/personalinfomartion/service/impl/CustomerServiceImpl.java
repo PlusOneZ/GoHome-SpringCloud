@@ -132,8 +132,14 @@ public class CustomerServiceImpl implements CustomerInfoService {
         results.put("registerDate",dateToString(customerEntity.getCustomerCreateTime()));
         results.put("hostCommentList",hostCommentDtoList);
         results.put("mood",customerEntity.getCustomerMood());
-        results.put("userBirthDate",dateToString(customerEntity.getCustomerBirthday()));
-        results.put("usrSex",(customerEntity.getCustomerGender().equals("m"))?"男":"女");
+        results.put("userBirthDate", Objects.equals(dateToString(customerEntity.getCustomerBirthday()), "") ?"暂无生日哦":dateToString(customerEntity.getCustomerBirthday()));
+        String customerGender = customerEntity.getCustomerGender();
+        if(customerGender != null) {
+            results.put("usrSex", (customerEntity.getCustomerGender().equals("m")) ? "男" : "女");
+        }
+        else{
+            results.put("usrSex", "");
+        }
 
         return results;
 
@@ -487,33 +493,38 @@ public class CustomerServiceImpl implements CustomerInfoService {
 
     private String timeToString(Time time){
         String timeStr = "";
+        if(time != null){
         DateFormat sdf = new SimpleDateFormat("hh:mm");
         try{
             timeStr = sdf.format(time);
         }catch (Exception e){
             e.printStackTrace();
-        }
+        }}
         return timeStr;
     }
 
     private String dateToString(Timestamp timestamp){
         String dateStr = "";
+        if(timestamp != null){
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         try{
             dateStr = sdf.format(timestamp);
         }catch (Exception e){
             e.printStackTrace();
         }
+        }
         return dateStr;
     }
 
     private String dateToString(Date date){
         String dateStr = "";
-        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        try{
-            dateStr = sdf.format(date);
-        }catch (Exception e){
-            e.printStackTrace();
+        if(date != null) {
+            DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                dateStr = sdf.format(date);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return dateStr;
     }
