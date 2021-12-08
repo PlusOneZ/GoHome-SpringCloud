@@ -1,5 +1,6 @@
 package cn.edu.tongji.gohome.login.controller;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.edu.tongji.gohome.login.dto.CustomerSignupDTO;
 import cn.edu.tongji.gohome.login.payload.IdVerificationResult;
@@ -135,25 +136,38 @@ public class SignupController {
     public ResponseEntity<HashMap<String, Boolean>> upgradeToHost(
             @ApiParam(value = "International Phone Code", defaultValue = "+86") @RequestParam String phoneCode,
             @ApiParam(value = "Phone", defaultValue = "19946254155") @RequestParam String phone,
-            @ApiParam(value = "Password", defaultValue = "13456") @RequestParam String password,
-            @ApiParam(value = "User Nick Name", defaultValue = "haha") @RequestParam(required = false) String username,
-            @ApiParam(value = "User Real Name", defaultValue = "吴克") @RequestParam String realname,
+            @ApiParam(value = "User Real Name", defaultValue = "吴克") @RequestParam String realName,
             @ApiParam(value = "User Resident ID Card Number", defaultValue = "200001199901011010") @RequestParam String ID,
             @ApiParam(value = "User gender", defaultValue = "m") @RequestParam String gender
     ) {
         if (!phoneService.isPhoneValidate(phone)) {
             throw new DataFormatException();
         }
-        if (!loginService.checkUserLogin(phone, password)) {
+//        if (!loginService.checkUserLogin(phone, password)) {
+//            throw new LoginRequiredException();
+//        }
+        if (phone.isEmpty() || realName.isEmpty() || ID.isEmpty()) {
+            HashMap<String, Boolean> retMap = new HashMap<String, Boolean>();
+            retMap.put("registerState", false);
+            return ResponseEntity.ok(retMap);
+        }
+        try {
+            // check current login user is the user who wants to upgrade
+            Long loginId = Long.parseLong((String) StpUtil.getLoginId());
+            Long customerId = loginService.getCustomerIdByPhone(phone);
+            if (loginId.equals(customerId)) {
+                signupService.hostSignup(ID, realName, customerId);
+                signupService.setCustomerGender(customerId, gender);
+
+                HashMap<String, Boolean> retMap = new HashMap<String, Boolean>();
+                retMap.put("registerState", true);
+                return ResponseEntity.ok(retMap);
+            } else {
+                throw new LoginRequiredException();
+            }
+        } catch (NotLoginException e) {
             throw new LoginRequiredException();
         }
-        Long customerId = loginService.getCustomerIdByPhone(phone);
-        signupService.hostSignup(ID, realname, customerId);
-        signupService.setCustomerGender(customerId, gender);
-
-        HashMap<String, Boolean> retMap = new HashMap<String, Boolean>();
-        retMap.put("registerState", true);
-        return ResponseEntity.ok(retMap);
     }
 
     @PostMapping("verifyResidentId")
