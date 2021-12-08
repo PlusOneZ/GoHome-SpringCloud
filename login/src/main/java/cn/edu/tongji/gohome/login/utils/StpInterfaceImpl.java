@@ -24,15 +24,20 @@ public class StpInterfaceImpl implements StpInterface {
     public List<String> getPermissionList(Object loginId, String loginType) {
         List<String> permissions = new ArrayList<>();
         System.out.println(loginId);
-        if (permissionService.checkUserIsHost(Long.valueOf((String)loginId))) {
-            permissions.add("all-host");
-            permissions.add("all-customer");
-        } else if (permissionService.checkIsUser(Long.valueOf((String)loginId))) {
-            permissions.add("all-customer");
-        } else if (permissionService.checkIsAdmin(Long.valueOf((String)loginId))){
-            permissions.add("all-admin");
-        } else {
-            permissions.add("all-guest");
+        permissions.add("browse");
+        if (permissionService.checkUserIsHost(Long.valueOf((String) loginId))) {
+            permissions.add("stay");
+            permissions.add("host");
+        }
+        if (permissionService.checkIsUser(Long.valueOf((String) loginId))) {
+            if (!permissions.contains("host")) {
+                permissions.add("upgrade");
+            }
+            permissions.add("order");
+            permissions.add("purchase");
+        }
+        if (permissionService.checkIsAdmin(Long.valueOf((String) loginId))) {
+            permissions.add("admin");
         }
         return permissions;
     }
@@ -44,7 +49,7 @@ public class StpInterfaceImpl implements StpInterface {
             role.add("host");
         } else if (permissionService.checkIsUser((Long) loginId)) {
             role.add("customer");
-        } else if (permissionService.checkIsAdmin((Long) loginId)){
+        } else if (permissionService.checkIsAdmin((Long) loginId)) {
             role.add("admin");
         } else {
             role.add("guest");

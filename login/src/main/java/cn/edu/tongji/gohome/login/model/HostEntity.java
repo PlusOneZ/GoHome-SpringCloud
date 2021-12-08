@@ -1,5 +1,8 @@
 package cn.edu.tongji.gohome.login.model;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -11,6 +14,8 @@ import java.util.Objects;
  * @since 2021/11/22 9:35 PM
  */
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "`host`", schema = "GoHome", catalog = "")
 public class HostEntity {
     private int hostId;

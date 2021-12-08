@@ -6,6 +6,7 @@ import cn.edu.tongji.gohome.login.model.AdministratorEntity;
 import cn.edu.tongji.gohome.login.model.CustomerEntity;
 import cn.edu.tongji.gohome.login.repository.AdminRepository;
 import cn.edu.tongji.gohome.login.repository.CustomerRepository;
+import cn.edu.tongji.gohome.login.service.EncryptService;
 import cn.edu.tongji.gohome.login.service.LoginService;
 import cn.edu.tongji.gohome.login.service.exception.DataFormatException;
 import cn.edu.tongji.gohome.login.service.exception.UserNotExistException;
@@ -33,20 +34,28 @@ public class LoginServiceImpl implements LoginService {
     @Resource
     AdminRepository adminRepository;
 
+    @Resource
+    EncryptService encryptService;
+
     /**
      * checkUserLogin
+     *
      * @return true for login success, false otherwise
      * @author 卓正一
      * @since 2021-11-22 10:16 PM
      */
     @Override
     public Boolean checkUserLogin(String userPhone, String password) {
+        // TODO: Encrypt this password, maybe a password encryptor?
         Optional<CustomerEntity> customer = customerRepository.findByCustomerPhone(userPhone);
-        return customer.map(customerEntity -> customerEntity.getCustomerPassword().equals(password)).orElse(false);
+        return customer.map(customerEntity ->
+                encryptService.comparePasswords(customerEntity.getCustomerPassword(), password)
+        ).orElse(false);
     }
 
     /**
      * checkAdminLogin
+     *
      * @return true for login success, false otherwise
      * @author 卓正一
      * @since 2021-11-22 10:16 PM
@@ -54,7 +63,10 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public Boolean checkAdminLogin(String adminName, String password) {
         Optional<AdministratorEntity> administrator = adminRepository.findByAdminName(adminName);
-        return administrator.map(administratorEntity -> administratorEntity.getAdminPassword().equals(password)).orElse(false);
+        String pwdEncrypted = encryptService.encryptPassword(password);
+        return administrator.map(administratorEntity ->
+                encryptService.comparePasswords(administratorEntity.getAdminPassword(), password)
+        ).orElse(false);
     }
 
     /**
@@ -104,6 +116,16 @@ public class LoginServiceImpl implements LoginService {
         } catch (IOException e) {
             e.printStackTrace();
             throw new DataFormatException();
+        }
+    }
+
+    @Override
+    public String getCustomerPhoneById(Long id) {
+        Optional<CustomerEntity> optionalCustomer = customerRepository.findById(id);
+        if (optionalCustomer.isPresent()) {
+            return optionalCustomer.get().getCustomerPhone();
+        } else {
+            throw new UserNotExistException();
         }
     }
 

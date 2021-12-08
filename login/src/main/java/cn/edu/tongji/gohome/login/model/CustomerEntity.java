@@ -1,5 +1,8 @@
 package cn.edu.tongji.gohome.login.model;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -12,6 +15,8 @@ import java.util.Objects;
  * @since 2021/11/22 9:35 PM
  */
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "customer", schema = "GoHome", catalog = "")
 public class CustomerEntity {
     private long customerId;
