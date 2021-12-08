@@ -20,6 +20,5 @@ public class ApplicationConfigRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         IdGeneratorOptions options = new IdGeneratorOptions((short) 1);
         YitIdHelper.setIdGenerator(options);
-        System.out.println("post id生成器初始化配置完成");
     }
 }
