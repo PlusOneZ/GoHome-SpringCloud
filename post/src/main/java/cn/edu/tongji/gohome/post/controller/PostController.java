@@ -1,5 +1,6 @@
 package cn.edu.tongji.gohome.post.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.edu.tongji.gohome.post.dto.UploadedPostDetail;
 import cn.edu.tongji.gohome.post.dto.UploadedPostLike;
 import cn.edu.tongji.gohome.post.dto.UploadedReply;
@@ -49,6 +50,8 @@ public class PostController {
     public ResponseEntity<HashMap<String, Object>> getDefaultTagList(
             @RequestParam(value = "currentPage", defaultValue = "0") int currentPage,
             @RequestParam(value = "pageSize", defaultValue = "5") int pageSize) {
+
+        System.out.println((String) StpUtil.getLoginId());
 
         return new ResponseEntity<>(tagService.searchDefaultTagList(currentPage, pageSize), HttpStatus.OK);
     }
