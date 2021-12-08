@@ -2,10 +2,12 @@ package cn.edu.tongji.gohome.login.service.impl;
 
 import cn.edu.tongji.gohome.login.model.CustomerEntity;
 import cn.edu.tongji.gohome.login.model.HostEntity;
+import cn.edu.tongji.gohome.login.payload.IdVerificationResult;
 import cn.edu.tongji.gohome.login.repository.AdminRepository;
 import cn.edu.tongji.gohome.login.repository.CustomerRepository;
 import cn.edu.tongji.gohome.login.repository.HostRepository;
 import cn.edu.tongji.gohome.login.service.EncryptService;
+import cn.edu.tongji.gohome.login.service.IdVerificationService;
 import cn.edu.tongji.gohome.login.service.SignupService;
 import cn.edu.tongji.gohome.login.service.exception.UserAlreadyExists;
 import cn.edu.tongji.gohome.login.service.exception.UserNotExistException;
@@ -43,6 +45,9 @@ public class SignupServiceImpl implements SignupService {
 
     @Resource
     EncryptService encryptService;
+
+    @Resource
+    IdVerificationService idVerificationService;
 
     @Override
     public Boolean checkPhoneAvailable(String phone) {
@@ -94,6 +99,20 @@ public class SignupServiceImpl implements SignupService {
             // TODO fill this
         }
 
+    }
+
+    @Override
+    public IdVerificationResult idVerification(String base64img) {
+        IdVerificationResult result = idVerificationService.verifyIdImage(base64img);
+
+        // check if duplicated
+        if (!result.getTrueID().isEmpty()) {
+            Optional<HostEntity> host = hostRepository.findByHostResidentId(result.getTrueID());
+            if (host.isPresent()) {
+                result.setVerifyResult(2);
+            }
+        }
+        return result;
     }
 
     @Override

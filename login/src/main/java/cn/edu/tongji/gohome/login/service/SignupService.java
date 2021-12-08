@@ -1,5 +1,6 @@
 package cn.edu.tongji.gohome.login.service;
 
+import cn.edu.tongji.gohome.login.payload.IdVerificationResult;
 import org.springframework.stereotype.Service;
 
 /**
@@ -22,6 +23,8 @@ public interface SignupService {
     void sendSmsVerificationCode(String phone);
 
     // TODO 一个身份证照片检验服务
+
+    IdVerificationResult idVerification(String base64img);
 
     Long customerSignup(String phoneCode, String phone, String password, String username);
 

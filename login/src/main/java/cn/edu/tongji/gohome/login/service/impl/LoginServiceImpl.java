@@ -119,5 +119,15 @@ public class LoginServiceImpl implements LoginService {
         }
     }
 
+    @Override
+    public String getCustomerPhoneById(Long id) {
+        Optional<CustomerEntity> optionalCustomer = customerRepository.findById(id);
+        if (optionalCustomer.isPresent()) {
+            return optionalCustomer.get().getCustomerPhone();
+        } else {
+            throw new UserNotExistException();
+        }
+    }
+
 
 }

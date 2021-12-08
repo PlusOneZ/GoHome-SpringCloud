@@ -137,8 +137,33 @@ public class LoginController {
         }
     }
 
+    @ApiOperation("Get user brief info while logging in.")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "OK", response = CustomerBriefInfoDTO.class),
+                    @ApiResponse(code = 401, message = "Not Logged in.")
+            }
+    )
     @GetMapping(value = "verificationCode")
     public ResponseEntity<VerifyCodeToken> getVerificationCode() {
         return ResponseEntity.ok(loginService.getVerificationCodeAndToken());
+    }
+
+    @ApiOperation("Get user phone while login.")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "OK", response = CustomerBriefInfoDTO.class),
+                    @ApiResponse(code = 401, message = "Not Logged in.")
+            }
+    )
+    @GetMapping(value = "getLoginPhone")
+    public ResponseEntity<String> getLoginPhone() {
+        try {
+            Long id = Long.parseLong((String) StpUtil.getLoginId());
+            System.out.println(id);
+            return ResponseEntity.ok(loginService.getCustomerPhoneById(id));
+        } catch (NotLoginException e) {
+            throw new LoginRequiredException();
+        }
     }
 }

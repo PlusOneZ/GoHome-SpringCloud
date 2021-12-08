@@ -23,4 +23,6 @@ public interface LoginService {
     CustomerBriefInfoDTO getCustomerBriefInfoByCustomerId(Long id);
 
     VerifyCodeToken getVerificationCodeAndToken();
+
+    String getCustomerPhoneById(Long id);
 }

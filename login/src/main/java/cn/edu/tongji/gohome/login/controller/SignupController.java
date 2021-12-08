@@ -2,6 +2,7 @@ package cn.edu.tongji.gohome.login.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.edu.tongji.gohome.login.dto.CustomerSignupDTO;
+import cn.edu.tongji.gohome.login.payload.IdVerificationResult;
 import cn.edu.tongji.gohome.login.service.LoginService;
 import cn.edu.tongji.gohome.login.service.PhoneService;
 import cn.edu.tongji.gohome.login.service.SignupService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * SignupController
@@ -152,6 +154,17 @@ public class SignupController {
         HashMap<String, Boolean> retMap = new HashMap<String, Boolean>();
         retMap.put("registerState", true);
         return ResponseEntity.ok(retMap);
+    }
+
+    @PostMapping("verifyResidentId")
+    public ResponseEntity<IdVerificationResult> verifyId(@RequestBody Map<String, String> body) {
+        if (!body.containsKey("positivePhoto")) {
+            throw new DataFormatException();
+        }
+        String img = body.get("positivePhoto");
+
+        // todo verify img using aliyun service
+        return ResponseEntity.ok(signupService.idVerification(img));
     }
 
 }

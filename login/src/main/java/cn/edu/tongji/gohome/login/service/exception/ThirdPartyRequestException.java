@@ -6,8 +6,8 @@ package cn.edu.tongji.gohome.login.service.exception;
  * @author 卓正一
  * @since 2021/12/6 9:01 PM
  */
-public class AliyunSmsCodeException extends RuntimeException {
-    AliyunSmsCodeException() {
-        super("Aliyun SMS API error.");
+public class ThirdPartyRequestException extends RuntimeException {
+    public ThirdPartyRequestException() {
+        super("External API error.");
     }
 }
