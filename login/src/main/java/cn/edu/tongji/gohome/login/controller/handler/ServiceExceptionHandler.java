@@ -34,4 +34,9 @@ public class ServiceExceptionHandler {
         return ResponseEntity.status(400).body(e.getMessage());
     }
 
+    @ExceptionHandler(ThirdPartyRequestException.class)
+    public ResponseEntity<String> handleThirdPartyRequestError(ThirdPartyRequestException e) {
+        return ResponseEntity.status(500).body(e.getMessage());
+    }
+
 }

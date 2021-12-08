@@ -54,7 +54,6 @@ public class SsoServerController {
         cfg.sso.setDoLoginHandle((name, pwd) -> {
             // name: 电话号码，pwd 密码
             if (loginService.checkUserLogin(name, pwd)) {
-                System.out.println("成功");
                 System.out.println(loginService.getCustomerIdByPhone(name));
 
                 StpUtil.login(loginService.getCustomerIdByPhone(name));
@@ -62,7 +61,6 @@ public class SsoServerController {
                 return SaResult.ok("登录成功！").setData(StpUtil.getTokenValue());
             }
 
-            System.out.println("失败");
             return SaResult.error("登录失败！");
         });
     }
