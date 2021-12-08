@@ -1,10 +1,15 @@
 package cn.edu.tongji.gohome.post.model;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "post_reply", schema = "GoHome", catalog = "")
 public class PostReplyEntity {
     private long replyId;

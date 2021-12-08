@@ -1,5 +1,6 @@
 package cn.edu.tongji.gohome.login.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.edu.tongji.gohome.login.dto.CustomerBriefInfoDTO;
 import cn.edu.tongji.gohome.login.dto.VerifyCodeToken;
 import cn.edu.tongji.gohome.login.model.AdministratorEntity;
@@ -95,7 +96,7 @@ public class LoginServiceImpl implements LoginService {
         Optional<CustomerEntity> customer = customerRepository.findById(id);
         if (customer.isPresent()) {
             CustomerBriefInfoDTO briefInfoDTO = new CustomerBriefInfoDTO();
-            briefInfoDTO.fillByCustomerEntity(customer.get());
+            briefInfoDTO.fillByCustomerEntity(customer.get(), StpUtil.getPermissionList());
             return briefInfoDTO;
         } else {
             throw new UserNotExistException();

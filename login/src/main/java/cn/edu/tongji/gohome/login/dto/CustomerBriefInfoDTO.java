@@ -3,6 +3,8 @@ package cn.edu.tongji.gohome.login.dto;
 import cn.edu.tongji.gohome.login.model.CustomerEntity;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * CustomerDTO
  *
@@ -18,9 +20,12 @@ public class CustomerBriefInfoDTO {
 
     private String userAvatar;
 
-    public void fillByCustomerEntity(CustomerEntity customer) {
+    private List<String> userPermissions;
+
+    public void fillByCustomerEntity(CustomerEntity customer, List<String> permissions) {
         this.setUserId(customer.getCustomerId());
         this.setUserAvatar(customer.getCustomerAvatarLink());
         this.setUserName(customer.getCustomerName());
+        this.setUserPermissions(permissions);
     }
 }
