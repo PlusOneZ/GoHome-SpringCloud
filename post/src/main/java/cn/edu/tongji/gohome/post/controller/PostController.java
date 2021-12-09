@@ -1,5 +1,6 @@
 package cn.edu.tongji.gohome.post.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.edu.tongji.gohome.post.dto.UploadedPostDetail;
 import cn.edu.tongji.gohome.post.dto.UploadedPostLike;
 import cn.edu.tongji.gohome.post.dto.UploadedReply;
@@ -50,6 +51,8 @@ public class PostController {
             @RequestParam(value = "currentPage", defaultValue = "0") int currentPage,
             @RequestParam(value = "pageSize", defaultValue = "5") int pageSize) {
 
+        System.out.println((String) StpUtil.getLoginId());
+
         return new ResponseEntity<>(tagService.searchDefaultTagList(currentPage, pageSize), HttpStatus.OK);
     }
 
@@ -92,14 +95,15 @@ public class PostController {
     @RequestMapping(value = "post", method = RequestMethod.POST)
     public HttpStatus postDetailPost(
             @RequestBody UploadedPostDetail uploadedPostDetail){
+        uploadedPostDetail.getPost().setCustomerId(Long.valueOf((String) StpUtil.getLoginId()));
         return postService.addPost(uploadedPostDetail);
     }
 
 
     @RequestMapping(value="post", method = RequestMethod.DELETE)
     public HttpStatus deletePersonalPost(
-            @RequestParam(value = "postId", defaultValue ="0") long postId,
-            @RequestParam(value = "customerId", defaultValue = "0") long customerId) {
+            @RequestParam(value = "postId", defaultValue ="0") long postId) {
+        long customerId=Long.valueOf((String) StpUtil.getLoginId());
         return postService.removePost(postId,customerId);
     }
 
@@ -125,49 +129,55 @@ public class PostController {
     @RequestMapping(value="reply",method = RequestMethod.POST)
     public HttpStatus postReplyForPost(
             @RequestBody UploadedReply uploadedReply) {
+        uploadedReply.setCustomerId(Long.valueOf((String) StpUtil.getLoginId()));
         return replyService.addReply(uploadedReply);
     }
 
 
     @RequestMapping("like/post/status")
     public ResponseEntity<HashMap<String, Object>> getPostLikeStatus(
-            @RequestParam(value="postId", defaultValue ="0") long postId,
-            @RequestParam(value = "customerId", defaultValue = "0") long customerId) {
-
+            @RequestParam(value="postId", defaultValue ="0") long postId) {
+        long customerId=Long.valueOf((String) StpUtil.getLoginId());
         return new ResponseEntity<>(likeService.searchPostLikeForPostIdAndCustomerId(postId,customerId), HttpStatus.OK);
     }
 
     @RequestMapping(value="like/post",method = RequestMethod.POST)
     public HttpStatus postLikeForPost(
             @RequestBody UploadedPostLike uploadedPostLike) {
+        uploadedPostLike.setCustomerId(Long.valueOf((String) StpUtil.getLoginId()));
         return likeService.addLikeForPost(uploadedPostLike);
     }
 
     @RequestMapping(value="like/post", method = RequestMethod.DELETE)
     public HttpStatus deleteLikeForPost(
-            @RequestParam(value = "postId", defaultValue ="0") long postId,
-            @RequestParam(value = "customerId", defaultValue = "0") long customerId) {
+            @RequestParam(value = "postId", defaultValue ="0") long postId) {
+        long customerId=Long.valueOf((String) StpUtil.getLoginId());
         return likeService.removeLikeForPost(postId, customerId);
     }
 
 
     @RequestMapping("like/reply/status")
     public ResponseEntity<HashMap<String, Object>> getReplyLikeStatus(
-            @RequestParam(value="replyId", defaultValue ="0") long replyId,
-            @RequestParam(value = "customerId", defaultValue = "0") long customerId) {
+            @RequestParam(value="replyId", defaultValue ="0") long replyId) {
+        System.out.println("begin reply like status searching with:");
+        System.out.println(replyId);
+        Long customerId=Long.valueOf((String) StpUtil.getLoginId());
+
+        System.out.println("this is the customerId "+customerId.toString());
         return new ResponseEntity<>(likeService.searchReplyLikeForReplyIdAndCustomerId(replyId,customerId), HttpStatus.OK);
     }
 
     @RequestMapping(value="like/reply",method = RequestMethod.POST)
     public HttpStatus postLikeForReply(
             @RequestBody UploadedReplyLike uploadedReplyLike) {
+        uploadedReplyLike.setCustomerId(Long.valueOf((String) StpUtil.getLoginId()));
         return likeService.addLikeForReply(uploadedReplyLike);
     }
 
     @RequestMapping(value="like/reply", method = RequestMethod.DELETE)
     public HttpStatus deleteLikeForReply(
-            @RequestParam(value = "replyId", defaultValue ="0") long replyId,
-            @RequestParam(value = "customerId", defaultValue = "0") long customerId) {
+            @RequestParam(value = "replyId", defaultValue ="0") long replyId) {
+        long customerId=Long.valueOf((String) StpUtil.getLoginId());
         return likeService.removeLikeForReply(replyId, customerId);
     }
 
