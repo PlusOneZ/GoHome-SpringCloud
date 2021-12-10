@@ -79,6 +79,9 @@ public class LikeServiceImpl implements LikeService {
         postReplyLikeEntity.setReplyId(uploadedReplyLike.getReplyId());
         postReplyLikeEntity.setCustomerId(uploadedReplyLike.getCustomerId());
 
+        System.out.println(postReplyLikeEntity.toString());
+
+        System.out.println("replyid="+uploadedReplyLike.getReplyId().toString()+"\n"+"customerid="+uploadedReplyLike.getCustomerId().toString());
         try{
             postReplyLikeRepository.saveAndFlush(postReplyLikeEntity);
         }catch (Exception exception) {

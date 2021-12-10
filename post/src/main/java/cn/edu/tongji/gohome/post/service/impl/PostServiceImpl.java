@@ -101,9 +101,10 @@ public class PostServiceImpl implements PostService{
         HashMap<String, Object> results = new HashMap<>();
 
         Page<PostEntity> postEntityList = postRepository.findAllByCustomerId(customerId,pageable);
-        Page<HashMap<String,Object>> postList=postEntityList.map(postEntity->{return searchBriefPostInfo(postEntity);});
+        Page<HashMap<String,Object>> postList=postEntityList.map(postEntity-> searchBriefPostInfo(postEntity));
 
         results.put("postInfo", postList);
+        results.put("postNum",postRepository.findAllByCustomerId(customerId).size());
         return results;
     }
 

@@ -1,6 +1,6 @@
-package cn.edu.tongji.gohome.statistics.Service.impl;
+package cn.edu.tongji.gohome.statistics.service.impl;
 
-import cn.edu.tongji.gohome.statistics.Service.StayService;
+import cn.edu.tongji.gohome.statistics.service.StayService;
 import cn.edu.tongji.gohome.statistics.model.*;
 import cn.edu.tongji.gohome.statistics.repository.*;
 import org.springframework.data.domain.Page;
