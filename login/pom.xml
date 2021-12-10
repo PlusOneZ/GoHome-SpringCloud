@@ -69,6 +69,7 @@
             <artifactId>springfox-swagger-ui</artifactId>
             <version>3.0.0</version>
         </dependency>
+
         <!-- 测试数据以 JSON 格式返回的依赖包 -->
         <dependency>
             <groupId>org.codehaus.jackson</groupId>

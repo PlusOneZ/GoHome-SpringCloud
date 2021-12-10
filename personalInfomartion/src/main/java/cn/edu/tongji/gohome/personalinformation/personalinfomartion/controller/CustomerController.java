@@ -1,5 +1,6 @@
 package cn.edu.tongji.gohome.personalinformation.personalinfomartion.controller;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.*;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.CustomerInfoService;
@@ -57,7 +58,7 @@ public class CustomerController {
             @RequestBody Base64Data base64Data){
 
         try {
-            Long customerId = (Long)StpUtil.getLoginId();
+            Long customerId = Long.parseLong((String) StpUtil.getLoginId());
             customerInfoService.updateAvatar(customerId, base64Data.getBase64Data());
             return new ResponseEntity<>(true,HttpStatus.OK);
         }catch (Exception error){
@@ -200,10 +201,10 @@ public class CustomerController {
     @RequestMapping(value = "host/info", method = RequestMethod.GET)
     public ResponseEntity<HashMap<String,Object>> getHostBasicInfo(){
         try {
-            Long customerId =(Long)StpUtil.getLoginId();
-            return new ResponseEntity<>(customerInfoService.getHostInfoByCustomerId(customerId), HttpStatus.OK);
-        }catch (Exception error){
-            return new ResponseEntity<>(null,HttpStatus.EXPECTATION_FAILED);
+            Long customerId = Long.parseLong((String) StpUtil.getLoginId());
+            return ResponseEntity.ok(customerInfoService.getHostInfoByCustomerId(customerId));
+        }catch (NotLoginException error){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
 
@@ -232,7 +233,7 @@ public class CustomerController {
             @RequestBody HostNickNameDto hostNickNameDto
     ){
         try{
-            Long customerId = (Long)StpUtil.getLoginId();
+            Long customerId = Long.parseLong((String) StpUtil.getLoginId());
             customerInfoService.updateHostNickName(customerId, hostNickNameDto.getHostNickName());
             return new ResponseEntity<>(true,HttpStatus.OK);
         }catch (Exception error)
@@ -252,7 +253,7 @@ public class CustomerController {
     )
     {
         try {
-            Long customerId = (Long)StpUtil.getLoginId();
+            Long customerId = Long.parseLong((String) StpUtil.getLoginId());
             customerInfoService.updateAvatar(customerId,base64Data.getBase64Data());
             return new ResponseEntity<>(true,HttpStatus.OK);
         }
