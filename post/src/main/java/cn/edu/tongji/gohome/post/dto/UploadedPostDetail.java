@@ -8,7 +8,7 @@ public class UploadedPostDetail {
 
     private ArrayList<Long> stays;
 
-    private ArrayList<String> images;
+    private ArrayList<String> base64images;
 
     private UploadedPost post;
 
@@ -29,13 +29,6 @@ public class UploadedPostDetail {
         this.stays = stays;
     }
 
-    public ArrayList<String> getImages() {
-        return images;
-    }
-
-    public void setImages(ArrayList<String> images) {
-        this.images = images;
-    }
 
     public UploadedPost getPost() {
         return post;
@@ -43,5 +36,13 @@ public class UploadedPostDetail {
 
     public void setPost(UploadedPost post) {
         this.post = post;
+    }
+
+    public ArrayList<String> getBase64images() {
+        return base64images;
+    }
+
+    public void setBase64images(ArrayList<String> base64images) {
+        this.base64images = base64images;
     }
 }
