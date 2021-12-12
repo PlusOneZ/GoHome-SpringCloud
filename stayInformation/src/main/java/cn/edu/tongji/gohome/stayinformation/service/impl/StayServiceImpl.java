@@ -521,8 +521,10 @@ public class StayServiceImpl implements StayService {
         System.out.println(stayId);
         newStay.setStayId(stayId);
         newStay.setHostId(hostId);
+        System.out.println("房东id为"+String.valueOf(hostId));
         newStay.setStayName(hostStay.getStayName());
         newStay.setStayTypeName(hostStay.getStayType());
+        System.out.println(hostStay.getStayType());
         newStay.setDetailedAddress(hostStay.getStruPos());
         newStay.setLongitude(hostStay.getLongitude());
         newStay.setLatitude(hostStay.getLatitude());
