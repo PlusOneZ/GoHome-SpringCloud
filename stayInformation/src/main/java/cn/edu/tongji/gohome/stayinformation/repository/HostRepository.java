@@ -14,5 +14,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface HostRepository extends JpaRepository<HostEntity, Integer>,
         JpaSpecificationExecutor<HostEntity> {
 
-
+    HostEntity findFirstByCustomerId(long customerId);
 }
