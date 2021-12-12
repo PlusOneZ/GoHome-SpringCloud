@@ -1,5 +1,6 @@
 package cn.edu.tongji.gohome.order.service;
 
+import cn.edu.tongji.gohome.order.dto.FootMapInfoDto;
 import cn.edu.tongji.gohome.order.dto.OrderContent;
 import cn.edu.tongji.gohome.order.model.ViewCouponInformationEntity;
 import org.springframework.data.domain.Page;
@@ -28,4 +29,6 @@ public interface OrderService {
     Map<String,Object> searchUsableCouponForCustomerId(long customerId, BigDecimal couponLimit, Integer currentPage, Integer pageSize);
 
     void updateOCouponStatus(long couponId, int couponStatus);
+
+    List<FootMapInfoDto> getFootMapInformation(long customerId);
 }

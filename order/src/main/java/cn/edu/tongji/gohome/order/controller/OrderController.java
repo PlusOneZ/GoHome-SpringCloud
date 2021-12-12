@@ -2,10 +2,7 @@ package
         cn.edu.tongji.gohome.order.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.edu.tongji.gohome.order.dto.Comment;
-import cn.edu.tongji.gohome.order.dto.OrderContent;
-import cn.edu.tongji.gohome.order.dto.OrderStatus;
-import cn.edu.tongji.gohome.order.dto.Report;
+import cn.edu.tongji.gohome.order.dto.*;
 import cn.edu.tongji.gohome.order.model.CustomerCommentEntity;
 import cn.edu.tongji.gohome.order.model.HostCommentEntity;
 import cn.edu.tongji.gohome.order.model.OrderReportEntity;
@@ -142,7 +139,6 @@ public class OrderController {
     @RequestMapping(value = "order", method = RequestMethod.POST)
     public Long addOrder(@RequestBody OrderContent orderContent) {
 
-        orderContent.setCustomerId(Long.parseLong((String) StpUtil.getLoginId()));
         return orderService.addOrderAndDetailedInformation(orderContent);
     }
 
@@ -178,6 +174,13 @@ public class OrderController {
         orderService.updateOCouponStatus(couponId,couponStatus);
 
         return HttpStatus.OK;
+    }
+
+    @RequestMapping(value = "order/footMap", method = RequestMethod.GET)
+    public ResponseEntity<List<FootMapInfoDto>> getFootMapInformation(){
+
+        return new ResponseEntity<>
+                (orderService.getFootMapInformation(Long.parseLong((String) StpUtil.getLoginId())),HttpStatus.OK);
     }
 
 }

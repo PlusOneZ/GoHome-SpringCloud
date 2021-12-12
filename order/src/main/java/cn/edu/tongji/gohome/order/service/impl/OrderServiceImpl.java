@@ -15,6 +15,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -97,7 +98,7 @@ public class OrderServiceImpl implements OrderService {
 
         //get order startTime, endTime.
         ViewOrderTimeEntity viewOrderTime = viewOrderTimeRepository.findFirstByOrderId(orderId);
-        if(viewOrderTime != null){
+        if (viewOrderTime != null) {
             orderInfo.setOrderStartTime(viewOrderTime.getMinStartTime());
             orderInfo.setOrderEndTime(viewOrderTime.getMaxEndTime());
         }
@@ -109,10 +110,9 @@ public class OrderServiceImpl implements OrderService {
 
             //get first room photo link.
             roomPhoto = roomPhotoRepository.findFirstByStayIdAndRoomId(orderStay.getStayId(), orderStay.getRoomId());
-            if(roomPhoto != null){
+            if (roomPhoto != null) {
                 orderInfo.setRoomPhotoLink(roomPhoto.getRoomPhotoLink());
-            }
-            else{
+            } else {
                 orderInfo.setRoomPhotoLink("");
             }
 
@@ -121,21 +121,6 @@ public class OrderServiceImpl implements OrderService {
             orderInfo.setStayId(stay.getStayId());
             orderInfo.setStayName(stay.getStayName());
             orderInfo.setDetailedAddress(stay.getDetailedAddress());
-
-            //get stayProvince and stayCity from detailedAddress.
-            System.out.println(stay.getDetailedAddress());
-            orderInfo.setStayProvince("");
-            orderInfo.setStayCity("");
-            if(stay.getDetailedAddress() != null){
-                String regEx = "(.*?)省(.*?)市.*|(.*?)市(.*?区).*";
-                Pattern pattern = Pattern.compile(regEx);
-                Matcher matcher = pattern.matcher(stay.getDetailedAddress());
-                if(matcher.find()){
-                    System.out.println(matcher.group(1));
-                    orderInfo.setStayProvince(matcher.group(1));
-                    orderInfo.setStayCity(matcher.group(2));
-                }
-            }
 
             ViewStayCustomerEntity viewStayCustomer = stayCustomerRepository.getById(orderStay.getStayId());
             orderInfo.setHostAvatarLink(viewStayCustomer.getCustomerAvatarLink());
@@ -147,17 +132,16 @@ public class OrderServiceImpl implements OrderService {
         String reportReason = "";
         String reportReply = "";
         OrderReportEntity orderReport = orderReportRepository.findByOrderId(orderId);
-        if(orderInfo.getOrderStatus() == OrderStatus.ORDER_BUSINESS_COMPLETED){
+        if (orderInfo.getOrderStatus() == OrderStatus.ORDER_BUSINESS_COMPLETED) {
             reportStatus = 0;
         }
-        if(orderReport != null){
+        if (orderReport != null) {
             boolean status = orderReport.isDealt();
-            if(status){
-               reportStatus = 2;
-               reportReason = orderReport.getReportReason();
-               reportReply = orderReport.getReply();
-            }
-            else{
+            if (status) {
+                reportStatus = 2;
+                reportReason = orderReport.getReportReason();
+                reportReply = orderReport.getReply();
+            } else {
                 reportStatus = 1;
                 reportReason = orderReport.getReportReason();
             }
@@ -368,7 +352,7 @@ public class OrderServiceImpl implements OrderService {
 
         OrderEntity order = orderRepository.getById(orderId);
         order.setOrderStatus(orderStatus);
-        System.out.println("orderStatus: "+orderStatus);
+        System.out.println("orderStatus: " + orderStatus);
         orderRepository.save(order);
     }
 
@@ -402,4 +386,37 @@ public class OrderServiceImpl implements OrderService {
         coupon.setCouponStatus(couponStatus);
         couponRepository.save(coupon);
     }
+
+
+    public List<FootMapInfoDto> getFootMapInformation(long customerId) {
+        //根据customerId获得orderId
+        List<OrderEntity> orders = orderRepository.findAllByCustomerId(customerId);
+        List<FootMapInfoDto> footMapInfoDtos = new ArrayList<>();
+        for (OrderEntity order : orders) {
+            long orderId = order.getOrderId();
+            VOrderStayEntity stayView = vOrderStayRepository.findFirstByOrderId(orderId);
+            if (stayView != null) {
+                long stayId = stayView.getStayId();
+                StayEntity stay = stayRepository.findFirstByStayId(stayId);
+                if (stay != null) {
+                    if (stay.getDetailedAddress() != null) {
+
+                        String regEx = "(.*?省)(.*?市).*|(.*?市)(.*?区).*";
+                        Pattern pattern = Pattern.compile(regEx);
+                        Matcher matcher = pattern.matcher(stay.getDetailedAddress());
+                        if (matcher.find()) {
+                            FootMapInfoDto footMapInfoDto = new FootMapInfoDto();
+                            footMapInfoDto.setOrderId(orderId);
+                            System.out.println(matcher.group(1));
+                            footMapInfoDto.setStayProvince(matcher.group(1));
+                            footMapInfoDto.setStayCity(matcher.group(2));
+                            footMapInfoDtos.add(footMapInfoDto);
+                        }
+                    }
+                }
+            }
+        }
+        return footMapInfoDtos;
+    }
+
 }
