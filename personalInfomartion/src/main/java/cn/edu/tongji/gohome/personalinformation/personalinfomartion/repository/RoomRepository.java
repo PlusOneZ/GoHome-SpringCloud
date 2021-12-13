@@ -12,4 +12,5 @@ import java.util.List;
  **/
 public interface RoomRepository extends JpaRepository<RoomEntity,Long> {
     List<RoomEntity> findAllByStayId(long stayId);
+    List<RoomEntity> getAllByStayId(long stayId);
 }
