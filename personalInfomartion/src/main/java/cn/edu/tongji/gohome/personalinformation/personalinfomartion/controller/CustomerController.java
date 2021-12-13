@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * <b>与获取用户信息有关的api</b>
@@ -77,11 +78,22 @@ public class CustomerController {
             @RequestBody CustomerInfoDto customerInfoDto
             ){
         try {
-            Long customerId = (Long)StpUtil.getLoginId();
+            Long customerId = Long.valueOf((String)StpUtil.getLoginId());
             customerInfoService.updateUserInfo(customerInfoDto, customerId);
             return new ResponseEntity<>(true,HttpStatus.OK);
         }catch (Exception error){
             return new ResponseEntity<>(false,HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @RequestMapping(value = "favorite/directory", method = RequestMethod.GET)
+    public ResponseEntity<List<HashMap<String, Object>>> getFavoriteDirectory(){
+        try {
+            Long customerId = Long.valueOf((String)StpUtil.getLoginId());
+            return new ResponseEntity<>(customerInfoService.getFavoriteDirectory(customerId), HttpStatus.OK);
+        }catch (Exception error){
+            error.printStackTrace();
+            return new ResponseEntity<>(null,HttpStatus.EXPECTATION_FAILED);
         }
     }
 
@@ -98,7 +110,7 @@ public class CustomerController {
             ){
 
             try {
-                Long customerId = (Long)StpUtil.getLoginId();
+                Long customerId = Long.valueOf((String)StpUtil.getLoginId());
                 return new ResponseEntity<>(customerInfoService.insertNewFavorite(favoriteNameDto.getFavoriteName(), customerId), HttpStatus.OK);
             }catch (Exception error){
                 error.printStackTrace();
@@ -184,10 +196,45 @@ public class CustomerController {
             @RequestBody FavoriteStayAdditionDto favoriteStayAdditionDto
     ){
         try {
-            customerInfoService.addStayToFavorite(favoriteStayAdditionDto.getFavoriteId(),favoriteStayAdditionDto.getStayId());
+            customerInfoService.deleteStayFromFavorite(favoriteStayAdditionDto.getFavoriteId(),favoriteStayAdditionDto.getStayId());
             return new ResponseEntity<>(true, HttpStatus.OK);
         }catch (Exception error){
             return new ResponseEntity<>(false,HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    /**
+     * 删除指定用户收藏夹中的指定房源
+     * @param stayId
+     * @return
+     */
+    @RequestMapping(value = "favorite/stay/heart/deletion",method = RequestMethod.GET)
+    public ResponseEntity<Boolean> deleteSpecificStayInFavorite(
+            @RequestParam Long stayId
+    ){
+        try {
+            Long customerId = Long.valueOf((String)StpUtil.getLoginId());
+            return new ResponseEntity<>(
+                    customerInfoService.deleteSpecificStayInFavorite(customerId, stayId)
+                    , HttpStatus.OK);
+        }catch (Exception error){
+            error.printStackTrace();
+            return new ResponseEntity<>(Boolean.FALSE,HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @RequestMapping(value = "favorite/stay/heart", method = RequestMethod.GET)
+    public ResponseEntity<Boolean> getSpecificStayLikeState(
+            @RequestParam Long stayId
+    ){
+        try {
+            Long customerId = Long.valueOf((String)StpUtil.getLoginId());
+            return new ResponseEntity<>(
+                    customerInfoService.getSpecificStayLikeState(customerId, stayId)
+                    , HttpStatus.OK);
+        }catch (Exception error){
+            error.printStackTrace();
+            return new ResponseEntity<>(Boolean.FALSE,HttpStatus.EXPECTATION_FAILED);
         }
     }
 

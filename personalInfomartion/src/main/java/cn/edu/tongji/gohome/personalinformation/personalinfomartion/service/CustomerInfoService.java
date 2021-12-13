@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * CustomerInfoService类，待实现的接口
@@ -34,6 +35,14 @@ public interface CustomerInfoService {
     HashMap<String,Object> getHostInfoByCustomerId(Long customerId);
 
     HashMap<String,Object> getStayInfoByStayId(long stayId);
+
+    List<HashMap<String, Object>> getFavoriteDirectory(long customerId);
+
+    List<String> getAllPhotoByStayId(Long stayId);
+
+    Boolean deleteSpecificStayInFavorite(long customerId, long stayId);
+
+    Boolean getSpecificStayLikeState(long customerId, long stayId);
 
     void updateHostNickName(long customerId,String hostNickName);
 

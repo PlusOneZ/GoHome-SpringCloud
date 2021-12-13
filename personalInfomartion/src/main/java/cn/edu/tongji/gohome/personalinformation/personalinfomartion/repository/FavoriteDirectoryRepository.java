@@ -16,5 +16,6 @@ import java.util.List;
 public interface FavoriteDirectoryRepository extends JpaRepository<FavoriteDirectoryEntity,Integer> {
     FavoriteDirectoryEntity findByFavoriteDirectoryId(int favoriteDirectoryId);
     FavoriteDirectoryEntity findTopByName(String favoriteDirectoryName);
-    List<FavoriteDirectoryEntity> findAllByName(String favoriteDiretoryName);
+    List<FavoriteDirectoryEntity> findAllByName(String favoriteDirectoryName);
+    List<FavoriteDirectoryEntity> findAllByCustomerId(long customerId);
 }

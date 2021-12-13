@@ -3,7 +3,9 @@ package cn.edu.tongji.gohome.login.controller;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.edu.tongji.gohome.login.dto.CustomerSignupDTO;
+import cn.edu.tongji.gohome.login.model.CustomerEntity;
 import cn.edu.tongji.gohome.login.payload.IdVerificationResult;
+import cn.edu.tongji.gohome.login.repository.CustomerRepository;
 import cn.edu.tongji.gohome.login.service.LoginService;
 import cn.edu.tongji.gohome.login.service.PhoneService;
 import cn.edu.tongji.gohome.login.service.SignupService;
@@ -37,6 +39,7 @@ public class SignupController {
     @Resource
     private PhoneService phoneService;
 
+
     @ApiOperation("Check Whether the Phone is Available")
     @ApiResponses(
             value = {
@@ -65,15 +68,18 @@ public class SignupController {
             @ApiParam(value = "International Phone Code", defaultValue = "+86") @RequestParam(required = false) String phoneCode,
             @ApiParam(value = "Phone", defaultValue = "19946254155") @RequestParam String phone
     ) {
-        if (StpUtil.getLoginId() == null) {
+        if (StpUtil.getLoginIdDefaultNull() == null) {
             signupService.changeCustomerPassword(phone, newPassword);
         }
-        Long id = Long.valueOf((String) StpUtil.getLoginId());
-        signupService.changeCustomerPassword(id, newPassword);
+        else{
+            Long id = Long.valueOf((String) StpUtil.getLoginId());
+            signupService.changeCustomerPassword(id, newPassword);
 
+        }
         HashMap<String, Boolean> retMap = new HashMap<String, Boolean>();
         retMap.put("changeState", true);
         return ResponseEntity.ok(retMap);
+
     }
 
     @ApiOperation("Customer Signup")

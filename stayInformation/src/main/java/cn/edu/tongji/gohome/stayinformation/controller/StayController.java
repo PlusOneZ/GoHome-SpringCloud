@@ -80,7 +80,7 @@ public class StayController {
     public ResponseEntity<HashMap<String,Boolean>> isHostSameWithCustomer(
             @RequestParam Long stayId
     ){
-        long customerId = 1;
+        long customerId = Long.valueOf((String)StpUtil.getLoginId());
         // 获取customerId
         int hostId = stayRepository.findFirstByStayId(stayId).getHostId();
         Boolean isEqual = hostRepository.getById(hostId).getCustomerId()
@@ -229,7 +229,9 @@ public class StayController {
     public ResponseEntity<HashMap<String, Object>> getStayBriefInfoByHostId
             (){
         HashMap<String, Object> hashMap = new HashMap<>();
-        int hostId = 1;
+        long customerId = Long.valueOf((String)StpUtil.getLoginId());
+
+        int hostId = hostService.findHostIdByCustomerId(customerId);
         // 0 代表保存但未提交， 1 表示待审核， 2 表示审核通过
         List<Long> unpublishedList =
                 stayService.getAllStayIdByHostIdAndStatus(hostId, BigInteger.valueOf(0));

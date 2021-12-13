@@ -13,4 +13,6 @@ public interface RoomPhotoRepository extends JpaRepository<RoomPhotoEntity, Room
     RoomPhotoEntity findFirstByStayId(Long stayId);
     List<RoomPhotoEntity> findAllByStayId(Long stayId);
     RoomPhotoEntity findByStayIdAndRoomId(long stayId, int roomId);
+
+    RoomPhotoEntity findFirstByRoomIdAndStayId(int roomId, long stayId);
 }
