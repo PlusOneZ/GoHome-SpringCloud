@@ -168,7 +168,7 @@ public class VerifyCodeUtil {
         for (int i = 0; i < verifySize; i++) {
             g2.setColor(getRandColor(100, 160));
             AffineTransform affine = new AffineTransform();
-            affine.setToRotation(Math.PI / 4 * rand.nextDouble() * (rand.nextBoolean() ? 1 : -1), (w / verifySize) * i + fontSize / 2, h / 2);
+            affine.setToRotation(Math.PI / 8 * rand.nextDouble() * (rand.nextBoolean() ? 1 : -1), (w / verifySize) * i + fontSize / 2, h / 2);
             g2.setTransform(affine);
             g2.drawChars(chars, i, 1, ((w - 30) / verifySize) * i - 10, h / 2 + fontSize / 2 - 10);
         }

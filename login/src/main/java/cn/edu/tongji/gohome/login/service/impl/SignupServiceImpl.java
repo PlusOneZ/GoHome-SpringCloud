@@ -59,7 +59,8 @@ public class SignupServiceImpl implements SignupService {
         Optional<CustomerEntity> customer = customerRepository.findByCustomerPhone(phone);
         if (customer.isPresent()) {
             CustomerEntity customerEntity = customer.get();
-            customerEntity.setCustomerPassword(newPassword);
+            String pwdEncrypted = encryptService.encryptPassword(newPassword);
+            customerEntity.setCustomerPassword(pwdEncrypted);
             customerRepository.save(customerEntity);
         } else {
             throw new UserNotExistException();
@@ -71,7 +72,8 @@ public class SignupServiceImpl implements SignupService {
         Optional<CustomerEntity> customer = customerRepository.findById(userId);
         if (customer.isPresent()) {
             CustomerEntity customerEntity = customer.get();
-            customerEntity.setCustomerPassword(newPassword);
+            String pwdEncrypted = encryptService.encryptPassword(newPassword);
+            customerEntity.setCustomerPassword(pwdEncrypted);
             customerRepository.save(customerEntity);
         } else {
             throw new UserNotExistException();
