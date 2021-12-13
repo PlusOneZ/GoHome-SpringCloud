@@ -77,7 +77,7 @@ public class CustomerController {
             @RequestBody CustomerInfoDto customerInfoDto
             ){
         try {
-            Long customerId = (Long)StpUtil.getLoginId();
+            Long customerId = Long.valueOf((String)StpUtil.getLoginId());
             customerInfoService.updateUserInfo(customerInfoDto, customerId);
             return new ResponseEntity<>(true,HttpStatus.OK);
         }catch (Exception error){
@@ -98,7 +98,7 @@ public class CustomerController {
             ){
 
             try {
-                Long customerId = (Long)StpUtil.getLoginId();
+                Long customerId = Long.valueOf((String)StpUtil.getLoginId());
                 return new ResponseEntity<>(customerInfoService.insertNewFavorite(favoriteNameDto.getFavoriteName(), customerId), HttpStatus.OK);
             }catch (Exception error){
                 error.printStackTrace();
