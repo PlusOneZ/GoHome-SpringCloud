@@ -18,7 +18,7 @@ public interface OrderService {
 
     HashMap<String, Object> searchOrderInfoForCustomerIdAndOrderStatus(long customerId, int orderStatus, Integer currentPage, Integer pageSize);
 
-    HashMap<String, Object> searchOrderInfoForStayId(long stayId, Integer currentPage, Integer pageSize);
+    HashMap<String, Object> searchOrderInfoForHost(long customerId, Integer currentPage, Integer pageSize);
 
     HashMap<String, Object> searchOrderDetailedInfoForOrderId(long orderId, Integer currentPage, Integer pageSize);
 
