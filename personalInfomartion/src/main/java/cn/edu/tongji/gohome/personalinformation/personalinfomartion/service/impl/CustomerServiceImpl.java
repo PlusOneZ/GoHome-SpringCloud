@@ -491,6 +491,44 @@ public class CustomerServiceImpl implements CustomerInfoService {
         return result;
     }
 
+    /**
+     * 删除某一顾客收藏的某一房源
+     * @param customerId
+     * @param stayId
+     * @return
+     */
+    @Override
+    public Boolean deleteSpecificStayInFavorite(long customerId, long stayId){
+        //
+        List<FavoriteDirectoryEntity> favoriteDirectoryList =
+                favoriteDirectoryRepository.findAllByCustomerId(customerId);
+        for(FavoriteDirectoryEntity favoriteDirectory: favoriteDirectoryList){
+            FavoriteDirectoryStayEntity favoriteStay=
+            favoriteDirectoryStayRepository.
+                    findFirstByFavoriteDirectoryIdAndStayId((favoriteDirectory.getFavoriteDirectoryId()),stayId);
+            if (favoriteStay!=null){
+                favoriteDirectoryStayRepository.delete(favoriteStay);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Boolean getSpecificStayLikeState(long customerId, long stayId){
+        List<FavoriteDirectoryEntity> favoriteDirectoryList =
+                favoriteDirectoryRepository.findAllByCustomerId(customerId);
+        for(FavoriteDirectoryEntity favoriteDirectory: favoriteDirectoryList){
+            FavoriteDirectoryStayEntity favoriteStay=
+                    favoriteDirectoryStayRepository.
+                            findFirstByFavoriteDirectoryIdAndStayId((favoriteDirectory.getFavoriteDirectoryId()),stayId);
+            if (favoriteStay!=null){
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public List<HashMap<String, Object>> getFavoriteDirectory(long customerId){
         List<FavoriteDirectoryEntity> favoriteDirectoryList

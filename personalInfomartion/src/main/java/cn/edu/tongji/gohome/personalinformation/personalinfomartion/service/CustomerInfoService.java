@@ -40,6 +40,10 @@ public interface CustomerInfoService {
 
     List<String> getAllPhotoByStayId(Long stayId);
 
+    Boolean deleteSpecificStayInFavorite(long customerId, long stayId);
+
+    Boolean getSpecificStayLikeState(long customerId, long stayId);
+
     void updateHostNickName(long customerId,String hostNickName);
 
     HashMap<String,Object> getCustomerGroupInfo();
