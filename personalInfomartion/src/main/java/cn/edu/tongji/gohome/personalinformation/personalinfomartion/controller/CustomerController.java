@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * <b>与获取用户信息有关的api</b>
@@ -82,6 +83,17 @@ public class CustomerController {
             return new ResponseEntity<>(true,HttpStatus.OK);
         }catch (Exception error){
             return new ResponseEntity<>(false,HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @RequestMapping(value = "favorite/directory", method = RequestMethod.GET)
+    public ResponseEntity<List<HashMap<String, Object>>> getFavoriteDirectory(){
+        try {
+            Long customerId = Long.valueOf((String)StpUtil.getLoginId());
+            return new ResponseEntity<>(customerInfoService.getFavoriteDirectory(customerId), HttpStatus.OK);
+        }catch (Exception error){
+            error.printStackTrace();
+            return new ResponseEntity<>(null,HttpStatus.EXPECTATION_FAILED);
         }
     }
 
@@ -184,7 +196,7 @@ public class CustomerController {
             @RequestBody FavoriteStayAdditionDto favoriteStayAdditionDto
     ){
         try {
-            customerInfoService.addStayToFavorite(favoriteStayAdditionDto.getFavoriteId(),favoriteStayAdditionDto.getStayId());
+            customerInfoService.deleteStayFromFavorite(favoriteStayAdditionDto.getFavoriteId(),favoriteStayAdditionDto.getStayId());
             return new ResponseEntity<>(true, HttpStatus.OK);
         }catch (Exception error){
             return new ResponseEntity<>(false,HttpStatus.EXPECTATION_FAILED);

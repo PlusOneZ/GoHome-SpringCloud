@@ -491,6 +491,55 @@ public class CustomerServiceImpl implements CustomerInfoService {
         return result;
     }
 
+    @Override
+    public List<HashMap<String, Object>> getFavoriteDirectory(long customerId){
+        List<FavoriteDirectoryEntity> favoriteDirectoryList
+                = favoriteDirectoryRepository.findAllByCustomerId(customerId);
+        List<HashMap<String, Object>> res = new ArrayList<>();
+        for(FavoriteDirectoryEntity favoriteDirectory: favoriteDirectoryList){
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("favoriteId", favoriteDirectory.getFavoriteDirectoryId());
+            hashMap.put("name", favoriteDirectory.getName());
+
+            List<FavoriteDirectoryStayEntity> directoryStayList=
+                    favoriteDirectoryStayRepository
+                            .findAllByFavoriteDirectoryId(favoriteDirectory.getFavoriteDirectoryId());
+
+            // 获取该收藏下内房源的数量
+            hashMap.put("totalStay",directoryStayList.size());
+
+            // 图片
+            for(FavoriteDirectoryStayEntity favoriteStay:directoryStayList){
+                List<String> photos=getAllPhotoByStayId(favoriteStay.getStayId());
+                if (photos.size()!=0){
+                    hashMap.put("imgUrl",photos.get(0));
+                    break;
+                }
+            }
+
+            res.add(hashMap);
+        }
+        return res;
+    }
+
+    @Override
+    public List<String> getAllPhotoByStayId(Long stayId){
+        List<RoomEntity> roomList = roomRepository.getAllByStayId(stayId);
+        List<String> photoList = new ArrayList<>();
+        for(RoomEntity room: roomList) {
+            // 获取到该房间对应的roomPhoto
+            RoomPhotoEntity roomPhoto =
+                    roomPhotoRepository.findFirstByRoomIdAndStayId(
+                            room.getRoomId(),
+                            stayId
+                    );
+            if (roomPhoto != null){
+                photoList.add(roomPhoto.getRoomPhotoLink());
+            }
+        }
+        return photoList;
+    }
+
     private String timeToString(Time time){
         String timeStr = "";
         if(time != null){
