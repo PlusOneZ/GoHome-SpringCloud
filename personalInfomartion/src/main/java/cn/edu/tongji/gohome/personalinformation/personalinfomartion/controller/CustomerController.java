@@ -204,6 +204,41 @@ public class CustomerController {
     }
 
     /**
+     * 删除指定用户收藏夹中的指定房源
+     * @param stayId
+     * @return
+     */
+    @RequestMapping(value = "favorite/stay/heart/deletion",method = RequestMethod.GET)
+    public ResponseEntity<Boolean> deleteSpecificStayInFavorite(
+            @RequestParam Long stayId
+    ){
+        try {
+            Long customerId = Long.valueOf((String)StpUtil.getLoginId());
+            return new ResponseEntity<>(
+                    customerInfoService.deleteSpecificStayInFavorite(customerId, stayId)
+                    , HttpStatus.OK);
+        }catch (Exception error){
+            error.printStackTrace();
+            return new ResponseEntity<>(Boolean.FALSE,HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @RequestMapping(value = "favorite/stay/heart", method = RequestMethod.GET)
+    public ResponseEntity<Boolean> getSpecificStayLikeState(
+            @RequestParam Long stayId
+    ){
+        try {
+            Long customerId = Long.valueOf((String)StpUtil.getLoginId());
+            return new ResponseEntity<>(
+                    customerInfoService.getSpecificStayLikeState(customerId, stayId)
+                    , HttpStatus.OK);
+        }catch (Exception error){
+            error.printStackTrace();
+            return new ResponseEntity<>(Boolean.FALSE,HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    /**
     * 获取房东的详细个人信息
      * @return : org.springframework.http.ResponseEntity<java.util.HashMap<java.lang.String,java.lang.Object>>
     * @author 梁乔
