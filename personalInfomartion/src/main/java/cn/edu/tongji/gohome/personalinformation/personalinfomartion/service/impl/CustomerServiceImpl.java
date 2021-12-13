@@ -308,7 +308,7 @@ public class CustomerServiceImpl implements CustomerInfoService {
         result.put("hostNickName",customer.getCustomerName());
         HostEntity hostEntity = hostRepository.findByCustomerId(customerId);
         result.put("hostRealName",hostEntity.getHostRealName());
-        result.put("hostSex",customer.getCustomerGender().equals("m")?"男":"女");
+        result.put("hostSex",hostEntity.getHostResidentId().charAt(16)=='1'?"男":"女");
         result.put("hostLevel",hostEntity.getHostLevel());
         HostGroupEntity hostGroupEntity = hostGroupRepository.getByHostLevel(hostEntity.getHostLevel());
         result.put("hostLevelName",hostGroupEntity.getHostLevelName());
@@ -327,12 +327,20 @@ public class CustomerServiceImpl implements CustomerInfoService {
         result.put("hostCreateTime",dateToString(hostEntity.getHostCreateTime()));
         //获取房东平均评分
         if(viewHostStayCommentEntityList !=null) {
+            System.out.println("开始计算平均得分");
             float averageScore = 0;
             for (ViewHostStayCommentEntity viewHostStayCommentEntity:viewHostStayCommentEntityList) {
                 averageScore += viewHostStayCommentEntity.getStayScore();
             }
-            averageScore = averageScore / viewHostStayCommentEntityList.size();
-            result.put("averageRate",averageScore);
+
+            if (viewHostStayCommentEntityList.size()==0){
+                result.put("averageRate",0);
+            }
+            else{
+                averageScore = averageScore / viewHostStayCommentEntityList.size();
+                result.put("averageRate",averageScore);
+            }
+
         }
         else {
             result.put("averageRate",0);
