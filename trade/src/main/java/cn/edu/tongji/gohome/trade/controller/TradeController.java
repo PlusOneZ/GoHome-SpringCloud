@@ -35,8 +35,7 @@ public class TradeController {
     public ResponseEntity<String> tradeForOrder(@RequestBody OrderInfoDto orderInfoDto){
 
         // "order-service" add an order and get the orderId.
-        long customerId = 1;
-        orderInfoDto.setCustomerId(customerId);
+        orderInfoDto.setCustomerId(Long.parseLong((String) StpUtil.getLoginId()));
         orderInfoDto.setOrderTime(new Timestamp(System.currentTimeMillis()));
         System.out.println(orderInfoDto);
         ResponseEntity<Long> orderId = restTemplate.postForEntity("http://order-service/api/v1/order",orderInfoDto,Long.class);

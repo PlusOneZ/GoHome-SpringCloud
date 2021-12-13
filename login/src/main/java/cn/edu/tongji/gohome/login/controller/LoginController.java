@@ -30,6 +30,7 @@ public class LoginController {
     @Resource
     LoginService loginService;
 
+    @Deprecated
     @ApiOperation("Customer login")
     @ApiResponses(
             value = {
@@ -51,6 +52,7 @@ public class LoginController {
         }
     }
 
+    @Deprecated
     @ApiOperation("Host login")
     @ApiResponses(
             value = {
@@ -94,8 +96,6 @@ public class LoginController {
         }
     }
 
-    //TODO: Write API to get all permissions
-
     @ApiOperation("All permissions for user")
     @ApiResponses(
             value = {
@@ -105,7 +105,11 @@ public class LoginController {
     )
     @GetMapping("permission")
     public ResponseEntity<List<String>> getUserPermissions() {
-        return ResponseEntity.ok(StpUtil.getPermissionList());
+        try {
+            return ResponseEntity.ok(StpUtil.getPermissionList());
+        } catch (NotLoginException e) {
+            throw new LoginRequiredException();
+        }
     }
 
     @ApiOperation("Role for user")
@@ -117,7 +121,11 @@ public class LoginController {
     )
     @GetMapping("userRole")
     public ResponseEntity<List<String>> getUserRoles() {
-        return ResponseEntity.ok(StpUtil.getRoleList());
+        try {
+            return ResponseEntity.ok(StpUtil.getRoleList());
+        } catch (NotLoginException e) {
+            throw new LoginRequiredException();
+        }
     }
 
     @ApiOperation("Get user brief info while logging in.")

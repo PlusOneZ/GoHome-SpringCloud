@@ -21,17 +21,17 @@ public class OSSManageUtils {
         OSSConfigure ossConfigure = new OSSConfigure("application-oss.properties");
 
         OSSClient ossClient = new OSSClient(
-                ossConfigure.getEndpoint(),
-                ossConfigure.getAccessKeyId(),
-                ossConfigure.getAccessKeySecret()
+                "oss-cn-shanghai.aliyuncs.com",
+                "LTAI5t9L46CRZ9pYLUUdSS8b",
+                "Mw6UGxmaFWQtK7jTsfAq4MHir3GNRC"
         );
         //创建存贮空间
         //ossClient.createBucket(ossConfigure.getBucketName());
         // 上传文件
-        ossClient.putObject(ossConfigure.getBucketName(),fileName,new ByteArrayInputStream(bs));
+        ossClient.putObject("tongjigohome",fileName,new ByteArrayInputStream(bs));
         //设置url过期时间为100年
         Date expiration=new Date(System.currentTimeMillis()+3600L*1000*24*365*100);
-        String url = ossClient.generatePresignedUrl(ossConfigure.getBucketName(), fileName, expiration).toString();
+        String url = ossClient.generatePresignedUrl("tongjigohome", fileName, expiration).toString();
         // 关闭OSSClient
         ossClient.shutdown();
         return url;

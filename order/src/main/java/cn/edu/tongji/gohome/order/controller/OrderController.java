@@ -1,10 +1,8 @@
 package
         cn.edu.tongji.gohome.order.controller;
 
-import cn.edu.tongji.gohome.order.dto.Comment;
-import cn.edu.tongji.gohome.order.dto.OrderContent;
-import cn.edu.tongji.gohome.order.dto.OrderStatus;
-import cn.edu.tongji.gohome.order.dto.Report;
+import cn.dev33.satoken.stp.StpUtil;
+import cn.edu.tongji.gohome.order.dto.*;
 import cn.edu.tongji.gohome.order.model.CustomerCommentEntity;
 import cn.edu.tongji.gohome.order.model.HostCommentEntity;
 import cn.edu.tongji.gohome.order.model.OrderReportEntity;
@@ -68,10 +66,14 @@ public class OrderController {
             @RequestParam(value = "pageSize", defaultValue = "5") int pageSize,
             @RequestParam(value = "orderStatus", required = false) Integer orderStatus) {
 
+        Long customerId = Long.valueOf((String) StpUtil.getLoginId());
+        System.out.println("print customerId");
+        System.out.println(customerId);
+
         if(orderStatus == null){
-            return new ResponseEntity<>(orderService.searchOrderInfoForCustomerId(1L, currentPage, pageSize), HttpStatus.OK);
+            return new ResponseEntity<>(orderService.searchOrderInfoForCustomerId(customerId, currentPage, pageSize), HttpStatus.OK);
         }
-        return new ResponseEntity<>(orderService.searchOrderInfoForCustomerIdAndOrderStatus(1L, orderStatus, currentPage, pageSize), HttpStatus.OK);
+        return new ResponseEntity<>(orderService.searchOrderInfoForCustomerIdAndOrderStatus(customerId, orderStatus, currentPage, pageSize), HttpStatus.OK);
     }
 
 
@@ -162,7 +164,7 @@ public class OrderController {
             @RequestParam(value = "currentPage") int currentPage,
             @RequestParam(value = "pageSize", defaultValue = "3") int pageSize) {
         return new ResponseEntity<>(
-                orderService.searchUsableCouponForCustomerId(1, couponLimit, currentPage, pageSize), HttpStatus.OK
+                orderService.searchUsableCouponForCustomerId(Long.parseLong((String) StpUtil.getLoginId()), couponLimit, currentPage, pageSize), HttpStatus.OK
         );
     }
 
@@ -172,6 +174,13 @@ public class OrderController {
         orderService.updateOCouponStatus(couponId,couponStatus);
 
         return HttpStatus.OK;
+    }
+
+    @RequestMapping(value = "order/footMap", method = RequestMethod.GET)
+    public ResponseEntity<List<FootMapInfoDto>> getFootMapInformation(){
+
+        return new ResponseEntity<>
+                (orderService.getFootMapInformation(Long.parseLong((String) StpUtil.getLoginId())),HttpStatus.OK);
     }
 
 }

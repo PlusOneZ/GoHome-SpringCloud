@@ -1,5 +1,6 @@
 package cn.edu.tongji.gohome.personalinformation.personalinfomartion.controller;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.*;
 import cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.CustomerInfoService;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * <b>与获取用户信息有关的api</b>
@@ -57,7 +59,7 @@ public class CustomerController {
             @RequestBody Base64Data base64Data){
 
         try {
-            Long customerId = (Long)StpUtil.getLoginId();
+            Long customerId = Long.parseLong((String) StpUtil.getLoginId());
             customerInfoService.updateAvatar(customerId, base64Data.getBase64Data());
             return new ResponseEntity<>(true,HttpStatus.OK);
         }catch (Exception error){
@@ -76,11 +78,22 @@ public class CustomerController {
             @RequestBody CustomerInfoDto customerInfoDto
             ){
         try {
-            Long customerId = (Long)StpUtil.getLoginId();
+            Long customerId = Long.valueOf((String)StpUtil.getLoginId());
             customerInfoService.updateUserInfo(customerInfoDto, customerId);
             return new ResponseEntity<>(true,HttpStatus.OK);
         }catch (Exception error){
             return new ResponseEntity<>(false,HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @RequestMapping(value = "favorite/directory", method = RequestMethod.GET)
+    public ResponseEntity<List<HashMap<String, Object>>> getFavoriteDirectory(){
+        try {
+            Long customerId = Long.valueOf((String)StpUtil.getLoginId());
+            return new ResponseEntity<>(customerInfoService.getFavoriteDirectory(customerId), HttpStatus.OK);
+        }catch (Exception error){
+            error.printStackTrace();
+            return new ResponseEntity<>(null,HttpStatus.EXPECTATION_FAILED);
         }
     }
 
@@ -97,7 +110,7 @@ public class CustomerController {
             ){
 
             try {
-                Long customerId = (Long)StpUtil.getLoginId();
+                Long customerId = Long.valueOf((String)StpUtil.getLoginId());
                 return new ResponseEntity<>(customerInfoService.insertNewFavorite(favoriteNameDto.getFavoriteName(), customerId), HttpStatus.OK);
             }catch (Exception error){
                 error.printStackTrace();
@@ -183,10 +196,45 @@ public class CustomerController {
             @RequestBody FavoriteStayAdditionDto favoriteStayAdditionDto
     ){
         try {
-            customerInfoService.addStayToFavorite(favoriteStayAdditionDto.getFavoriteId(),favoriteStayAdditionDto.getStayId());
+            customerInfoService.deleteStayFromFavorite(favoriteStayAdditionDto.getFavoriteId(),favoriteStayAdditionDto.getStayId());
             return new ResponseEntity<>(true, HttpStatus.OK);
         }catch (Exception error){
             return new ResponseEntity<>(false,HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    /**
+     * 删除指定用户收藏夹中的指定房源
+     * @param stayId
+     * @return
+     */
+    @RequestMapping(value = "favorite/stay/heart/deletion",method = RequestMethod.GET)
+    public ResponseEntity<Boolean> deleteSpecificStayInFavorite(
+            @RequestParam Long stayId
+    ){
+        try {
+            Long customerId = Long.valueOf((String)StpUtil.getLoginId());
+            return new ResponseEntity<>(
+                    customerInfoService.deleteSpecificStayInFavorite(customerId, stayId)
+                    , HttpStatus.OK);
+        }catch (Exception error){
+            error.printStackTrace();
+            return new ResponseEntity<>(Boolean.FALSE,HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @RequestMapping(value = "favorite/stay/heart", method = RequestMethod.GET)
+    public ResponseEntity<Boolean> getSpecificStayLikeState(
+            @RequestParam Long stayId
+    ){
+        try {
+            Long customerId = Long.valueOf((String)StpUtil.getLoginId());
+            return new ResponseEntity<>(
+                    customerInfoService.getSpecificStayLikeState(customerId, stayId)
+                    , HttpStatus.OK);
+        }catch (Exception error){
+            error.printStackTrace();
+            return new ResponseEntity<>(Boolean.FALSE,HttpStatus.EXPECTATION_FAILED);
         }
     }
 
@@ -200,10 +248,10 @@ public class CustomerController {
     @RequestMapping(value = "host/info", method = RequestMethod.GET)
     public ResponseEntity<HashMap<String,Object>> getHostBasicInfo(){
         try {
-            Long customerId =(Long)StpUtil.getLoginId();
-            return new ResponseEntity<>(customerInfoService.getHostInfoByCustomerId(customerId), HttpStatus.OK);
-        }catch (Exception error){
-            return new ResponseEntity<>(null,HttpStatus.EXPECTATION_FAILED);
+            Long customerId = Long.parseLong((String) StpUtil.getLoginId());
+            return ResponseEntity.ok(customerInfoService.getHostInfoByCustomerId(customerId));
+        }catch (NotLoginException error){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
 
@@ -232,7 +280,7 @@ public class CustomerController {
             @RequestBody HostNickNameDto hostNickNameDto
     ){
         try{
-            Long customerId = (Long)StpUtil.getLoginId();
+            Long customerId = Long.parseLong((String) StpUtil.getLoginId());
             customerInfoService.updateHostNickName(customerId, hostNickNameDto.getHostNickName());
             return new ResponseEntity<>(true,HttpStatus.OK);
         }catch (Exception error)
@@ -252,7 +300,7 @@ public class CustomerController {
     )
     {
         try {
-            Long customerId = (Long)StpUtil.getLoginId();
+            Long customerId = Long.parseLong((String) StpUtil.getLoginId());
             customerInfoService.updateAvatar(customerId,base64Data.getBase64Data());
             return new ResponseEntity<>(true,HttpStatus.OK);
         }

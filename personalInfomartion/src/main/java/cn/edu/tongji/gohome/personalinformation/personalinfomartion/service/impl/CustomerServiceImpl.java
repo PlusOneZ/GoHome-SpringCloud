@@ -308,7 +308,7 @@ public class CustomerServiceImpl implements CustomerInfoService {
         result.put("hostNickName",customer.getCustomerName());
         HostEntity hostEntity = hostRepository.findByCustomerId(customerId);
         result.put("hostRealName",hostEntity.getHostRealName());
-        result.put("hostSex",customer.getCustomerGender().equals("m")?"男":"女");
+        result.put("hostSex",hostEntity.getHostResidentId().charAt(16)=='1'?"男":"女");
         result.put("hostLevel",hostEntity.getHostLevel());
         HostGroupEntity hostGroupEntity = hostGroupRepository.getByHostLevel(hostEntity.getHostLevel());
         result.put("hostLevelName",hostGroupEntity.getHostLevelName());
@@ -327,12 +327,20 @@ public class CustomerServiceImpl implements CustomerInfoService {
         result.put("hostCreateTime",dateToString(hostEntity.getHostCreateTime()));
         //获取房东平均评分
         if(viewHostStayCommentEntityList !=null) {
+            System.out.println("开始计算平均得分");
             float averageScore = 0;
             for (ViewHostStayCommentEntity viewHostStayCommentEntity:viewHostStayCommentEntityList) {
                 averageScore += viewHostStayCommentEntity.getStayScore();
             }
-            averageScore = averageScore / viewHostStayCommentEntityList.size();
-            result.put("averageRate",averageScore);
+
+            if (viewHostStayCommentEntityList.size()==0){
+                result.put("averageRate",0);
+            }
+            else{
+                averageScore = averageScore / viewHostStayCommentEntityList.size();
+                result.put("averageRate",averageScore);
+            }
+
         }
         else {
             result.put("averageRate",0);
@@ -489,6 +497,93 @@ public class CustomerServiceImpl implements CustomerInfoService {
         }
         result.put("customerGroup",hostGroupDtoList);
         return result;
+    }
+
+    /**
+     * 删除某一顾客收藏的某一房源
+     * @param customerId
+     * @param stayId
+     * @return
+     */
+    @Override
+    public Boolean deleteSpecificStayInFavorite(long customerId, long stayId){
+        //
+        List<FavoriteDirectoryEntity> favoriteDirectoryList =
+                favoriteDirectoryRepository.findAllByCustomerId(customerId);
+        for(FavoriteDirectoryEntity favoriteDirectory: favoriteDirectoryList){
+            FavoriteDirectoryStayEntity favoriteStay=
+            favoriteDirectoryStayRepository.
+                    findFirstByFavoriteDirectoryIdAndStayId((favoriteDirectory.getFavoriteDirectoryId()),stayId);
+            if (favoriteStay!=null){
+                favoriteDirectoryStayRepository.delete(favoriteStay);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Boolean getSpecificStayLikeState(long customerId, long stayId){
+        List<FavoriteDirectoryEntity> favoriteDirectoryList =
+                favoriteDirectoryRepository.findAllByCustomerId(customerId);
+        for(FavoriteDirectoryEntity favoriteDirectory: favoriteDirectoryList){
+            FavoriteDirectoryStayEntity favoriteStay=
+                    favoriteDirectoryStayRepository.
+                            findFirstByFavoriteDirectoryIdAndStayId((favoriteDirectory.getFavoriteDirectoryId()),stayId);
+            if (favoriteStay!=null){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public List<HashMap<String, Object>> getFavoriteDirectory(long customerId){
+        List<FavoriteDirectoryEntity> favoriteDirectoryList
+                = favoriteDirectoryRepository.findAllByCustomerId(customerId);
+        List<HashMap<String, Object>> res = new ArrayList<>();
+        for(FavoriteDirectoryEntity favoriteDirectory: favoriteDirectoryList){
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("favoriteId", favoriteDirectory.getFavoriteDirectoryId());
+            hashMap.put("name", favoriteDirectory.getName());
+
+            List<FavoriteDirectoryStayEntity> directoryStayList=
+                    favoriteDirectoryStayRepository
+                            .findAllByFavoriteDirectoryId(favoriteDirectory.getFavoriteDirectoryId());
+
+            // 获取该收藏下内房源的数量
+            hashMap.put("totalStay",directoryStayList.size());
+
+            // 图片
+            for(FavoriteDirectoryStayEntity favoriteStay:directoryStayList){
+                List<String> photos=getAllPhotoByStayId(favoriteStay.getStayId());
+                if (photos.size()!=0){
+                    hashMap.put("imgUrl",photos.get(0));
+                    break;
+                }
+            }
+
+            res.add(hashMap);
+        }
+        return res;
+    }
+
+    @Override
+    public List<String> getAllPhotoByStayId(Long stayId){
+        List<RoomEntity> roomList = roomRepository.getAllByStayId(stayId);
+        List<String> photoList = new ArrayList<>();
+        for(RoomEntity room: roomList) {
+            // 获取到该房间对应的roomPhoto
+            RoomPhotoEntity roomPhoto =
+                    roomPhotoRepository.findFirstByRoomIdAndStayId(
+                            room.getRoomId(),
+                            stayId
+                    );
+            if (roomPhoto != null){
+                photoList.add(roomPhoto.getRoomPhotoLink());
+            }
+        }
+        return photoList;
     }
 
     private String timeToString(Time time){

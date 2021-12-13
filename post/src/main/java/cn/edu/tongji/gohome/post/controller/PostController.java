@@ -71,10 +71,13 @@ public class PostController {
 
     @RequestMapping("post/list/personal")
     public ResponseEntity<HashMap<String, Object>> getPersonalPostList(
-            @RequestParam(value = "customerId", defaultValue = "0") long customerId,
+            @RequestParam(value = "customerId", defaultValue = "0") Long customerId,
             @RequestParam(value = "currentPage", defaultValue = "0") int currentPage,
             @RequestParam(value = "pageSize", defaultValue = "5") int pageSize) {
-
+        // 如果customerId 为 0，则从token中获取
+        if (customerId == null || customerId == 0){
+            customerId = Long.valueOf((String) StpUtil.getLoginId());
+        }
         return new ResponseEntity<>(postService.searchPostListForCustomerId(customerId,currentPage, pageSize), HttpStatus.OK);
     }
 
@@ -150,8 +153,17 @@ public class PostController {
     @RequestMapping("like/post/status")
     public ResponseEntity<HashMap<String, Object>> getPostLikeStatus(
             @RequestParam(value="postId", defaultValue ="0") long postId) {
-        long customerId=Long.valueOf((String) StpUtil.getLoginId());
-        return new ResponseEntity<>(likeService.searchPostLikeForPostIdAndCustomerId(postId,customerId), HttpStatus.OK);
+        try{
+            long customerId=Long.valueOf((String) StpUtil.getLoginId());
+            return new ResponseEntity<>(likeService.searchPostLikeForPostIdAndCustomerId(postId,customerId), HttpStatus.OK);
+        }
+        catch (Exception error){
+            // 未登录情况下也能查看点赞情况
+            HashMap<String, Object> res = new HashMap<>();
+            res.put("exist",false);
+            return new ResponseEntity<>(res, HttpStatus.OK);
+        }
+
     }
 
     @RequestMapping(value="like/post",method = RequestMethod.POST)
@@ -172,12 +184,20 @@ public class PostController {
     @RequestMapping("like/reply/status")
     public ResponseEntity<HashMap<String, Object>> getReplyLikeStatus(
             @RequestParam(value="replyId", defaultValue ="0") long replyId) {
-        System.out.println("begin reply like status searching with:");
-        System.out.println(replyId);
-        Long customerId=Long.valueOf((String) StpUtil.getLoginId());
+        try{
+            Long customerId=Long.valueOf((String) StpUtil.getLoginId());
+            return new ResponseEntity<>(
+                    likeService.searchReplyLikeForReplyIdAndCustomerId(replyId,customerId), HttpStatus.OK);
+        }
+        catch (Exception error){
+            // 未登录情况下也能查看点赞情况
+            HashMap<String, Object> res = new HashMap<>();
+            res.put("exist",false);
+            return new ResponseEntity<>(res, HttpStatus.OK);
+        }
 
-        System.out.println("this is the customerId "+customerId.toString());
-        return new ResponseEntity<>(likeService.searchReplyLikeForReplyIdAndCustomerId(replyId,customerId), HttpStatus.OK);
+
+
     }
 
     @RequestMapping(value="like/reply",method = RequestMethod.POST)

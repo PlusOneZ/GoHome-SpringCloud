@@ -8,10 +8,13 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import javax.transaction.Transactional;
+import java.util.List;
 
 public interface PostRepository extends JpaRepository<PostEntity, Long>, JpaSpecificationExecutor<PostEntity> {
 
     Page<PostEntity> findAllByCustomerId(Long customerId, Pageable pageable);
+
+    List<PostEntity> findAllByCustomerId(Long customerId);
 
     PostEntity findOneByPostId(long postId);
 

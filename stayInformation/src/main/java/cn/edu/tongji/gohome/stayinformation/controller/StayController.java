@@ -9,6 +9,7 @@ import cn.edu.tongji.gohome.stayinformation.model.LabelEntity;
 import cn.edu.tongji.gohome.stayinformation.model.StayLabelEntity;
 import cn.edu.tongji.gohome.stayinformation.model.StayTypeEntity;
 import cn.edu.tongji.gohome.stayinformation.repository.*;
+import cn.edu.tongji.gohome.stayinformation.service.HostService;
 import cn.edu.tongji.gohome.stayinformation.service.StayCommentService;
 import cn.edu.tongji.gohome.stayinformation.service.StayService;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.transaction.Transactional;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,6 +55,9 @@ public class StayController {
     @Resource
     private HostRepository hostRepository;
 
+    @Resource
+    private HostService hostService;
+
     /**
      * <b>Example: http://localhost:8090/api/v1/stay?stayId=10059</b><br>
      * @param stayId
@@ -75,7 +80,7 @@ public class StayController {
     public ResponseEntity<HashMap<String,Boolean>> isHostSameWithCustomer(
             @RequestParam Long stayId
     ){
-        long customerId = 1;
+        long customerId = Long.valueOf((String)StpUtil.getLoginId());
         // 获取customerId
         int hostId = stayRepository.findFirstByStayId(stayId).getHostId();
         Boolean isEqual = hostRepository.getById(hostId).getCustomerId()
@@ -96,8 +101,13 @@ public class StayController {
     (@RequestParam Long stayId){
         HashMap<String, Object> hashMap = new HashMap<>();
 
-        //TODO: change to token
-        long customerId = 1;
+        long customerId = 3;
+        try{
+            customerId = Long.valueOf((String)StpUtil.getLoginId());
+        }
+        catch (Exception err){
+            customerId = 3;
+        }
 
         hashMap.put("stayPositionNum", 1);
         hashMap.put("stayPositionInfo",
@@ -131,8 +141,13 @@ public class StayController {
             (@RequestParam Long stayId){
         HashMap<String, Object> hashMap = new HashMap<>();
 
-        //TODO: change to token
-        long customerId = 1;
+        long customerId = 3;
+        try{
+            customerId = Long.valueOf((String)StpUtil.getLoginId());
+        }
+        catch (Exception err){
+            customerId = 3;
+        }
 
         hashMap.put("stayPositionNum", 1);
         hashMap.put("stayPositionInfo",
@@ -214,7 +229,9 @@ public class StayController {
     public ResponseEntity<HashMap<String, Object>> getStayBriefInfoByHostId
             (){
         HashMap<String, Object> hashMap = new HashMap<>();
-        int hostId = 1;
+        long customerId = Long.valueOf((String)StpUtil.getLoginId());
+
+        int hostId = hostService.findHostIdByCustomerId(customerId);
         // 0 代表保存但未提交， 1 表示待审核， 2 表示审核通过
         List<Long> unpublishedList =
                 stayService.getAllStayIdByHostIdAndStatus(hostId, BigInteger.valueOf(0));
@@ -240,8 +257,11 @@ public class StayController {
     public ResponseEntity<Boolean> createStay(@RequestBody HostStay hostStay){
         try{
 
-            // TODO: 改变hostId
-            stayService.insertIntoStay(hostStay, 1);
+            long customerId = Long.valueOf((String)StpUtil.getLoginId());
+
+            int hostId = hostService.findHostIdByCustomerId(customerId);
+
+            stayService.insertIntoStay(hostStay, hostId);
             return new ResponseEntity<>(true,
                     HttpStatus.OK);
         }
@@ -256,8 +276,12 @@ public class StayController {
                                                           hostStayUpdate){
         try{
 
-            // TODO: 改变hostId
-            stayService.updateAStay(hostStayUpdate.getUpdateInfo(), hostStayUpdate.getStayId(),1);
+            long customerId = Long.valueOf((String)StpUtil.getLoginId());
+
+            int hostId = hostService.findHostIdByCustomerId(customerId);
+
+            stayService.updateAStay(hostStayUpdate.getUpdateInfo(), hostStayUpdate.getStayId(),
+                    hostId);
             return new ResponseEntity<>(true,
                     HttpStatus.OK);
         }
@@ -267,6 +291,7 @@ public class StayController {
         }
     }
 
+    @Transactional
     @RequestMapping(method = RequestMethod.DELETE)
     public ResponseEntity<Boolean> deleteStayFromStayId(@RequestParam long stayId){
         try{

@@ -14,6 +14,8 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>, JpaSp
 
     Page<OrderEntity> findAllByCustomerId(Long customerId, Pageable pageable);
 
+    List<OrderEntity> findAllByCustomerId(Long customerId);
+
     Page<OrderEntity> findAllByCustomerIdAndOrderStatus(Long customerId, Integer orderStatus, Pageable pageable);
 
     OrderEntity findFirstByOrderId(Long orderId);
