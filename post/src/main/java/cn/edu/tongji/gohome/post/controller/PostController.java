@@ -58,10 +58,13 @@ public class PostController {
 
     @RequestMapping("post/list/personal")
     public ResponseEntity<HashMap<String, Object>> getPersonalPostList(
-            @RequestParam(value = "customerId", defaultValue = "0") long customerId,
+            @RequestParam(value = "customerId", defaultValue = "0") Long customerId,
             @RequestParam(value = "currentPage", defaultValue = "0") int currentPage,
             @RequestParam(value = "pageSize", defaultValue = "5") int pageSize) {
-
+        // 如果customerId 为 0，则从token中获取
+        if (customerId == null || customerId == 0){
+            customerId = Long.valueOf((String) StpUtil.getLoginId());
+        }
         return new ResponseEntity<>(postService.searchPostListForCustomerId(customerId,currentPage, pageSize), HttpStatus.OK);
     }
 
