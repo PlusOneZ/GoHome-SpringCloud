@@ -109,10 +109,10 @@ public class PostController {
 
 
     @RequestMapping(value = "post", method = RequestMethod.POST)
-    public HttpStatus postDetailPost(
+    public ResponseEntity<String> postDetailPost(
             @RequestBody UploadedPostDetail uploadedPostDetail){
         uploadedPostDetail.getPost().setCustomerId(Long.valueOf((String) StpUtil.getLoginId()));
-        return postService.addPost(uploadedPostDetail);
+        return ResponseEntity.ok(postService.addPost(uploadedPostDetail));
     }
 
 
