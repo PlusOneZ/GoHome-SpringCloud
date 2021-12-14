@@ -3,9 +3,8 @@ package cn.edu.tongji.gohome.login.controller;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.edu.tongji.gohome.login.dto.CustomerSignupDTO;
-import cn.edu.tongji.gohome.login.model.CustomerEntity;
 import cn.edu.tongji.gohome.login.payload.IdVerificationResult;
-import cn.edu.tongji.gohome.login.repository.CustomerRepository;
+import cn.edu.tongji.gohome.login.payload.SmsSendResult;
 import cn.edu.tongji.gohome.login.service.LoginService;
 import cn.edu.tongji.gohome.login.service.PhoneService;
 import cn.edu.tongji.gohome.login.service.SignupService;
@@ -185,6 +184,15 @@ public class SignupController {
 
         // todo verify img using aliyun service
         return ResponseEntity.ok(signupService.idVerification(img));
+    }
+
+    @GetMapping("smsVerifyCode")
+    public ResponseEntity<SmsSendResult> sendSmsVerifyCode(@RequestParam String phone) {
+        if (!phoneService.isPhoneValidate(phone)) {
+            throw new DataFormatException();
+        }
+
+        return ResponseEntity.ok(signupService.sendSmsVerificationCode(phone));
     }
 
 }
