@@ -20,7 +20,7 @@ public interface PostService {
 
     HashMap<String, Object> searchPostListForKeyWord(String key, int currentPage, int pageSize);
 
-    HttpStatus addPost(UploadedPostDetail uploadedPostDetail);
+    String addPost(UploadedPostDetail uploadedPostDetail);
 
     HttpStatus removePost(long postId, long customerId);
 

@@ -137,7 +137,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public HttpStatus addPost(UploadedPostDetail uploadedPostDetail) {
+    public String addPost(UploadedPostDetail uploadedPostDetail) {
 
         UploadedPost post=uploadedPostDetail.getPost();
 
@@ -187,9 +187,9 @@ public class PostServiceImpl implements PostService{
 
         }catch (Exception ex) {
             System.out.println(ex.toString());
-            return HttpStatus.CONFLICT;
+            return null;
         }
-        return HttpStatus.OK;
+        return String.valueOf(postId);
     }
 
     @Override
