@@ -1,6 +1,7 @@
 package cn.edu.tongji.gohome.post.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.Base64Data;
 import cn.edu.tongji.gohome.post.dto.UploadedPostDetail;
 import cn.edu.tongji.gohome.post.dto.UploadedPostLike;
 import cn.edu.tongji.gohome.post.dto.UploadedReply;
@@ -37,6 +38,20 @@ public class PostController {
 
     @Resource
     private TagService tagService;
+
+
+    @RequestMapping(value="post/img",method = RequestMethod.POST)
+    public ResponseEntity<String> updateCustomerAvatar(
+            @RequestBody Base64Data base64Data){
+        try {
+            Long customerId = (Long)StpUtil.getLoginId();
+            String res=postService.uploadImage(customerId, base64Data.getBase64Data());
+            return new ResponseEntity<>(res,HttpStatus.OK);
+        }catch (Exception error){
+            return new ResponseEntity<>(null,HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
 
     @RequestMapping("post/list/default")
     public ResponseEntity<HashMap<String, Object>> getDefaultPostList(

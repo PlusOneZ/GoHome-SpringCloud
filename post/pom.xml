@@ -90,6 +90,12 @@
             <artifactId>sa-token-alone-redis</artifactId>
             <version>1.28.0</version>
         </dependency>
+        <dependency>
+            <groupId>cn.edu.tongji.gohome.personalInformation</groupId>
+            <artifactId>personalInfomartion</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
