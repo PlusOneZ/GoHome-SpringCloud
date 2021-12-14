@@ -3,11 +3,11 @@ package
 
 import cn.edu.tongji.gohome.order.dto.*;
 import cn.edu.tongji.gohome.order.dto.mapper.OrderDetailedInfoMapper;
-import cn.edu.tongji.gohome.order.dto.mapper.OrderInfoMapper;
 import cn.edu.tongji.gohome.order.model.*;
 import cn.edu.tongji.gohome.order.repository.*;
 import cn.edu.tongji.gohome.order.service.OrderService;
 import com.github.yitter.idgen.YitIdHelper;
+import org.apache.catalina.Host;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +15,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -67,6 +66,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Resource
     private OrderReportRepository orderReportRepository;
+
+    @Resource
+    private HostRepository hostRepository;
 
     /**
      * @param order: orderEntity to get orderId and other information...
@@ -198,7 +200,7 @@ public class OrderServiceImpl implements OrderService {
      * @date: 2021/11/22 10:59
      **/
     @Override
-    public HashMap<String, Object> searchOrderInfoForStayId(long stayId, Integer currentPage, Integer pageSize) {
+    public HashMap<String, Object> searchOrderInfoForHost(long customerId, Integer currentPage, Integer pageSize) {
 
         // get all the order info
         Pageable pageable = PageRequest.of(currentPage, pageSize);
@@ -206,24 +208,36 @@ public class OrderServiceImpl implements OrderService {
         HashMap<String, Object> results = new HashMap<>();
         List<OrderInfoDto> orderInfoDtoList = new ArrayList<>();
 
-        Page<VOrderStayEntity> vOrderStayEntityPageable = vOrderStayRepository.findAllByStayId(stayId, pageable);
+        //找到hostId对应的stayIdList
+        HostEntity host = hostRepository.findFirstByCustomerId(customerId);
+        if (host != null) {
+            int hostId = host.getHostId();
+            List<StayEntity> stays = stayRepository.findAllByHostId(hostId);
+            List<Long> stayIds = new ArrayList<>();
+            for (StayEntity stay : stays) {
+                stayIds.add(stay.getStayId());
+            }
+            Page<VOrderStayEntity> vOrderStayEntityPageable = vOrderStayRepository.findAllByStayIdIn(stayIds, pageable);
+            // there is no order for customer whose id = ...
+            if (vOrderStayEntityPageable == null) {
+                results.put("totalPage", 0);
+                results.put("orderInfo", orderInfoDtoList);
+                return results;
+            }
+            results.put("totalPage", vOrderStayEntityPageable.getTotalPages());
+            List<OrderEntity> orderEntityList = new ArrayList<>();
+            for (VOrderStayEntity vOrderStayEntity : vOrderStayEntityPageable) {
+                orderEntityList.add(orderRepository.findFirstByOrderId(vOrderStayEntity.getOrderId()));
+            }
 
-        // there is no order for customer whose id = ...
-        if (vOrderStayEntityPageable == null) {
+            for (OrderEntity order : orderEntityList) {
+                orderInfoDtoList.add(getInfoFromOrderEntity(order));
+            }
+            results.put("orderInfo", orderInfoDtoList);
+        }else{
             results.put("totalPage", 0);
             results.put("orderInfo", orderInfoDtoList);
-            return results;
         }
-        results.put("totalPage", vOrderStayEntityPageable.getTotalPages());
-        List<OrderEntity> orderEntityList = new ArrayList<>();
-        for (VOrderStayEntity vOrderStayEntity : vOrderStayEntityPageable) {
-            orderEntityList.add(orderRepository.findFirstByOrderId(vOrderStayEntity.getOrderId()));
-        }
-
-        for (OrderEntity order : orderEntityList) {
-            orderInfoDtoList.add(getInfoFromOrderEntity(order));
-        }
-        results.put("orderInfo", orderInfoDtoList);
         return results;
     }
 

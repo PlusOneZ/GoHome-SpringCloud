@@ -66,7 +66,7 @@ public class OrderController {
             @RequestParam(value = "pageSize", defaultValue = "5") int pageSize,
             @RequestParam(value = "orderStatus", required = false) Integer orderStatus) {
 
-        Long customerId = Long.valueOf((String) StpUtil.getLoginId());
+        Long customerId = Long.parseLong((String) StpUtil.getLoginId());
         System.out.println("print customerId");
         System.out.println(customerId);
 
@@ -79,11 +79,11 @@ public class OrderController {
 
     @RequestMapping("orders/host")
     public ResponseEntity<HashMap<String, Object>> getHostOrderList(
-            @RequestParam(value = "stayId", required = false) long stayId,
             @RequestParam(value = "currentPage") int currentPage,
             @RequestParam(value = "pageSize", defaultValue = "5") int pageSize) {
 
-        return new ResponseEntity<>(orderService.searchOrderInfoForStayId(stayId, currentPage, pageSize), HttpStatus.OK);
+        return new ResponseEntity<>
+                (orderService.searchOrderInfoForHost(Long.parseLong((String) StpUtil.getLoginId()), currentPage, pageSize), HttpStatus.OK);
 
     }
 
