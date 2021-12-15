@@ -27,4 +27,8 @@ public interface PostService {
     String base64UploadFile(String base64Data, String fileName);
 
     String uploadImage(Long customerId, String base64Data);
+
+    void addPostReport(Long reportCustomerId, Long reportedCustomerId, String reportReason);
+
+    String getLastReportReason(Long reportCustomerId, Long reportedCustomerId);
 }
