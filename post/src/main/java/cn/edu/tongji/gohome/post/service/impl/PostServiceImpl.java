@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -46,6 +48,9 @@ public class PostServiceImpl implements PostService{
 
     @Resource
     private TagService tagService;
+
+    @Resource
+    private PostReportRepository postReportRepository;
 
     @Override
     public HashMap<String, Object> searchBriefPostInfo(PostEntity postEntity) {
@@ -134,6 +139,39 @@ public class PostServiceImpl implements PostService{
     @Override
     public HashMap<String, Object> searchPostListForKeyWord(String key, int currentPage, int pageSize) {
         return tagService.searchPostListForTag(key,currentPage,pageSize);
+    }
+
+    /**
+     * 添加举报信息
+     * @param reportCustomerId
+     * @param reportedCustomerId
+     * @param reportReason
+     */
+    @Override
+    public void addPostReport(Long reportCustomerId, Long reportedCustomerId, String reportReason){
+        // 删除之前的举报
+
+        // 新增举报
+        PostReportEntity postReport = new PostReportEntity();
+        postReport.setReportCustomerId(reportCustomerId);
+        postReport.setBeReportedCustomerId(reportedCustomerId);
+        postReport.setReportReason(reportReason);
+        postReport.setReportTime(Timestamp.valueOf(LocalDateTime.now()));
+        byte isDeal=0;
+        postReport.setIsDealt(isDeal);
+        postReportRepository.saveAndFlush(postReport);
+
+    }
+
+    @Override
+    public String getLastReportReason(Long reportCustomerId, Long reportedCustomerId){
+        PostReportEntity postReport = postReportRepository.findFirstByReportCustomerIdAndBeReportedCustomerId(reportCustomerId,reportedCustomerId);
+        if (postReport==null){
+            return null;
+        }
+        else{
+            return postReport.getReportReason();
+        }
     }
 
     @Override
