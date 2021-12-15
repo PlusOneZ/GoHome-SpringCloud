@@ -12,13 +12,15 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<PostEntity, Long>, JpaSpecificationExecutor<PostEntity> {
 
-    Page<PostEntity> findAllByCustomerId(Long customerId, Pageable pageable);
+    Page<PostEntity> findAllByCustomerIdOrderByPostTimeDesc(Long customerId, Pageable pageable);
 
-    List<PostEntity> findAllByCustomerId(Long customerId);
+    List<PostEntity> findAllByCustomerIdOrderByPostTimeDesc(Long customerId);
 
     PostEntity findOneByPostId(long postId);
 
     PostEntity saveAndFlush(PostEntity postEntity);
+
+    Page<PostEntity> findAllByOrderByPostTimeDesc(Pageable pageable);
 
     @Transactional
     void deleteByPostId(long postId);
