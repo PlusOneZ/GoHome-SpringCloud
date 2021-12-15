@@ -1,7 +1,7 @@
 package cn.edu.tongji.gohome.post.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.edu.tongji.gohome.personalinformation.personalinfomartion.dto.Base64Data;
+import cn.edu.tongji.gohome.post.dto.Base64Data;
 import cn.edu.tongji.gohome.post.dto.*;
 import cn.edu.tongji.gohome.post.model.CustomerEntity;
 import cn.edu.tongji.gohome.post.service.LikeService;

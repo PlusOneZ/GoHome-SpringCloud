@@ -10,18 +10,18 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>eureka</module>
-        <module>login</module>
-        <module>post</module>
         <module>admin</module>
-        <module>order</module>
+        <module>eureka</module>
         <module>gateway</module>
+        <module>login</module>
+        <module>order</module>
         <module>payment</module>
         <module>personalInfomartion</module>
+        <module>post</module>
         <module>sale</module>
         <module>statistics</module>
-        <module>trade</module>
         <module>stayInformation</module>
+        <module>trade</module>
     </modules>
 
     <build>

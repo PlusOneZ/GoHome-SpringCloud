@@ -10,7 +10,7 @@
     </parent>
     <groupId>cn.edu.tongji.gohome.sale</groupId>
     <artifactId>sale</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0</version>
     <name>sale</name>
     <description>sale</description>
     <properties>

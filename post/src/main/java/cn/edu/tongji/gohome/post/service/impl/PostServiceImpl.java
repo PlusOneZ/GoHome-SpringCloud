@@ -1,5 +1,5 @@
 package cn.edu.tongji.gohome.post.service.impl;
-import cn.edu.tongji.gohome.personalinformation.personalinfomartion.service.OSS.OSSManageUtils;
+import cn.edu.tongji.gohome.post.service.OSS.OSSManageUtils;
 import cn.edu.tongji.gohome.post.dto.PostCustomer;
 import cn.edu.tongji.gohome.post.dto.UploadedPost;
 import cn.edu.tongji.gohome.post.dto.UploadedPostDetail;
