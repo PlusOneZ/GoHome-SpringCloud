@@ -52,7 +52,7 @@ public class TradeService {
     public void completePaymentForOrder(long orderId){
         System.out.println("该订单已经完成，经过支付宝回调后修改订单状态与删除Redis内的订单");
         boolean hasKey = redisUtils.exists(String.valueOf(orderId));
-        restTemplate.put("http://order-service/api/vi/order/status?orderId={1}&orderStatus={2}",orderId,OrderStatus.ORDER_PAYMENT_COMPLETED);
+        restTemplate.put("http://order-service/api/v1/order/status?orderId={1}&orderStatus={2}",String.class,orderId,OrderStatus.ORDER_PAYMENT_COMPLETED);
         if(hasKey){
             redisUtils.remove(String.valueOf(orderId));
         }
