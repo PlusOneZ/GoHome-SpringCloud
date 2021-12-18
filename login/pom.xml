@@ -10,7 +10,7 @@
     </parent>
     <groupId>cn.edu.tongji.gohome</groupId>
     <artifactId>login</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0</version>
     <name>login</name>
     <description>login</description>
     <properties>
@@ -131,6 +131,13 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+        </dependency>
+
+        <!-- 发送短信依赖 -->
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
         </dependency>
 
     </dependencies>

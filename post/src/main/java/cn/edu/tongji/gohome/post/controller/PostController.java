@@ -1,10 +1,8 @@
 package cn.edu.tongji.gohome.post.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.edu.tongji.gohome.post.dto.UploadedPostDetail;
-import cn.edu.tongji.gohome.post.dto.UploadedPostLike;
-import cn.edu.tongji.gohome.post.dto.UploadedReply;
-import cn.edu.tongji.gohome.post.dto.UploadedReplyLike;
+import cn.edu.tongji.gohome.post.dto.Base64Data;
+import cn.edu.tongji.gohome.post.dto.*;
 import cn.edu.tongji.gohome.post.model.CustomerEntity;
 import cn.edu.tongji.gohome.post.service.LikeService;
 import cn.edu.tongji.gohome.post.service.PostService;
@@ -37,6 +35,49 @@ public class PostController {
 
     @Resource
     private TagService tagService;
+
+
+    @RequestMapping(value="post/img",method = RequestMethod.POST)
+    public ResponseEntity<String> updateCustomerAvatar(
+            @RequestBody Base64Data base64Data){
+        try {
+            Long customerId = Long.valueOf((String)StpUtil.getLoginId());
+            String res=postService.uploadImage(customerId, base64Data.getBase64Data());
+            return new ResponseEntity<>(res,HttpStatus.OK);
+        }catch (Exception error){
+            return new ResponseEntity<>(null,HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @RequestMapping(value = "post/report", method = RequestMethod.POST)
+    public ResponseEntity<Boolean> reportPostByReportedCustomerIdAndReason(
+            @RequestBody PostReport postReport
+    ){
+        try {
+            Long customerId = Long.valueOf((String)StpUtil.getLoginId());
+            postService.addPostReport(customerId,postReport.getReportedCustomerId(),
+                    postReport.getReportReason());
+            return new ResponseEntity<>(Boolean.TRUE,HttpStatus.OK);
+        }catch (Exception error){
+            error.printStackTrace();
+            return new ResponseEntity<>(Boolean.FALSE,HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @RequestMapping(value = "post/report", method = RequestMethod.GET)
+    public ResponseEntity<String> getPostReportByReportedCustomerIdAndReason(
+            @RequestParam Long reportedCustomerId
+    ){
+        try {
+            Long customerId = Long.valueOf((String)StpUtil.getLoginId());
+            String res = postService.getLastReportReason(customerId,reportedCustomerId);
+            return new ResponseEntity<>(res,HttpStatus.OK);
+        }catch (Exception error){
+            error.printStackTrace();
+            return new ResponseEntity<>(null,HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
 
     @RequestMapping("post/list/default")
     public ResponseEntity<HashMap<String, Object>> getDefaultPostList(
@@ -94,10 +135,10 @@ public class PostController {
 
 
     @RequestMapping(value = "post", method = RequestMethod.POST)
-    public HttpStatus postDetailPost(
+    public ResponseEntity<String> postDetailPost(
             @RequestBody UploadedPostDetail uploadedPostDetail){
         uploadedPostDetail.getPost().setCustomerId(Long.valueOf((String) StpUtil.getLoginId()));
-        return postService.addPost(uploadedPostDetail);
+        return ResponseEntity.ok(postService.addPost(uploadedPostDetail));
     }
 
 

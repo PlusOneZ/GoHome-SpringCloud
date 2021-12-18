@@ -24,6 +24,8 @@ public class CorsConfig {
         config.addAllowedOrigin("http://localhost:8091");
         config.addAllowedOrigin("http://*.guisu.website");
         config.addAllowedOrigin("https://*.guisu.website");
+        config.addAllowedOrigin("http://8.131.225.65");
+        config.addAllowedOrigin("https://8.131.225.65");
         config.addAllowedHeader("*");
         config.setAllowCredentials(true);
 
