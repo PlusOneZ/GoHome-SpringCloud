@@ -2,10 +2,7 @@ package cn.edu.tongji.gohome.admin.controller;
 
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.edu.tongji.gohome.admin.dto.ReturnExamineStayItem;
-import cn.edu.tongji.gohome.admin.dto.ReturnLogin;
-import cn.edu.tongji.gohome.admin.dto.ReturnReportPost;
-import cn.edu.tongji.gohome.admin.dto.ReturnReportStay;
+import cn.edu.tongji.gohome.admin.dto.*;
 import cn.edu.tongji.gohome.admin.model.OrderReportEntity;
 import cn.edu.tongji.gohome.admin.model.StayEntity;
 import cn.edu.tongji.gohome.admin.service.CustomerService;
@@ -35,20 +32,41 @@ public class AdminController {
     @Resource
     private StayService stayService;
 
-//    @RequestMapping(value = "post/report", method = RequestMethod.POST)
-//    public ResponseEntity<Boolean> reportPostByReportedCustomerIdAndReason(
-//            @RequestBody PostReport postReport
-//    ){
-//        try {
-//            Long customerId = Long.valueOf((String) StpUtil.getLoginId());
-//            postService.addPostReport(customerId,postReport.getReportedCustomerId(),
-//                    postReport.getReportReason());
-//            return new ResponseEntity<>(Boolean.TRUE, HttpStatus.OK);
-//        }catch (Exception error){
-//            error.printStackTrace();
-//            return new ResponseEntity<>(Boolean.FALSE,HttpStatus.EXPECTATION_FAILED);
-//        }
-//    }
+    @RequestMapping(value = "examine/stay", method = RequestMethod.POST)
+    public HttpStatus postStayExamine(
+            @RequestBody UploadedExamine ask
+    ){
+        try {
+            return stayService.postStayExamine(ask);
+        }catch (Exception error){
+            error.printStackTrace();
+            return HttpStatus.EXPECTATION_FAILED;
+        }
+    }
+
+    @RequestMapping(value = "report/post", method = RequestMethod.POST)
+    public HttpStatus postPostReport(
+            @RequestBody UploadedPostReport ask
+    ){
+        try {
+            return customerService.postPostReport(ask);
+        }catch (Exception error){
+            error.printStackTrace();
+            return HttpStatus.EXPECTATION_FAILED;
+        }
+    }
+
+    @RequestMapping(value = "report/stay", method = RequestMethod.POST)
+    public HttpStatus postStayReport(
+            @RequestBody UploadedStayReport ask
+    ){
+        try {
+            return stayService.postStayReport(ask);
+        }catch (Exception error){
+            error.printStackTrace();
+            return HttpStatus.EXPECTATION_FAILED;
+        }
+    }
 
     @RequestMapping(value = "login", method = RequestMethod.GET)
     public ResponseEntity<ReturnLogin> getLogin(
@@ -78,11 +96,11 @@ public class AdminController {
     }
 
     @RequestMapping(value = "examine/stay", method = RequestMethod.GET)
-    public ResponseEntity<StayEntity> getStayExamineDetail(
+    public ResponseEntity<ReturnDetailExamine> getStayExamineDetail(
             @RequestParam Long stayId
     ){
         try {
-            StayEntity res =stayService.getStayExamineDetail(stayId);
+            ReturnDetailExamine res =stayService.getStayExamineDetail(stayId);
             return new ResponseEntity<>(res,HttpStatus.OK);
         }catch (Exception error){
             error.printStackTrace();
@@ -104,11 +122,11 @@ public class AdminController {
     }
 
     @RequestMapping(value = "report/stay", method = RequestMethod.GET)
-    public ResponseEntity<HashMap<String,Object>> getStayReportDetail(
-            @RequestParam Long reportId
+    public ResponseEntity<ReturnDetailStayReport> getStayReportDetail(
+            @RequestParam Long orderId
     ){
         try {
-            HashMap<String,Object> res =stayService.getStayReportDetail(reportId);
+            ReturnDetailStayReport res =stayService.getStayReportDetail(orderId);
             return new ResponseEntity<>(res,HttpStatus.OK);
         }catch (Exception error){
             error.printStackTrace();
@@ -131,12 +149,12 @@ public class AdminController {
     }
 
     @RequestMapping(value = "report/post", method = RequestMethod.GET)
-    public ResponseEntity<HashMap<String,Object>> getPostReportDetail(
+    public ResponseEntity<ReturnDetailReportPost> getPostReportDetail(
             @RequestParam Long reporterId,
             @RequestParam Long customerId
     ){
         try {
-            HashMap<String,Object> res =customerService.getPostReportDetail(reporterId,customerId);
+            ReturnDetailReportPost res =customerService.getPostReportDetail(reporterId,customerId);
             return new ResponseEntity<>(res,HttpStatus.OK);
         }catch (Exception error){
             error.printStackTrace();

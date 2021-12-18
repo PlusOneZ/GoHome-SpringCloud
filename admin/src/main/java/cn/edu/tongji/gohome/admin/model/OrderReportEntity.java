@@ -11,7 +11,7 @@ public class OrderReportEntity {
     private Long orderId;
     private Timestamp reportTime;
     private String reportReason;
-    private Boolean isDealt;
+    private Integer isDealt;
     private Integer adminId;
     private Timestamp dealTime;
     private String reply;
@@ -59,12 +59,12 @@ public class OrderReportEntity {
 
     @Basic
     @Column(name = "is_dealt")
-    public Boolean getDealt() {
+    public Integer getIsDealt() {
         return isDealt;
     }
 
-    public void setDealt(Boolean dealt) {
-        isDealt = dealt;
+    public void setIsDealt(Integer isDealt) {
+        this.isDealt = isDealt;
     }
 
     @Basic

@@ -1,7 +1,6 @@
 package cn.edu.tongji.gohome.admin.model;
 
 import javax.persistence.*;
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Objects;
 
@@ -11,7 +10,7 @@ public class VerificationEntity {
     private Long verificationId;
     private Long stayId;
     private Integer adminId;
-    private BigInteger verificationResult;
+    private Boolean verificationResult;
     private String verificationReply;
     private Timestamp replyTime;
 
@@ -47,11 +46,11 @@ public class VerificationEntity {
 
     @Basic
     @Column(name = "verification_result")
-    public BigInteger getVerificationResult() {
+    public Boolean getVerificationResult() {
         return verificationResult;
     }
 
-    public void setVerificationResult(BigInteger verificationResult) {
+    public void setVerificationResult(Boolean verificationResult) {
         this.verificationResult = verificationResult;
     }
 

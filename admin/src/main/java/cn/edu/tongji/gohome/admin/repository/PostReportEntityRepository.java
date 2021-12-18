@@ -10,9 +10,9 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.HashMap;
 
 public interface PostReportEntityRepository extends JpaRepository<PostReportEntity, Long>, JpaSpecificationExecutor<PostReportEntity> {
-    @Query("select p from PostReportEntity p")
+    @Query("select p from PostReportEntity p where p.isDealt=0")
     Page<PostReportEntity> findAllBy(Pageable pageable);
 
     @Query("select p from PostReportEntity p where p.reportCustomerId = ?1 and p.beReportedCustomerId = ?2")
-    HashMap<String, Object> findOneBy(Long reporterId, Long customerId);
+    PostReportEntity findOneBy(Long reporterId, Long customerId);
 }

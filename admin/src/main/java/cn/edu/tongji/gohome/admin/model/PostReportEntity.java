@@ -16,6 +16,7 @@ public class PostReportEntity {
     private Integer adminId;
     private Timestamp dealTime;
     private String reply;
+    private Integer replyFlag;
 
     @Id
     @Column(name = "report_customer_id")
@@ -108,5 +109,15 @@ public class PostReportEntity {
     @Override
     public int hashCode() {
         return Objects.hash(reportCustomerId, beReportedCustomerId, reportReason, reportTime, isDealt, adminId, dealTime, reply);
+    }
+
+    @Basic
+    @Column(name = "reply_flag")
+    public Integer getReplyFlag() {
+        return replyFlag;
+    }
+
+    public void setReplyFlag(Integer replyFlag) {
+        this.replyFlag = replyFlag;
     }
 }
