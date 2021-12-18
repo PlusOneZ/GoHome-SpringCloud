@@ -35,7 +35,7 @@ public class CallBackController {
         Map<String,String[]> requestParams = httpServletRequest.getParameterMap();
         String result = paymentService.orderNotify(requestParams);
         // 验签通过
-        return new ResponseEntity<String>(result, HttpStatus.OK);
+        return new ResponseEntity<>(result, HttpStatus.OK);
 
     }
 }

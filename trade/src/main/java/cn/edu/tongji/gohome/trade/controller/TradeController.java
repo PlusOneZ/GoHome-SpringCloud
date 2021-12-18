@@ -61,9 +61,10 @@ public class TradeController {
         return HttpStatus.OK;
     }
 
-    @RequestMapping("trade/customer/id")
-    public String demoGetCustomerLoginId() {
-        return (String) StpUtil.getLoginId();
+    @RequestMapping(value = "trade/payment/callback", method = RequestMethod.POST)
+    public HttpStatus completeThePaymentForOrder(@RequestBody long orderId) {
+        tradeService.completePaymentForOrder(orderId);
+        return HttpStatus.OK;
     }
 
 }

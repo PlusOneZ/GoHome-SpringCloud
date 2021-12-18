@@ -1,12 +1,12 @@
 package
-        cn.edu.tongji.gohome.payment.dto;
+        cn.edu.tongji.gohome.trade.dto;
 
 /**
  * class description
  *
  * @author : loey
  * @className : OrderStatus
- * @since : 2021-11-27 19:26
+ * @since : 2021-12-18 23:40
  **/
 public class OrderStatus {
 
