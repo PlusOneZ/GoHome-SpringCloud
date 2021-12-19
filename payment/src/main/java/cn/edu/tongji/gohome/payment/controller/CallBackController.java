@@ -6,8 +6,10 @@ import com.alipay.api.AlipayApiException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +30,7 @@ public class CallBackController {
     private PaymentService paymentService;
 
     @RequestMapping(value = "notify",method = RequestMethod.POST)
+    @ResponseBody
     public ResponseEntity<String> notifyOrder(HttpServletRequest httpServletRequest) throws AlipayApiException {
 
         System.out.println("收到了回调内容!");
