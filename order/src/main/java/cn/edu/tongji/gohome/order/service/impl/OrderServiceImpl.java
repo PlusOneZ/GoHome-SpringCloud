@@ -190,8 +190,7 @@ public class OrderServiceImpl implements OrderService {
 
     }
 
-    /**
-     * @param stayId:      stay id for searching the order.
+    /**.
      * @param currentPage: current page for info.
      * @param pageSize:    the count of data every page.
      * @description: search the order info for the host when he clicks one stay...
@@ -415,16 +414,18 @@ public class OrderServiceImpl implements OrderService {
                 if (stay != null) {
                     if (stay.getDetailedAddress() != null) {
 
-                        String regEx = "(.*?省)(.*?市).*|(.*?市)(.*?区).*";
+                        String regEx = "^(.*?省|.*?市)(.*?市|.*?区).*";
                         Pattern pattern = Pattern.compile(regEx);
                         Matcher matcher = pattern.matcher(stay.getDetailedAddress());
                         if (matcher.find()) {
                             FootMapInfoDto footMapInfoDto = new FootMapInfoDto();
                             footMapInfoDto.setOrderId(orderId);
                             System.out.println(matcher.group(1));
-                            footMapInfoDto.setStayProvince(matcher.group(1));
-                            footMapInfoDto.setStayCity(matcher.group(2));
-                            footMapInfoDtos.add(footMapInfoDto);
+                            if(matcher.group(1)!=null && matcher.group(2)!= null){
+                                footMapInfoDto.setStayProvince(matcher.group(1));
+                                footMapInfoDto.setStayCity(matcher.group(2));
+                                footMapInfoDtos.add(footMapInfoDto);
+                            }
                         }
                     }
                 }
