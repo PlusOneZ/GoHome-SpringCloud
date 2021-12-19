@@ -76,10 +76,10 @@ public class PaymentService {
 
         bizContent.put("out_trade_no", String.valueOf(orderPaymentInfo.getOrderId()));
         bizContent.put("refund_amount", String.valueOf(orderPaymentInfo.getTotalCost()));
-        bizContent.put("subject", orderPaymentInfo.getOrderName());
+        bizContent.put("refund_reason", orderPaymentInfo.getOrderName());
+        bizContent.put("trade_no","");
         //bizContent.put("body", orderPaymentInfo.getOrderInfo());
-        bizContent.put("trade_no", String.valueOf(YitIdHelper.nextId()));
-
+        System.out.println(bizContent.toString());
         alipayTradeRefundRequest.setBizContent(bizContent.toString());
 
         return alipayClient.pageExecute(alipayTradeRefundRequest);

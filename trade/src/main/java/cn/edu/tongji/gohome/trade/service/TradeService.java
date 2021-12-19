@@ -41,12 +41,13 @@ public class TradeService {
     public void cancelOrder(long orderId){
         System.out.println("该订单已经超时支付取消, 订单Id为: " + orderId);
         System.out.println("the order in redis, orderId: " + orderId);
-        System.out.println("超时订单在redis中删除完成");
-//            redisUtils.remove(String.valueOf(orderId));
-
+        System.out.println("订单在redis中删除完成");
+        if (redisUtils.exists(String.valueOf(orderId))){
+            redisUtils.remove(String.valueOf(orderId));
+        }
         //use order service to remove the order with order id = orderId;
         restTemplate.delete("http://order-service/api/v1/order?orderId={1}", orderId);
-        System.out.println("超时订单在数据库中删除完成");
+        System.out.println("订单在数据库中删除完成");
     }
 
     public void completePaymentForOrder(long orderId){

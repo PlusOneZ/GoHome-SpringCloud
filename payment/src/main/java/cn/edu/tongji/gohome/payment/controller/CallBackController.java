@@ -36,6 +36,5 @@ public class CallBackController {
         String result = paymentService.orderNotify(requestParams);
         // 验签通过
         return new ResponseEntity<>(result, HttpStatus.OK);
-
     }
 }
