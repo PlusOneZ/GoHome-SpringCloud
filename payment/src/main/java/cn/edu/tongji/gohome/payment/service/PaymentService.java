@@ -116,7 +116,8 @@ public class PaymentService {
                 try {
                     //此处做自己的业务处理
                     String outTradeNo = param.getOutTradeNo();
-                    restTemplate.postForEntity("http://trade-service/api/vi/trade/payment/callback",Long.parseLong(outTradeNo),String.class);
+                    System.out.println("得到的outTradeNo为: "+outTradeNo);
+                    restTemplate.postForEntity("http://trade-service/api/v1/trade/payment/callback",Long.parseLong(outTradeNo),String.class);
                     System.out.println("数据库中订单状态更改为支付完成");
                 } catch (Exception e) {
                     System.out.println("支付宝回调业务处理报错,params:" + param);
