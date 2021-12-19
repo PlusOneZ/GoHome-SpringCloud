@@ -20,7 +20,7 @@ public class AlipayConfig {
     public static String ALIPAY_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjNjukAOdp+XrvGH86p6wheV7BHWqjlWt5Vw3CtVXur7xE+4N/sVoVDKco2YuakY/LHKSqkW1OVIIxw8Prs9foBnU2t4ZomQxoKVwOW8o9b4tjjjjG4Jq34jJB7z1dPYm7YqkGmCMxMegEsPapHxkyI3PIhElQ+9uQ+b2MIfave4Fg49+LK0nqciEMVl8PPjc0M/o/33i19JbV3QG+SPfvxt/NtDlldiMgRNurl6gl954T2bTVbxIMurp97IFbqCbL7LLcwyVgGV40G/qmQXZ2hqn12L62hcn1wFd2t5sO4XSKo20H0w1VAOUgyRlLNE9+9BTUVDl2RmSKXOscuBBaQIDAQAB";
 
     // 服务器异步通知页面路径
-    public static String notify_url = "http://8.131.225.65:8080/api/v1/notify";
+    public static String notify_url = "http://8.131.225.65:8080/api/v1/payment/notify";
 
     // 页面跳转同步通知页面路径,支付成功显示页面
     public static String return_url = "http://8.131.225.65";

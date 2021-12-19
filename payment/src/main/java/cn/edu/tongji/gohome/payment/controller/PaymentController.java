@@ -58,4 +58,14 @@ public class PaymentController {
         return response.getBody();
     }
 
+    @RequestMapping(value = "payment/notify",method = RequestMethod.POST)
+    public ResponseEntity<String> notifyOrder(HttpServletRequest httpServletRequest) throws AlipayApiException {
+
+        System.out.println("收到了回调内容!");
+
+        Map<String, String[]> requestParams = httpServletRequest.getParameterMap();
+        String result = paymentService.orderNotify(requestParams);
+        // 验签通过
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }
