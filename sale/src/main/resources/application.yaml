@@ -9,3 +9,22 @@ eureka:
     fetch-registry: true #获取注册实例列表
     service-url:
       defaultZone: http://8.131.225.65:8100/eureka/ #配置注册中心地址
+
+sa-token:
+  # SSO-相关配置
+  sso:
+    # SSO-Server端 统一认证地址
+    auth-url: http://localhost:8080/sso/auth
+    # 是否打开单点注销接口
+    is-slo: true
+
+  # 配置Sa-Token单独使用的Redis连接 （此处需要和SSO-Server端连接同一个Redis）
+  alone-redis:
+    # Redis数据库索引 (默认为0)
+    database: 1
+    # Redis服务器地址
+    host: 121.5.140.125
+    # Redis服务器连接端口
+    port: 6379
+    # Redis服务器连接密码（默认为空）
+    password: ENC(LvfQLvutAb64FW8NX8MK1ElIJB8v8tEi)

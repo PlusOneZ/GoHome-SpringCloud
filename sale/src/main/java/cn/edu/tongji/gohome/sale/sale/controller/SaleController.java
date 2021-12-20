@@ -3,6 +3,7 @@ package
  * @author 梁乔 2021/11/24
  **/
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.edu.tongji.gohome.sale.sale.dto.CouponIdDto;
 import cn.edu.tongji.gohome.sale.sale.dto.CouponTypeIdDto;
 import cn.edu.tongji.gohome.sale.sale.dto.CouponTypeInfoDto;
@@ -59,7 +60,7 @@ public class SaleController {
     */
     @RequestMapping(value = "customer/coupon",method = RequestMethod.GET)
     public ResponseEntity<HashMap<String,Object>> getCustomerCouponInfo(){
-        Long customerId = 1L;
+        Long customerId = Long.parseLong((String) StpUtil.getLoginId());
         return new ResponseEntity<>(saleService.getCouponInfoByCustomerId(customerId),HttpStatus.OK);
     }
 
