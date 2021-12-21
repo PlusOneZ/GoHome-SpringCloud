@@ -1,14 +1,15 @@
 server:
-  port: 8084 #运行端口号
+  port: 8081 #运行端口号
 spring:
   application:
-    name: sale-service
+    name: admin-service
+
 eureka:
   client:
     register-with-eureka: true #注册到Eureka的注册中心
     fetch-registry: true #获取注册实例列表
     service-url:
-      defaultZone: http://8.131.225.65:8100/eureka/ #配置注册中心地址
+      defaultZone: http://localhost:8100/eureka/ #配置注册中心地址
 
 sa-token:
   # SSO-相关配置
@@ -28,3 +29,4 @@ sa-token:
     port: 6379
     # Redis服务器连接密码（默认为空）
     password: ENC(LvfQLvutAb64FW8NX8MK1ElIJB8v8tEi)
+

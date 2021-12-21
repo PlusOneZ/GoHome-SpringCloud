@@ -101,7 +101,8 @@ public class SaleServiceImpl implements SaleService {
             CouponTypeEntity couponTypeEntity = couponTypeRepository.findByCouponTypeId(couponEntity.getCouponTypeId());
             CouponInfoDto couponInfoDto = new CouponInfoDto();
             couponInfoDto.setCouponName(couponTypeEntity.getCouponName());
-            couponInfoDto.setCouponAmount(couponTypeEntity.getCouponLimit().floatValue());
+            couponInfoDto.setCouponAmount(couponTypeEntity.getCouponAmount().floatValue());
+            couponInfoDto.setCouponLimit(couponTypeEntity.getCouponLimit().floatValue());
             couponInfoDto.setCouponStartDate(couponEntity.getCouponStartDate());
             couponInfoDto.setCouponEndDate(couponEntity.getCouponEndDate());
             couponInfoDto.setCouponId(couponEntity.getCouponId());
