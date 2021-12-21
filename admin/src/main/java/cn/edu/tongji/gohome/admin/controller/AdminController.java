@@ -48,6 +48,7 @@ public class AdminController {
     public HttpStatus postPostReport(
             @RequestBody UploadedPostReport ask
     ){
+        System.out.println(ask);
         try {
             return customerService.postPostReport(ask);
         }catch (Exception error){
