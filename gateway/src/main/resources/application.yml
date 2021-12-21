@@ -13,6 +13,8 @@ spring:
             allowedOrigins:
               - "localhost://*"
               - "localhost://8080"
+              - "localhost://8082"
+              - "http://localhost:8082"
               - "http://*.guisu.website"
               - "https://*.guisu.website"
               - "http://8.131.225.65"
@@ -36,6 +38,10 @@ spring:
           uri: lb://statistics-service
           predicates:
             - Path=/api/{segment}/statistics/**
+        - id: admin-service
+          uri: lb://admin-service
+          predicates:
+            - Path=/api/{segment}/admin/**
         - id: order-service
           uri: lb://order-service
           predicates:

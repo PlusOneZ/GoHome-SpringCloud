@@ -1,0 +1,12 @@
+package cn.edu.tongji.gohome.admin.repository;
+
+import cn.edu.tongji.gohome.admin.model.OrderStayEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+
+public interface OrderStayEntityRepository extends JpaRepository<OrderStayEntity, Long>, JpaSpecificationExecutor<OrderStayEntity> {
+    @Query("select o from OrderStayEntity o where o.orderId = ?1")
+    OrderStayEntity findOneByOrderId(long orderId);
+
+}
