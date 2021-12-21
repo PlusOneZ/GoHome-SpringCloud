@@ -281,6 +281,48 @@ public class OrderServiceImpl implements OrderService {
 
         return results;
     }
+    @Override
+    public HashMap<String, Object> searchOrderInfoForHostAndOrderStatus(long customerId,
+                                                                 int orderStatus, Integer currentPage, Integer pageSize){
+        Pageable pageable = PageRequest.of(currentPage, pageSize);
+        HashMap<String, Object> results = new HashMap<>();
+        List<OrderInfoDto> orderInfoDtoList = new ArrayList<>();
+
+        HostEntity host = hostRepository.findFirstByCustomerId(customerId);
+        if (host != null) {
+            int hostId = host.getHostId();
+            List<StayEntity> stays = stayRepository.findAllByHostId(hostId);
+            List<Long> stayIds = new ArrayList<>();
+            for (StayEntity stay : stays) {
+                stayIds.add(stay.getStayId());
+            }
+            List<VOrderStayEntity> vOrderStayEntityList = vOrderStayRepository.findAllByStayIdIn(stayIds);
+            // there is no order for customer whose id = ...
+            if (vOrderStayEntityList == null) {
+                results.put("totalPage", 0);
+                results.put("orderInfo", orderInfoDtoList);
+                return results;
+            }
+            List<Long> orderIdList = new ArrayList<>();
+            for(VOrderStayEntity vOrderStay : vOrderStayEntityList){
+                if(vOrderStay != null) {
+                    orderIdList.add(vOrderStay.getOrderId());
+                }
+            }
+            Page<OrderEntity> orderPages = orderRepository.findAllByOrderIdInAndOrderStatus(orderIdList,orderStatus,pageable);
+            results.put("totalPage", orderPages.getTotalPages());
+
+            for (OrderEntity order : orderPages) {
+                orderInfoDtoList.add(getInfoFromOrderEntity(order));
+            }
+            results.put("orderInfo", orderInfoDtoList);
+        }else{
+            results.put("totalPage", 0);
+            results.put("orderInfo", orderInfoDtoList);
+        }
+        return results;
+    }
+
 
     @Override
     public HashMap<String, Object> searchOrderInfoForCustomerIdAndOrderStatus(long customerId, int orderStatus,
