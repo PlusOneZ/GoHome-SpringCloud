@@ -11,6 +11,8 @@ public interface VOrderStayRepository extends JpaRepository<VOrderStayEntity, Lo
 
         Page<VOrderStayEntity> findAllByStayId(long stayId, Pageable pageable);
 
+        List<VOrderStayEntity> findAllByStayIdIn(List<Long> stayList);
+
         Page<VOrderStayEntity> findAllByStayIdIn(List<Long> stayList, Pageable pageable);
 
         VOrderStayEntity findFirstByOrderId(long orderId);

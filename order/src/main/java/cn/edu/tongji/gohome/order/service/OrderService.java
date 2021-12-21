@@ -20,6 +20,8 @@ public interface OrderService {
 
     HashMap<String, Object> searchOrderInfoForHost(long customerId, Integer currentPage, Integer pageSize);
 
+    HashMap<String, Object> searchOrderInfoForHostAndOrderStatus(long customerId, int orderStatus, Integer currentPage, Integer pageSize);
+
     HashMap<String, Object> searchOrderDetailedInfoForOrderId(long orderId, Integer currentPage, Integer pageSize);
 
     Long addOrderAndDetailedInformation(OrderContent orderContent);

@@ -80,11 +80,14 @@ public class OrderController {
     @RequestMapping("orders/host")
     public ResponseEntity<HashMap<String, Object>> getHostOrderList(
             @RequestParam(value = "currentPage") int currentPage,
-            @RequestParam(value = "pageSize", defaultValue = "5") int pageSize) {
-
-        return new ResponseEntity<>
-                (orderService.searchOrderInfoForHost(Long.parseLong((String) StpUtil.getLoginId()), currentPage, pageSize), HttpStatus.OK);
-
+            @RequestParam(value = "pageSize", defaultValue = "5") int pageSize,
+            @RequestParam(value = "orderStatus", required = false) Integer orderStatus) {
+        if(orderStatus == null){
+            return new ResponseEntity<>
+                    (orderService.searchOrderInfoForHost(Long.parseLong((String) StpUtil.getLoginId()), currentPage, pageSize), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(orderService.searchOrderInfoForHostAndOrderStatus(Long.parseLong((String) StpUtil.getLoginId()), orderStatus,currentPage, pageSize), HttpStatus.OK);
+        
     }
 
     @RequestMapping("order")
